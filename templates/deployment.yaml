@@ -38,6 +38,12 @@ spec:
           value: "{{ .Values.ipsec.remotenet }}"
         - name: IPSEC_PSK
           value: "{{ .Values.ipsec.psk }}"
+        - name: IPSEC_KEYEXCHANGE
+          value: "{{ .Values.ipsec.keyexchange }}"
+        - name: IPSEC_IKECIPHER
+          value: "{{ .Values.ipsec.ikechipher }}"
+        - name: IPSEC_ESPCIPHER
+          value: "{{ .Values.ipsec.espchipher }}"
         livenessProbe:
           httpGet:
             path: /

@@ -8,6 +8,9 @@ ipsec:
   remotenet: 192.168.23.0/24
   localprivip: "%any"
   localpubip: ipsec.openvnf.com
+  keyexchange: ike
+  ikecipher: aes192gcm16-aes128gcm16-prfsha256-ecp256-ecp521,aes192-sha256-modp3072
+  espcipher: aes192gcm16-aes128gcm16-ecp256,aes192-sha256-modp3072#
 replicaCount: 1
 image:
   repository: openvnf/vnf-ipsec
