@@ -16,29 +16,34 @@ spec:
         release: {{ .Release.Name }}
     spec:
       containers:
-        - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - containerPort: {{ .Values.service.internalPort }}
-          env:
-          - name: IPSEC_REMOTEIP
-            value: "{{ .Values.ipsec.remoteip }}"
-          - name: IPSEC_REMOTENET
-            value: "{{ .Values.ipsec.remotenet }}"
-          livenessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.service.internalPort }}
-          readinessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.service.internalPort }}
-          securityContext:
-            privileged: true
-          resources:
-{{ toYaml .Values.resources | indent 12 }}
-    {{- if .Values.nodeSelector }}
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - containerPort: {{ .Values.service.internalPort }}
+        env:
+        - name: IPSEC_REMOTEIP
+          value: "{{ .Values.ipsec.remoteip }}"
+        - name: IPSEC_REMOTENET
+          value: "{{ .Values.ipsec.remotenet }}"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.service.internalPort }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.service.internalPort }}
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: host-kernel-modules-volume
+      volumes:
+      - name: host-kernel-modules-volume
+        hostPath:
+          path: /lib/modules
+   {{- if .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
-    {{- end }}
+   {{- end }}
