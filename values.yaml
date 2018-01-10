@@ -1,13 +1,14 @@
 # Default values for CGW.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-useEnvConfig: AWS
+useEnvConfig: "HIDDEN_PUBIP_HOST"
 setRouteDefaultTable: FALSE
 ipsec:
   remoteip: 192.0.2.0
   remotenet: 192.168.23.0/24
   localprivip: "%any"
   localpubip: ipsec.openvnf.com
+  localnet: 192.168.24.0/24
   keyexchange: ike
   ikecipher: aes192gcm16-aes128gcm16-prfsha256-ecp256-ecp521,aes192-sha256-modp3072
   espcipher: aes192gcm16-aes128gcm16-ecp256,aes192-sha256-modp3072
