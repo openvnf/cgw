@@ -48,6 +48,14 @@ spec:
             port: {{ .Values.service.internalPort }}
         securityContext:
           privileged: true
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: host-kernel-modules-volume
+      volumes:
+      - name: host-kernel-modules-volume
+        hostPath:
+          path: /lib/modules
+   {{- if .Values.nodeSelector }}
         resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- if .Values.nodeSelector }}
