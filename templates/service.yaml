@@ -12,7 +12,7 @@ spec:
   ports:
     - port: {{ .Values.service.externalPort }}
       targetPort: {{ .Values.service.internalPort }}
-      protocol: TCP
+      protocol: {{ .Values.service.protocol }}
       name: {{ .Values.service.name }}
   selector:
     app: {{ template "CGW.name" . }}
