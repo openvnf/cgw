@@ -44,6 +44,8 @@ spec:
           value: "{{ .Values.ipsec.ikecipher }}"
         - name: IPSEC_ESPCIPHER
           value: "{{ .Values.ipsec.espcipher }}"
+        - name: IPSEC_FORCE_UDP
+          value: "{{ .Values.ipsec.forceudp }}"
         securityContext:
           privileged: true
         volumeMounts:

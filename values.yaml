@@ -13,6 +13,7 @@ ipsec:
   ikecipher: aes192gcm16-aes128gcm16-prfsha256-ecp256-ecp521,aes192-sha256-modp3072
   espcipher: aes192gcm16-aes128gcm16-ecp256,aes192-sha256-modp3072
   psk: secret
+  forceudp: yes
 replicaCount: 1
 image:
   repository: openvnf/vnf-ipsec
