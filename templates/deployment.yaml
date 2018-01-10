@@ -41,9 +41,9 @@ spec:
         - name: IPSEC_KEYEXCHANGE
           value: "{{ .Values.ipsec.keyexchange }}"
         - name: IPSEC_IKECIPHER
-          value: "{{ .Values.ipsec.ikechipher }}"
+          value: "{{ .Values.ipsec.ikecipher }}"
         - name: IPSEC_ESPCIPHER
-          value: "{{ .Values.ipsec.espchipher }}"
+          value: "{{ .Values.ipsec.espcipher }}"
         securityContext:
           privileged: true
         volumeMounts:
