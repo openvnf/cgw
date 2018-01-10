@@ -44,7 +44,7 @@ spec:
           value: "{{ .Values.ipsec.ikecipher }}"
         - name: IPSEC_ESPCIPHER
           value: "{{ .Values.ipsec.espcipher }}"
-        - name: IPSEC_FORCE_UDP
+        - name: IPSEC_FORCEUDP
           value: "{{ .Values.ipsec.forceudp }}"
         securityContext:
           privileged: true
