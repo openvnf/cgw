@@ -22,10 +22,22 @@ spec:
         ports:
           - containerPort: {{ .Values.service.internalPort }}
         env:
+        - name: USE_ENV_CONFIG
+          value: "{{ .Values.useEnvConfig }}"
+        - name: SET_ROUTE_DEFAULT_TABLE
+          value: "{{ .Values.setRouteDefaultTable }}"
+        - name: IPSEC_LOCALPRIVIP
+          value: "{{ .Values.ipsec.localprivip }}"
+        - name: IPSEC_LOCALPUBIP
+          value: "{{ .Values.ipsec.localpubip }}"
+        - name: IPSEC_LOCALNET
+          value: "{{ .Values.ipsec.localnet }}"
         - name: IPSEC_REMOTEIP
           value: "{{ .Values.ipsec.remoteip }}"
         - name: IPSEC_REMOTENET
           value: "{{ .Values.ipsec.remotenet }}"
+        - name: IPSEC_PSK
+          value: "{{ .Values.ipsec.psk }}"
         livenessProbe:
           httpGet:
             path: /
@@ -36,14 +48,9 @@ spec:
             port: {{ .Values.service.internalPort }}
         securityContext:
           privileged: true
-        volumeMounts:
-        - mountPath: /lib/modules
-          name: host-kernel-modules-volume
-      volumes:
-      - name: host-kernel-modules-volume
-        hostPath:
-          path: /lib/modules
-   {{- if .Values.nodeSelector }}
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- if .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
    {{- end }}

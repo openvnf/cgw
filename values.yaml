@@ -1,9 +1,13 @@
 # Default values for CGW.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+useEnvConfig: AWS
+setRouteDefaultTable: FALSE
 ipsec:
   remoteip: 192.0.2.0
   remotenet: 192.168.23.0/24
+  localprivip: "%any"
+  localpubip: ipsec.openvnf.com
 replicaCount: 1
 image:
   repository: openvnf/vnf-ipsec
