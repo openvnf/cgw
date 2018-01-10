@@ -10,10 +10,14 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.externalPort }}
-      targetPort: {{ .Values.service.internalPort }}
-      protocol: {{ .Values.service.protocol }}
-      name: {{ .Values.service.name }}
+    - port: 500
+      targetPort: 500
+      protocol: UDP
+      name: p500
+    - port: 4500
+      targetPort: 4500
+      protocol: UDP
+      name: p4500
   selector:
     app: {{ template "CGW.name" . }}
     release: {{ .Release.Name }}

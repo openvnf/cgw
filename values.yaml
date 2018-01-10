@@ -22,9 +22,9 @@ image:
 service:
   name: ipsec
   type: ClusterIP
-  protocol: UDP
-  externalPort: 4500
-  internalPort: 4500
+#  protocol: UDP
+#  externalPort: 4500
+#  internalPort: 4500
 ingress:
   enabled: false
   # Used to create an Ingress record.
