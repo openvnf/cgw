@@ -21,6 +21,11 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.internalPort }}
+          env:
+          - name: IPSEC_REMOTEIP
+            value: "{{ .Values.ipsec.remoteip }}"
+          - name: IPSEC_REMOTENET
+            value: "{{ .Values.ipsec.remotenet }}"
           livenessProbe:
             httpGet:
               path: /
