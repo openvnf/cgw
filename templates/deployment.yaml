@@ -44,14 +44,6 @@ spec:
           value: "{{ .Values.ipsec.ikechipher }}"
         - name: IPSEC_ESPCIPHER
           value: "{{ .Values.ipsec.espchipher }}"
-        livenessProbe:
-          httpGet:
-            path: /
-            port: {{ .Values.service.internalPort }}
-        readinessProbe:
-          httpGet:
-            path: /
-            port: {{ .Values.service.internalPort }}
         securityContext:
           privileged: true
         volumeMounts:
