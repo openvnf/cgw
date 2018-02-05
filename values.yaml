@@ -7,13 +7,14 @@ ipsec:
   remoteip: 192.0.2.0
   remotenet: 192.168.23.0/24
   localprivip: "%any"
-  localpubip: ipsec.openvnf.com
+#  localpubip: ipsec.openvnf.com
   localnet: 192.168.24.0/24
-  keyexchange: ike
+  keyexchange: ikev2
   ikecipher: aes192gcm16-aes128gcm16-prfsha256-ecp256-ecp521,aes192-sha256-modp3072
   espcipher: aes192gcm16-aes128gcm16-ecp256,aes192-sha256-modp3072
   psk: secret
   forceudp: "yes"
+  vti_key: 1304
 replicaCount: 1
 image:
   repository: openvnf/vnf-ipsec
