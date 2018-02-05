@@ -20,7 +20,10 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
-          - containerPort: {{ .Values.service.internalPort }}
+        - containerPort: 500
+          name: p500
+        - containerPort: 4500
+          name: p4500
         env:
         - name: USE_ENV_CONFIG
           value: "{{ .Values.useEnvConfig }}"
