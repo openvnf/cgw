@@ -15,6 +15,56 @@ spec:
         app: {{ template "CGW.name" . }}
         release: {{ .Release.Name }}
     spec:
+      initContainers:
+      - name: init-ip
+        image: thzpub/vnf-swak-diag
+        volumeMounts:
+        - name: podshare
+          mountPath: /mnt/podshare
+        command:
+        - bash
+        - -c
+        - |
+          # create dummy interface for ping endpoint
+          if [ -n "$LOCAL_PING_ENDPOINT" ]; then
+              ip link add dum0 type dummy
+              ip addr add $LOCAL_PING_ENDPOINT/32 dev dum0
+              ip link set dum0 up
+          fi
+          #
+          # create dummy interface for ping endpoint
+          if [ -n "$BGP_ROUTER_ID" ]; then
+              ip link add dum1 type dummy
+              ip addr add $BGP_ROUTER_ID/32 dev dum1
+              ip link set dum1 up
+          fi
+          echo "Initializer completed."
+        env:
+        - name: LOCAL_PING_ENDPOINT
+          value: "{{ .Values.ipsec.local_ping_endpoint }}"
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+      - name: init-vti
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        command: ["/usr/local/bin/start-strongswan.sh", "init"]
+        env:
+        - name: IPSEC_VTI_KEY
+          value: "{{ .Values.ipsec.vti_key }}"
+#        - name: IPSEC_LOCALIP
+#          value: "{{ .Values.ipsec.localip }}"
+        - name: IPSEC_VTI_STATICROUTES
+          value: "{{ .Values.ipsec.vti_staticroutes }}"
+        - name: IPSEC_REMOTEIP
+          value: "{{ .Values.ipsec.remoteip }}"
+        - name: IPSEC_REMOTENET
+          value: "{{ .Values.ipsec.remotenet }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: host-kernel-modules-volume
+        securityContext:
+          privileged: true
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
