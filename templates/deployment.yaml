@@ -104,10 +104,40 @@ spec:
         volumeMounts:
         - mountPath: /lib/modules
           name: host-kernel-modules-volume
+
+      - name: ping-prober
+        image: alpine:latest
+        command:
+        - sh
+        - -c
+        - |
+          if [ -z "$REMOTE_PING_ENDPOINT" -o -z "$LOCAL_PING_ENDPOINT" ]; then
+            echo "REMOTE_PING_ENDPOINT or LOCAL_PING_ENDPOINT is not set. No probing. Sleeping."
+            while sleep 3600; do echo "keep sleeping"; done
+            exit 1
+          fi
+          echo "Starting ping probes."
+          while sleep 5; do
+            printf "\n\n# ping start - " ; date -Is
+            ping -I ${LOCAL_PING_ENDPOINT} -c 3 -w 10 ${REMOTE_PING_ENDPOINT} | tee /mnt/podshare/current-ping.log
+            # make it atomic:
+            mv /mnt/podshare/current-ping.log /mnt/podshare/last-ping.log
+          done
+
+        volumeMounts:
+        - name: podshare
+          mountPath: /mnt/podshare
+        env:
+        - name: REMOTE_PING_ENDPOINT
+          value: "{{ .Values.ipsec.remote_ping_endpoint }}"
+        - name: LOCAL_PING_ENDPOINT
+          value: "{{ .Values.ipsec.local_ping_endpoint }}"
       volumes:
       - name: host-kernel-modules-volume
         hostPath:
           path: /lib/modules
+      - name: podshare
+        emptyDir: {}
    {{- if .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
