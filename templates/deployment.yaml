@@ -65,6 +65,8 @@ spec:
           name: host-kernel-modules-volume
         securityContext:
           privileged: true
+
+      ##  GRE Tunneling ##
       {{ if .Values.gre.enabled }}
       - name: init-gre
         image: thzpub/vnf-swak-diag
@@ -73,21 +75,25 @@ spec:
         - -c
         - |
           # create GRE endpoint
-          if [ -n "$GRE_LOCALIP" -a -n "$GRE_REMOTEIP" ]; then
-            ip link add dum2 type dummy
-            ip addr add $GRE_LOCALIP/32 dev dum2
-            ip link set dum2 up
-            ip tunnel add gre0 mode gre remote $GRE_REMOTEIP local $GRE_LOCALIP ttl 255
-            ip link set gre0 up 
+          if [ -n "$GRE_LOCALIP" -a -n "$GRE_REMOTEIP" -a -n "$GRE_IFACE" ]; then
+            ip link add dum-"$GRE_IFACE" type dummy
+            ip addr add $GRE_LOCALIP/32 dev dum-"$GRE_IFACE"
+            ip link set dum-"$GRE_IFACE" up
+            ip tunnel add "$GRE_IFACE" mode gre remote $GRE_REMOTEIP local $GRE_LOCALIP ttl 255
+            ip link set "$GRE_IFACE" up 
           else
-            echo "set gre.localip and gre.remoteip in your configuration"
+            echo "set gre.localip, gre.remoteip and gre.name in your configuration"
+            exit 1
           fi
+          exit 0
 
         env:
         - name: GRE_LOCALIP
           value: "{{ .Values.gre.localip }}"
         - name: GRE_REMOTEIP
           value: "{{ .Values.gre.remoteip }}"
+        - name: GRE_IFACE
+          value: "{{ .Values.gre.name }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         securityContext:
           capabilities:
@@ -173,13 +179,54 @@ spec:
           value: "{{ .Values.ipsec.remote_ping_endpoint }}"
         - name: LOCAL_PING_ENDPOINT
           value: "{{ .Values.ipsec.local_ping_endpoint }}"
+      ## VXLAN Connection ##
+      {{- if .Values.vxlan.enabled }}
+      {{- range $index, $element := .Values.vxlan.connectors }}
+      - name: vxlan-connector-{{ $element.name }}
+        image: travelping/vxlan-connector
+        imagePullPolicy: Always
+        securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
+        env:
+        - name: PEER
+          value: "{{ $element.peer }}"
+        {{- if $element.bridge }}
+        - name: BRIDGE
+          value: "{{ $element.bridge }}"
+        {{- end }}
+        - name: BRIDGED_IFACES
+          value: "{{ $element.bridged_ifaces }}"
+        {{- if $element.bridge_name }}
+        - name: BRIDGE_IFNAME
+          value: "{{ $element.bride_name }}"
+        {{- end }}
+        - name: VXLANID
+          value: "{{ $element.id }}"
+        {{- if $element.ipaddr }}
+        - name: IP_ADDR
+          value: "{{ $element.ipaddr }}"
+        {{- end }}
+        {{- if eq $index 0 }}
+        ports:
+        - name: port-vxlan
+          containerPort: 4789
+          protocol: UDP
+        {{- end }}
+      {{- end }}
+      {{- end }}
+
       volumes:
       - name: host-kernel-modules-volume
         hostPath:
           path: /lib/modules
       - name: podshare
         emptyDir: {}
+        
    {{- if .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
    {{- end }}
+
+

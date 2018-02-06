@@ -56,4 +56,16 @@ gre:
   enabled: false
   localip: 192.0.2.1
   remoteip: 203.0.113.0
+  name: gre0
+
+vxlan:
+  enabled: false
+  connectors:
+    - name: default
+      peer: 192.0.2.2
+      bridge: true
+      bridged_ifaces: dum0815
+      bridge_name: br0
+      id: 100
+
 
