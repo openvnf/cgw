@@ -50,3 +50,10 @@ resources:
   requests:
    cpu: 100m
    memory: 128Mi
+
+## Values used to set up GRE usage
+gre:
+  enabled: false
+  localip: 192.0.2.1
+  remoteip: 203.0.113.0
+

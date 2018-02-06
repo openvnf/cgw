@@ -65,15 +65,46 @@ spec:
           name: host-kernel-modules-volume
         securityContext:
           privileged: true
+      {{ if .Values.gre.enabled }}
+      - name: init-gre
+        image: thzpub/vnf-swak-diag
+        command:
+        - sh
+        - -c
+        - |
+          # create GRE endpoint
+          if [ -n "$GRE_LOCALIP" -a -n "$GRE_REMOTEIP" ]; then
+            ip link add dum2 type dummy
+            ip addr add $GRE_LOCALIP/32 dev dum2
+            ip link set dum2 up
+            ip tunnel add gre0 mode gre remote $GRE_REMOTEIP local $GRE_LOCALIP ttl 255
+            ip link set gre0 up 
+          else
+            echo "set gre.localip and gre.remoteip in your configuration"
+          fi
+
+        env:
+        - name: GRE_LOCALIP
+          value: "{{ .Values.gre.localip }}"
+        - name: GRE_REMOTEIP
+          value: "{{ .Values.gre.remoteip }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+      {{ end }}
+
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: 500
+          name: u500
           protocol: UDP
           name: u500
         - containerPort: 4500
+          name: u4500
           protocol: UDP
           name: u4500
         env:
