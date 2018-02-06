@@ -71,9 +71,11 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: 500
-          name: p500
+          protocol: UDP
+          name: u500
         - containerPort: 4500
-          name: p4500
+          protocol: UDP
+          name: u4500
         env:
         - name: USE_ENV_CONFIG
           value: "{{ .Values.useEnvConfig }}"
