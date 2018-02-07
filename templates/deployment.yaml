@@ -80,9 +80,9 @@ spec:
             ip addr add $GRE_LOCALIP/32 dev dum-"$GRE_IFACE"
             ip link set dum-"$GRE_IFACE" up
             {{- if .Values.gre.gretap }}
-            ip tunnel add "$GRE_IFACE" mode gre remote "$GRE_REMOTEIP" local "$GRE_LOCALIP" ttl 255
+            ip link add "$GRE_IFACE" type gretap remote "$GRE_REMOTEIP" local "$GRE_LOCALIP" ttl 255
             {{- else }}
-            ip link add "$GRE_IFACE" type gretap remote "$GRE_REMOTEIP" local "$GRE_LOCALIP"
+            ip tunnel add "$GRE_IFACE" mode gre remote "$GRE_REMOTEIP" local "$GRE_LOCALIP" ttl 255
             {{- end }}
             ip link set "$GRE_IFACE" up 
           else
