@@ -17,7 +17,11 @@ vxlan:
       bridge: true
       id: 42
       ipaddr: <ip address added to the created interface>
-      bridged_ifaces: eth1 # mandatory when bridge: true
+      # mandatory when bridge: true
+      # if multiple interfaces shall be bridged,
+      # add them as a space seperated list
+      bridged_ifaces: eth1
+      # bridged_ifaces: "eth1 eth2 net0"
       bridge_name: <name of bridge> # optional: defaults to br0
       
 ```
