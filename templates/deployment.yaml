@@ -66,8 +66,8 @@ spec:
         securityContext:
           privileged: true
 
-      ##  GRE Tunneling ##
       {{ if .Values.gre.enabled }}
+      ##  GRE Tunneling ##
       - name: init-gre
         image: thzpub/vnf-swak-diag
         command:
