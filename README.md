@@ -22,8 +22,7 @@ vxlan:
       # add them as a space seperated list
       bridged_ifaces: eth1
       # bridged_ifaces: "eth1 eth2 net0"
-      bridge_name: <name of bridge> # optional: defaults to br0
-      
+      bridge_name: <name of bridge> # optional: defaults to br0      
 ```
 
 Multiple interfaces can be added by adding more entries to the list of connectors.
@@ -46,8 +45,7 @@ gre:
   name: <name of the interface to be created>
   # if Ethernet traffic shall be tunneled,
   # a GRETAP interface has to be used instead of a GRE interface
-  gretap: <true | false>
-  
+  gretap: <true | false> 
 ```
   
 
