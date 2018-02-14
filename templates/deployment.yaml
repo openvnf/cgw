@@ -65,17 +65,56 @@ spec:
           name: host-kernel-modules-volume
         securityContext:
           privileged: true
+
+      {{ if .Values.gre.enabled }}
+      ##  GRE Tunneling ##
+      - name: init-gre
+        image: thzpub/vnf-swak-diag
+        command:
+        - sh
+        - -c
+        - |
+          # create GRE endpoint
+          if [ -n "$GRE_LOCALIP" -a -n "$GRE_REMOTEIP" -a -n "$GRE_IFACE" ]; then
+            ip link add dum-"$GRE_IFACE" type dummy
+            ip addr add $GRE_LOCALIP/32 dev dum-"$GRE_IFACE"
+            ip link set dum-"$GRE_IFACE" up
+            {{- if .Values.gre.gretap }}
+            ip link add "$GRE_IFACE" type gretap remote "$GRE_REMOTEIP" local "$GRE_LOCALIP" ttl 255
+            {{- else }}
+            ip tunnel add "$GRE_IFACE" mode gre remote "$GRE_REMOTEIP" local "$GRE_LOCALIP" ttl 255
+            {{- end }}
+            ip link set "$GRE_IFACE" up 
+          else
+            echo "set gre.localip, gre.remoteip and gre.name in your configuration"
+            exit 1
+          fi
+          exit 0
+
+        env:
+        - name: GRE_LOCALIP
+          value: "{{ .Values.gre.localip }}"
+        - name: GRE_REMOTEIP
+          value: "{{ .Values.gre.remoteip }}"
+        - name: GRE_IFACE
+          value: "{{ .Values.gre.name }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+      {{ end }}
+
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: 500
-          protocol: UDP
           name: u500
-        - containerPort: 4500
           protocol: UDP
+        - containerPort: 4500
           name: u4500
+          protocol: UDP
         env:
         - name: USE_ENV_CONFIG
           value: "{{ .Values.useEnvConfig }}"
@@ -142,13 +181,54 @@ spec:
           value: "{{ .Values.ipsec.remote_ping_endpoint }}"
         - name: LOCAL_PING_ENDPOINT
           value: "{{ .Values.ipsec.local_ping_endpoint }}"
+      ## VXLAN Connection ##
+      {{- if .Values.vxlan.enabled }}
+      {{- range $index, $element := .Values.vxlan.connectors }}
+      - name: vxlan-connector-{{ $element.name }}
+        image: {{ $.Values.vxlan.image }}
+        imagePullPolicy: Always
+        securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
+        env:
+        - name: PEER
+          value: "{{ $element.peer }}"
+        {{- if $element.bridge }}
+        - name: BRIDGE
+          value: "{{ $element.bridge }}"
+        {{- end }}
+        - name: BRIDGED_IFACES
+          value: "{{ $element.bridged_ifaces }}"
+        {{- if $element.bridge_name }}
+        - name: BRIDGE_IFNAME
+          value: "{{ $element.bride_name }}"
+        {{- end }}
+        - name: VXLANID
+          value: "{{ $element.id }}"
+        {{- if $element.ipaddr }}
+        - name: IP_ADDR
+          value: "{{ $element.ipaddr }}"
+        {{- end }}
+        {{- if eq $index 0 }}
+        ports:
+        - name: port-vxlan
+          containerPort: 4789
+          protocol: UDP
+        {{- end }}
+      {{- end }}
+      {{- end }}
+
       volumes:
       - name: host-kernel-modules-volume
         hostPath:
           path: /lib/modules
       - name: podshare
         emptyDir: {}
+        
    {{- if .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
    {{- end }}
+
+
