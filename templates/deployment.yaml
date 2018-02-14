@@ -185,7 +185,7 @@ spec:
       {{- if .Values.vxlan.enabled }}
       {{- range $index, $element := .Values.vxlan.connectors }}
       - name: vxlan-connector-{{ $element.name }}
-        image: travelping/vxlan-connector
+        image: {{ $.Values.vxlan.image }}
         imagePullPolicy: Always
         securityContext:
           capabilities:

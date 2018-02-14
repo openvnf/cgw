@@ -61,6 +61,7 @@ gre:
 
 vxlan:
   enabled: false
+  image: travelping/vxlan-connector:devel
   connectors:
     - name: default
       peer: 192.0.2.2
