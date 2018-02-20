@@ -3,6 +3,15 @@ connectivity gateway
 
 ## Configuration
 
+### VTI
+
+To disable the usage of VTI and therefor use policy based routing set the key to false:
+
+```yaml
+ipsec:
+  vti_key: false
+```
+
 ### IPSEC
 #### PSK
 
