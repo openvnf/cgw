@@ -137,7 +137,14 @@ spec:
         - name: IPSEC_REMOTENET
           value: "{{ .Values.ipsec.remotenet }}"
         - name: IPSEC_PSK
-          value: "{{ .Values.ipsec.psk }}"
+        {{- if .Values.ipsec.psk.secret }}
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.ipsec.psk.secret.name }}"
+              key: "{{ .Values.ipsec.psk.secret.key }}"
+        {{- else }}
+          value: "{{ .Values.ipsec.psk.value }}"
+        {{- end }}
         - name: IPSEC_KEYEXCHANGE
           value: "{{ .Values.ipsec.keyexchange }}"
         - name: IPSEC_IKECIPHER

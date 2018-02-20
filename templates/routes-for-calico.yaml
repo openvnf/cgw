@@ -1,0 +1,55 @@
+# This file deploys the components necessary to patch calico and add routes to the host
+{{- if .Values.calicoSetup.enabled }}
+apiVersion: extension/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "CGW.fullname" . }}-calicoSetup
+  namespace: kube-system
+  label: 
+    app: {{ template "CGW.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "CGW.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      initContainers:
+      - name: {{ .Chart.Name }}-calico-etcd-routing-enabler
+        image: "quay.io/coreos/etcd:latest"
+        command:
+          - /bin/sh
+          - "-xc"
+          - >
+              etcdctl --endpoint=$ENDPOINT set
+              calico/bgp/v1/global/custom_filters/v4/ipsec
+              "if ( net = $REMOTENET ) then { accept ; }"
+        env:
+        - name: ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: calico-config
+              key: etcd_endpoints
+        - name: REMOTENET
+          value: "{{ .Values.ipsec.remotenet }}"
+      containers:
+      - name: {{ .Chart.Name }}-calicoSetup
+        image: "{{ .Values.calicoSetup.image.repository }}:{{ .Values.calicoSetup.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: IPSEC_SERVICE
+          value: {{ template "CGW.fullname" . }}
+        - name: IPSEC_REMOTENET
+          value: "{{ .Values.ipsec.remotenet }}"
+        securityContext:
+          privileged: true
+        hostNetwork: true
+   {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+   {{- end }}
+{{- end }}
