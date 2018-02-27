@@ -56,9 +56,11 @@ resources:
 ## values for setting up calico routing over IPSEC
 calicoSetup:
   enabled: false
-  image:
-    repository: openvnf/helper-ipsec-calico
-    tag: latest
+  excludeHost:
+    key: ipsec-cp
+    value: "true"
+  interface: tunl0
+  gateway: 192.0.2.1
 
 ## Values used to set up GRE usage
 gre:
