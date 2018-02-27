@@ -146,6 +146,8 @@ spec:
           value: "{{ .Values.ipsec.espcipher }}"
         - name: IPSEC_FORCEUDP
           value: "{{ .Values.ipsec.forceudp }}"
+        - name: IPSEC_IKEREAUTH
+          value: "{{ .Values.ipsec.ikereauth }}"
         - name: IPSEC_VTI_KEY
           value: "{{ .Values.ipsec.vti_key }}"
         securityContext:
