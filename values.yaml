@@ -2,7 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 useEnvConfig: "HIDDEN_PUBIP_HOST"
-setRouteDefaultTable: FALSE
 ipsec:
   remoteip: 192.0.2.0
   remotenet: 192.168.23.0/24
@@ -16,6 +15,8 @@ ipsec:
     value: secret
   forceudp: "yes"
   vti_key: 1304
+  setDefaultTable: false
+  hostNetworking: false
 replicaCount: 1
 image:
   repository: openvnf/vnf-ipsec

@@ -15,6 +15,9 @@ spec:
         app: {{ template "CGW.name" . }}
         release: {{ .Release.Name }}
     spec:
+      {{- if .Values.ipsec.hostNetworking }}
+      hostNetwork: true
+      {{- end }}
       initContainers:
       - name: init-ip
         image: thzpub/vnf-swak-diag
@@ -110,6 +113,7 @@ spec:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if not .Values.ipsec.hostNetworking }}
         ports:
         - containerPort: 500
           name: u500
@@ -117,11 +121,17 @@ spec:
         - containerPort: 4500
           name: u4500
           protocol: UDP
+        {{- end }}
         env:
         - name: USE_ENV_CONFIG
           value: "{{ .Values.useEnvConfig }}"
+        {{- if .Values.ipsec.setDefaultTable }}
         - name: SET_ROUTE_DEFAULT_TABLE
-          value: "{{ .Values.setRouteDefaultTable }}"
+          value: "TRUE"
+        {{- else }}
+        - name: SET_ROUTE_DEFAULT_TABLE
+          value: "FALSE"
+        {{- end }}
         - name: IPSEC_LOCALPRIVIP
           value: "{{ .Values.ipsec.localprivip }}"
 #        - name: IPSEC_LOCALPUBIP
@@ -162,7 +172,8 @@ spec:
           value: "{{ .Values.ipsec.vti_key }}"
         {{- end }}
         securityContext:
-          privileged: true
+          capabilities:
+            add: ["NET_ADMIN"]
         volumeMounts:
         - mountPath: /lib/modules
           name: host-kernel-modules-volume
