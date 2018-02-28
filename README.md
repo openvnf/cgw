@@ -19,10 +19,11 @@ To the pre-shared key for the connection, you can either set it directly in you 
 
 ```yaml
 ipsec:
-  psk: "<my-very-secret-psk>"
+  psk: 
+    value: "<my-very-secret-psk>"
 ```
 
-This is though discouraged, because the secrets might be commited to you repository.
+This is though discouraged, because the secrets might be commited to your repository.
 
 Instead, also a kubernetes secret can be used as following:
 
@@ -37,15 +38,53 @@ ipsec:
 ### Calico
 
 In a setup, where the calico network should be connected to another side transparently with this CGW.
-If the following options are set, a route will automatically be set on the host and calico will be
-reconfigured to accept and propagate this route.
+If the following options are set, the route will be statically configured on all nodes but the
+excluded one.
 
-ATTENTION: Because of changes on you infrastructure, use this option with care!
+The gateway address is the internal calico IP address of the node executing the CGW.
+
+ATTENTION: Because of changes on your infrastructure, use this option with care!
+
+The following is a sample configuration for usage with Calico.
 
 ```yaml
 calcioSetup:
   enabled: true
+  # exclude hosts with mathching labels
+  excludeHost:
+    key: ipsec-cp
+    value: "true"
+  # interface to use on all nodes for routing
+  interface: tunl0
+  # IP address of the gateway
+  gateway: 192.0.2.1
 ```
+
+In a scenario on AWS, the VPC network will not provide all Layer 2 functions and will make custom routing at least cumbersome.
+Therefore with Calico the internal overlay network will be used (`tunl0`).
+
+To use a host as the *IPSEC Gateway* for the cluster it is also advised to run in the host network namespace and pin to a certain host. This will not provide HA, but this is also not in the scope of this project right now.
+
+As an example the following parameter could be used for host-pinning and host networking:
+
+```yaml
+ipsec:
+  vti_key: false
+  setDefaultTable: false
+  hostNetworking: true
+  
+nodeSelector:
+  ipsec-cp: "true"
+  
+calcioSetup:
+  enabled: true
+  excludeHost:
+    key: ipsec-cp
+    value: "true"
+  interface: tunl0
+  gateway: 192.0.2.1
+```
+
 
 ### VXLAN
 
