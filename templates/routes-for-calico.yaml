@@ -65,8 +65,8 @@ spec:
           trap _term TERM INT
           while true
           do
-            echo "going to sleep for 1d"
-            sleep 1d
+            echo "going to infinite sleep"
+            sleep 3
           done
 
         env:
