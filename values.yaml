@@ -70,4 +70,15 @@ vxlan:
       bridge_name: br0
       id: 100
 
-
+vxlanController:
+  enabled: false
+  names: "vxeth0, vxeth1"
+  ip:
+  - interface: vxeth1
+    addr: "192.0.2.1/24"
+    type: ip
+  - interface: bridge0
+    type: bridge
+    bind:
+      - gre9
+      - vxeth0
