@@ -7,11 +7,6 @@ metadata:
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    {{- if .Values.vxlanController.enabled }}
-    vxlan: true
-  annotations:
-    vxlan.travelping.com/names: "{{ .Values.vxlanController.names }}"
-    {{ end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   template:
@@ -19,41 +14,21 @@ spec:
       labels:
         app: {{ template "CGW.name" . }}
         release: {{ .Release.Name }}
+        {{- if .Values.vxlanController.enabled }}
+        vxlan: "true"
+      annotations:
+        vxlan.travelping.com/names: "{{ .Values.vxlanController.names }}"
+        {{ end }}
     spec:
       initContainers:
       {{- if .Values.vxlanController.enabled }}
-      - name: {{ .Chart.Name }}-vxlan-controller-agent-init
+      - name: vxlan-controller-agent-init
         image: aialferov/kube-vxlan-controller-agent
         command:
         - kube-vxlan-controller-agent-init
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
-      {{- if .Values.vxlanController.ip }}
-      - name: {{ .Chart.Name }}-vxlan-controller-ip-setup
-        image: alpine:latest
-        securityContext:
-          capabilities:
-            add: ["NET_ADMIN"]
-        command:
-        - sh
-        - -c
-        - |
-          set -euo pipefail
-          {{- range $element := .Values.vxlanController.ip }}
-            {{- if eq $element.type "bridge" }}
-            brctl addbr {{ $element.interface }}
-            {{- range $bind := $element.bind }}
-            brctl addif {{ $element.interface }} {{ $bind }}
-            {{- end }}
-            {{- end }}
-          {{- end }}
-          {{- range $element := .Values.vxlanController.ip }}
-            {{- if eq $element.type "ip" }}
-            ip addr add {{ $element.addr }} {{ $element.interface }}
-            {{- end }}
-          {{- end }}
-      {{- end }}
       {{- end }}
       - name: init-ip
         image: thzpub/vnf-swak-diag
@@ -268,6 +243,40 @@ spec:
             add:
             - NET_ADMIN
 
+      {{- if or .Values.vxlanController.ip .Values.vxlanController.staticRoutes }}
+      - name: {{ .Chart.Name }}-vxlan-controller-ip-setup
+        image: alpine:latest
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+        command:
+        - sh
+        - -c
+        - |
+          set -ex
+            sleep 5
+          {{- range $element := .Values.vxlanController.ip }}
+            {{- if eq $element.type "bridge" }}
+            brctl addbr {{ $element.interface }}
+            {{- range $bind := $element.bind }}
+            brctl addif {{ $element.interface }} {{ $bind }}
+            {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- range $element := .Values.vxlanController.ip }}
+            {{- if eq $element.type "ip" }}
+            ip addr add {{ $element.addr }} dev {{ $element.interface }}
+            {{- end }}
+          {{- end }}
+          {{- range $element := .Values.vxlanController.staticRoutes }}
+            ip route add {{ $element }}
+
+          {{- end }}
+
+          while true; do
+            sleep 5
+          done
+      {{- end }}
       {{- end }}
       volumes:
       - name: host-kernel-modules-volume
