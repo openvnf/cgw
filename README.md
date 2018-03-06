@@ -4,6 +4,13 @@ connectivity gateway
 ## Configuration
 ### VXLAN
 
+There are two different ways available of connecting this service with another container.
+
+The first one is the manual way, where the partners have to be configured with values.
+The second one is using the *vxlan-controller* and the vxlans can be configured using annotations.
+
+#### manual VXLAN setup
+
 VXLAN endpoints inside the CGW can be created by adding a configuration under the `vxlan` key.
 
 For example:
@@ -27,6 +34,37 @@ vxlan:
 
 Multiple interfaces can be added by adding more entries to the list of connectors.
 `enabled` has to be explicitly set.
+
+#### VXLAN-Controller configuration
+
+To use the *vxlan-controller* add the following section to the configuration:
+
+```yaml
+vxlanController:
+  enabled: true
+  names: "vxeth0, vxeth1"
+  ip:
+  - interface: vxeth1
+    addr: "192.0.2.1/24"
+    type: ip
+  - interface: bridge0
+    type: bridge
+    bind:
+      - gre9
+      - vxeth0
+  staticRoutes:
+  - "203.0.113.15 via 192.0.2.1" 
+  - "203.0.113.16 via 192.0.2.1"
+```
+The networks have to be configured already by the controller and have to be provided as a comma seperated
+list (`vxlanController.names`).
+
+The `vxlanController.ip` section can be provided by a list of configurations.
+Two types are available. One for assigning a static IP address to an interface and the second
+to add a bridge and bind interfaces to them.
+
+Additionally `vxlanController.staticRoutes` can be configured with a list of static routes as strings
+to be configured in the default routing table of the pod.
 
 
 ### GRE
