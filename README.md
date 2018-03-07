@@ -52,16 +52,20 @@ vxlanController:
     bind:
       - gre9
       - vxeth0
+  - interface: gre9
+    type: interface
+    action: up
   staticRoutes:
   - "203.0.113.15 via 192.0.2.1" 
   - "203.0.113.16 via 192.0.2.1"
 ```
+
 The networks have to be configured already by the controller and have to be provided as a comma seperated
 list (`vxlanController.names`).
 
 The `vxlanController.ip` section can be provided by a list of configurations.
-Two types are available. One for assigning a static IP address to an interface and the second
-to add a bridge and bind interfaces to them.
+Three types are available. One for assigning a static IP address to an interface, the second
+to add a bridge and bind interfaces to them and the third to set interfaces to state `up` or `down`.
 
 Additionally `vxlanController.staticRoutes` can be configured with a list of static routes as strings
 to be configured in the default routing table of the pod.

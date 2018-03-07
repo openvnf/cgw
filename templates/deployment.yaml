@@ -260,12 +260,20 @@ spec:
             brctl addbr {{ $element.interface }}
             {{- range $bind := $element.bind }}
             brctl addif {{ $element.interface }} {{ $bind }}
+            ip link set {{ $element.interface }} up
             {{- end }}
             {{- end }}
           {{- end }}
           {{- range $element := .Values.vxlanController.ip }}
             {{- if eq $element.type "ip" }}
             ip addr add {{ $element.addr }} dev {{ $element.interface }}
+            {{- end }}
+            {{- if eq $element.type "interface" }}
+              {{- if eq $element.action "up" }}
+              ip link set {{ $element.interface }} up
+              {{- else if eq $element.action "down" }}
+              ip link set {{ $element.interface }} down
+              {{- end }}
             {{- end }}
           {{- end }}
           {{- range $element := .Values.vxlanController.staticRoutes }}
