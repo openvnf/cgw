@@ -18,7 +18,7 @@ ipsec:
 replicaCount: 1
 image:
   repository: openvnf/vnf-ipsec
-  tag: unstable
+  tag: 1.1.0
   pullPolicy: Always
 service:
   name: ipsec
@@ -59,9 +59,19 @@ gre:
   name: gre9
   gretap: false
 
+networkUtility:
+  image:
+    repository: travelping/nettools
+    tag: 1.2.0
+    pullPolicy: IfNotPresent
+
 vxlan:
   enabled: false
-  image: travelping/vxlan-connector:devel
+  image:
+    repository: travelping/vxlan-connector
+    tag: devel
+    pullPolicy: Always
+
   connectors:
     - name: default
       peer: 192.0.2.2
@@ -73,6 +83,10 @@ vxlan:
 vxlanController:
   enabled: false
   names: "vxeth0, vxeth1"
+  image:
+    repository: aialferov/kube-vxlan-controller-agent
+    tag: 1.0.1
+    pullPolicy: IfNotPresent
   #ip:
   #- interface: vxeth1
     #addr: "192.0.2.1/24"

@@ -23,7 +23,8 @@ spec:
       initContainers:
       {{- if .Values.vxlanController.enabled }}
       - name: vxlan-controller-agent-init
-        image: aialferov/kube-vxlan-controller-agent
+        image: {{ .Values.vxlanController.image.repository }}:{{ .Values.vxlanController.image.repository }}
+        imagePullPolicy: {{ .Values.vxlanController.image.pullPolicy  | quote }}
         command:
         - kube-vxlan-controller-agent-init
         securityContext:
@@ -31,7 +32,8 @@ spec:
             add: ["NET_ADMIN"]
       {{- end }}
       - name: init-ip
-        image: thzpub/vnf-swak-diag
+        image: {{ .Values.networkUtility.image.repository }}:{{ .Values.networkUtility.image.tag }}
+        imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
         volumeMounts:
         - name: podshare
           mountPath: /mnt/podshare
@@ -61,6 +63,7 @@ spec:
             add: ["NET_ADMIN"]
       - name: init-vti
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
         command: ["/usr/local/bin/start-strongswan.sh", "init"]
         env:
         - name: IPSEC_VTI_KEY
@@ -73,7 +76,6 @@ spec:
           value: "{{ .Values.ipsec.remoteip }}"
         - name: IPSEC_REMOTENET
           value: "{{ .Values.ipsec.remotenet }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
         - mountPath: /lib/modules
           name: host-kernel-modules-volume
@@ -83,7 +85,8 @@ spec:
       {{ if .Values.gre.enabled }}
       ##  GRE Tunneling ##
       - name: init-gre
-        image: thzpub/vnf-swak-diag
+        image: {{ .Values.networkUtility.image.repository }}:{{ .Values.networkUtility.image.tag }}
+        imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
         command:
         - sh
         - -c
@@ -112,7 +115,7 @@ spec:
           value: "{{ .Values.gre.remoteip }}"
         - name: GRE_IFACE
           value: "{{ .Values.gre.name }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
@@ -121,7 +124,7 @@ spec:
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
         ports:
         - containerPort: 500
           name: u500
@@ -171,7 +174,8 @@ spec:
           name: host-kernel-modules-volume
 
       - name: ping-prober
-        image: alpine:latest
+        image: {{ .Values.networkUtility.image.repository }}:{{ .Values.networkUtility.image.tag }}
+        imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
         command:
         - sh
         - -c
@@ -201,8 +205,8 @@ spec:
       {{- if .Values.vxlan.enabled }}
       {{- range $index, $element := .Values.vxlan.connectors }}
       - name: vxlan-connector-{{ $element.name }}
-        image: {{ $.Values.vxlan.image }}
-        imagePullPolicy: Always
+        image: {{ $.Values.vxlan.image.repository }}:{{ $.Values.vxlan.image.tag }}
+        imagePullPolicy: {{ $.Values.vxlan.image.pullPolicy | quote }}
         securityContext:
           capabilities:
             add:
@@ -237,7 +241,8 @@ spec:
 
       {{- if .Values.vxlanController.enabled }}
       - name: vxlan-controller-agent
-        image: aialferov/kube-vxlan-controller-agent
+        image: {{ .Values.vxlanController.image.repository }}:{{ .Values.vxlanController.image.repository }}
+        imagePullPolicy: {{ .Values.vxlanController.image.pullPolicy | quote }}
         securityContext:
           capabilities:
             add:
@@ -245,7 +250,8 @@ spec:
 
       {{- if or .Values.vxlanController.ip .Values.vxlanController.staticRoutes }}
       - name: {{ .Chart.Name }}-vxlan-controller-ip-setup
-        image: alpine:latest
+        image: {{ .Values.networkUtility.image.repository }}:{{ .Values.networkUtility.image.tag }}
+        imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
