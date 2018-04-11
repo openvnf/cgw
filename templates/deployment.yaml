@@ -23,7 +23,7 @@ spec:
       initContainers:
       {{- if .Values.vxlanController.enabled }}
       - name: vxlan-controller-agent-init
-        image: {{ .Values.vxlanController.image.repository }}:{{ .Values.vxlanController.image.repository }}
+        image: {{ .Values.vxlanController.image.repository }}:{{ .Values.vxlanController.image.tag }}
         imagePullPolicy: {{ .Values.vxlanController.image.pullPolicy  | quote }}
         command:
         - kube-vxlan-controller-agent-init
@@ -241,7 +241,7 @@ spec:
 
       {{- if .Values.vxlanController.enabled }}
       - name: vxlan-controller-agent
-        image: {{ .Values.vxlanController.image.repository }}:{{ .Values.vxlanController.image.repository }}
+        image: {{ .Values.vxlanController.image.repository }}:{{ .Values.vxlanController.image.tag }}
         imagePullPolicy: {{ .Values.vxlanController.image.pullPolicy | quote }}
         securityContext:
           capabilities:
