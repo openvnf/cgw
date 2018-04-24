@@ -25,8 +25,6 @@ spec:
       - name: vxlan-controller-agent-init
         image: {{ .Values.vxlanController.image.repository }}:{{ .Values.vxlanController.image.tag }}
         imagePullPolicy: {{ .Values.vxlanController.image.pullPolicy  | quote }}
-        command:
-        - kube-vxlan-controller-agent-init
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]

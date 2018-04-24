@@ -85,7 +85,7 @@ vxlanController:
   names: "vxeth0, vxeth1"
   image:
     repository: aialferov/kube-vxlan-controller-agent
-    tag: 1.0.1
+    tag: 2.1.0
     pullPolicy: IfNotPresent
   #ip:
   #- interface: vxeth1
