@@ -25,6 +25,8 @@ spec:
       - name: vxlan-controller-agent-init
         image: {{ .Values.vxlanController.image.repository }}:{{ .Values.vxlanController.image.tag }}
         imagePullPolicy: {{ .Values.vxlanController.image.pullPolicy  | quote }}
+        resources:
+{{ toYaml .Values.resources.vxlanControllerAgentInit | indent 10 }}
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
@@ -32,6 +34,8 @@ spec:
       - name: init-ip
         image: {{ .Values.networkUtility.image.repository }}:{{ .Values.networkUtility.image.tag }}
         imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.initIp | indent 10 }}
         volumeMounts:
         - name: podshare
           mountPath: /mnt/podshare
@@ -63,6 +67,8 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
         command: ["/usr/local/bin/start-strongswan.sh", "init"]
+        resources:
+{{ toYaml .Values.resources.initVti | indent 10 }}
         env:
         - name: IPSEC_VTI_KEY
           value: "{{ .Values.ipsec.vti_key }}"
@@ -85,6 +91,8 @@ spec:
       - name: init-gre
         image: {{ .Values.networkUtility.image.repository }}:{{ .Values.networkUtility.image.tag }}
         imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.initGre | indent 10 }}
         command:
         - sh
         - -c
@@ -118,11 +126,57 @@ spec:
           capabilities:
             add: ["NET_ADMIN"]
       {{ end }}
+       
+      {{- if .Values.vxlanController.enabled }}
+      {{- if or .Values.vxlanController.ip .Values.vxlanController.staticRoutes }}
+      - name: {{ .Chart.Name }}-vxlan-controller-ip-setup
+        image: {{ .Values.networkUtility.image.repository }}:{{ .Values.networkUtility.image.tag }}
+        imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.vxlanControllerIpSetup | indent 10 }}
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+        command:
+        - sh
+        - -c
+        - |
+          set -ex
+            sleep 5
+          {{- range $element := .Values.vxlanController.ip }}
+            {{- if eq $element.type "bridge" }}
+            brctl addbr {{ $element.interface }}
+            {{- range $bind := $element.bind }}
+            brctl addif {{ $element.interface }} {{ $bind }}
+            ip link set {{ $element.interface }} up
+            {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- range $element := .Values.vxlanController.ip }}
+            {{- if eq $element.type "ip" }}
+            ip addr add {{ $element.addr }} dev {{ $element.interface }}
+            {{- end }}
+            {{- if eq $element.type "interface" }}
+              {{- if eq $element.action "up" }}
+              ip link set {{ $element.interface }} up
+              {{- else if eq $element.action "down" }}
+              ip link set {{ $element.interface }} down
+              {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- range $element := .Values.vxlanController.staticRoutes }}
+            ip route add {{ $element }}
+
+          {{- end }}
+      {{- end }}
+      {{- end }}
 
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.ipsec | indent 10 }}
         ports:
         - containerPort: 500
           name: u500
@@ -174,6 +228,8 @@ spec:
       - name: ping-prober
         image: {{ .Values.networkUtility.image.repository }}:{{ .Values.networkUtility.image.tag }}
         imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.pingProber | indent 10 }}
         command:
         - sh
         - -c
@@ -205,6 +261,8 @@ spec:
       - name: vxlan-connector-{{ $element.name }}
         image: {{ $.Values.vxlan.image.repository }}:{{ $.Values.vxlan.image.tag }}
         imagePullPolicy: {{ $.Values.vxlan.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.vxlan | indent 10 }}
         securityContext:
           capabilities:
             add:
@@ -241,62 +299,21 @@ spec:
       - name: vxlan-controller-agent
         image: {{ .Values.vxlanController.image.repository }}:{{ .Values.vxlanController.image.tag }}
         imagePullPolicy: {{ .Values.vxlanController.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.vxlanControllerAgent | indent 10 }}
         securityContext:
           capabilities:
             add:
             - NET_ADMIN
-
-      {{- if or .Values.vxlanController.ip .Values.vxlanController.staticRoutes }}
-      - name: {{ .Chart.Name }}-vxlan-controller-ip-setup
-        image: {{ .Values.networkUtility.image.repository }}:{{ .Values.networkUtility.image.tag }}
-        imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
-        securityContext:
-          capabilities:
-            add: ["NET_ADMIN"]
-        command:
-        - sh
-        - -c
-        - |
-          set -ex
-            sleep 5
-          {{- range $element := .Values.vxlanController.ip }}
-            {{- if eq $element.type "bridge" }}
-            brctl addbr {{ $element.interface }}
-            {{- range $bind := $element.bind }}
-            brctl addif {{ $element.interface }} {{ $bind }}
-            ip link set {{ $element.interface }} up
-            {{- end }}
-            {{- end }}
-          {{- end }}
-          {{- range $element := .Values.vxlanController.ip }}
-            {{- if eq $element.type "ip" }}
-            ip addr add {{ $element.addr }} dev {{ $element.interface }}
-            {{- end }}
-            {{- if eq $element.type "interface" }}
-              {{- if eq $element.action "up" }}
-              ip link set {{ $element.interface }} up
-              {{- else if eq $element.action "down" }}
-              ip link set {{ $element.interface }} down
-              {{- end }}
-            {{- end }}
-          {{- end }}
-          {{- range $element := .Values.vxlanController.staticRoutes }}
-            ip route add {{ $element }}
-
-          {{- end }}
-
-          while true; do
-            sleep 5
-          done
       {{- end }}
-      {{- end }}
+
       volumes:
       - name: host-kernel-modules-volume
         hostPath:
           path: /lib/modules
       - name: podshare
         emptyDir: {}
-        
+
    {{- if .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
