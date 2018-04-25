@@ -19,7 +19,7 @@ replicaCount: 1
 image:
   repository: openvnf/vnf-ipsec
   tag: 1.1.0
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
 service:
   name: ipsec
   type: ClusterIP
@@ -116,7 +116,7 @@ vxlan:
   image:
     repository: travelping/vxlan-connector
     tag: 1.0.0
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
   connectors:
     - name: default
