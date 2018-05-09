@@ -27,6 +27,7 @@ service:
   type: ClusterIP
   annotations:
     prometheus.io/scrape: "true"
+    prometheus.io/port: "9427"
 #  protocol: UDP
 #  externalPort: 4500
 #  internalPort: 4500
