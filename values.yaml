@@ -23,6 +23,8 @@ image:
 service:
   name: ipsec
   type: ClusterIP
+  annotations:
+    prometheus.io/scrape: "true"
 #  protocol: UDP
 #  externalPort: 4500
 #  internalPort: 4500
@@ -67,6 +69,13 @@ resources:
     requests:
      cpu: 200m
      memory: 128Mi
+  cgwExporter:
+    limits:
+     cpu: 50m
+     memory: 64Mi
+    requests:
+     cpu: 50m
+     memory: 64Mi
   pingProber:
     limits:
      cpu: 50m
@@ -110,6 +119,14 @@ networkUtility:
     repository: travelping/nettools
     tag: 1.2.0
     pullPolicy: IfNotPresent
+
+cgwExporter:
+  image:
+    repository: werft.tpip.net/grundrauschen/cgw-exporter
+    tag: latest
+    pullPolicy: Always
+    pullSecrets:
+      - name: werft
 
 vxlan:
   enabled: false
