@@ -20,6 +20,8 @@ image:
   repository: openvnf/vnf-ipsec
   tag: 1.1.0
   pullPolicy: IfNotPresent
+  pullSecrets:
+    - name: werft
 service:
   name: ipsec
   type: ClusterIP
@@ -125,8 +127,6 @@ cgwExporter:
     repository: werft.tpip.net/grundrauschen/cgw-exporter
     tag: latest
     pullPolicy: Always
-    pullSecrets:
-      - name: werft
 
 vxlan:
   enabled: false

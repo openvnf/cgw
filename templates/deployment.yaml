@@ -233,13 +233,9 @@ spec:
         - mountPath: /lib/modules
           name: host-kernel-modules-volume
 
-      - name: cgwExporter
+      - name: cgw-exporter
         image: {{ .Values.cgwExporter.image.repository }}:{{ .Values.cgwExporter.image.tag }}
         imagePullPolicy: {{ .Values.cgwExporter.image.pullPolicy | quote }}
-        {{- if .Values.cgwExporter.image.pullSecrets }}
-        imagePullSecrets:
-{{ toYaml .Values.cgwExporter.image.pullSecrets | indent 10 }}
-        {{- end }}
         resources:
 {{ toYaml .Values.resources.cgwExporter | indent 10 }}
         env:
@@ -339,6 +335,11 @@ spec:
           path: /lib/modules
       - name: podshare
         emptyDir: {}
+
+    {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.image.pullSecrets | indent 8 }}
+    {{- end }}
 
    {{- if .Values.nodeSelector }}
       nodeSelector:
