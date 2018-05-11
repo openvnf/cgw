@@ -217,6 +217,14 @@ spec:
           value: "{{ .Values.ipsec.forceudp }}"
         - name: IPSEC_IKEREAUTH
           value: "{{ .Values.ipsec.ikereauth }}"
+        {{- if .Values.ipsec.lifetime }}
+        - name: IPSEC_LIFETIME
+          value: "{{ .Values.ipsec.lifetime }}"
+        {{- end}}
+        {{- if .Values.ipsec.ikelifetime }}
+        - name: IPSEC_IKELIFETIME
+          value: "{{ .Values.ipsec.ikelifetime }}"
+        {{- end}}
         - name: IPSEC_VTI_KEY
           value: "{{ .Values.ipsec.vti_key }}"
         securityContext:
