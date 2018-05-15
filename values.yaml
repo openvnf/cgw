@@ -123,11 +123,23 @@ networkUtility:
     tag: 1.2.0
     pullPolicy: IfNotPresent
 
+pingProber:
+  image:
+    repository: alpine
+    tag: "3.7"
+    pullPolicy: IfNotPresent
+
 cgwExporter:
   image:
     repository: werft.tpip.net/grundrauschen/cgw-exporter
-    tag: latest
-    pullPolicy: Always
+    tag: v0.2.0
+    pullPolicy: IfNotPresent
+  config:
+    web:
+      listen-address: ":9427"
+      telemetry-path: "/metrics"
+    dns:
+      refresh: 1m
 
 vxlan:
   enabled: false
