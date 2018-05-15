@@ -246,10 +246,13 @@ spec:
         ports:
         - containerPort: 9427
           protocol: TCP
+        volumeMounts:
+          - name: cgwConfig
+            mountPath: /etc/cgw-exporter
 
       - name: ping-prober
-        image: {{ .Values.networkUtility.image.repository }}:{{ .Values.networkUtility.image.tag }}
-        imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
+        image: {{ .Values.pingProber.image.repository }}:{{ .Values.pingProber.image.tag }}
+        imagePullPolicy: {{ .Values.pingProber.image.pullPolicy | quote }}
         resources:
 {{ toYaml .Values.resources.pingProber | indent 10 }}
         command:
@@ -335,6 +338,10 @@ spec:
           path: /lib/modules
       - name: podshare
         emptyDir: {}
+      - name: cgwConfig
+        configMap:
+          name: {{ template "CGW.fullname" . }}
+
 
     {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
