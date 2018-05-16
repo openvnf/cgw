@@ -247,7 +247,7 @@ spec:
         - containerPort: 9427
           protocol: TCP
         volumeMounts:
-          - name: cgwConfig
+          - name: cgw-config
             mountPath: /etc/cgw-exporter
 
       - name: ping-prober
@@ -338,7 +338,7 @@ spec:
           path: /lib/modules
       - name: podshare
         emptyDir: {}
-      - name: cgwConfig
+      - name: cgw-config
         configMap:
           name: {{ template "CGW.fullname" . }}
 
