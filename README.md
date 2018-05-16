@@ -91,3 +91,42 @@ gre:
 ```
   
 
+### Monitoring
+
+The monitoring component of *CGW* supports ICMP echoes to defined endpoints and exposes it via an
+http endpoint in prometheus format.
+
+By default the component will send pings to the address stated in `ipsec.remote_ping_endpoint` from the address
+configured in `ipsec.local_ping_endpoint`.
+
+A service will be exposed and will be scraped automatically by common configured prometheus instances.
+
+By default the service will be called `<release name>-cgw` and the metrics will be available at
+`http://<release name>-cgw:9427/metrics`
+
+#### Configure targets
+
+To configure additional targets or source addresses, you have to configure the values as follows:
+
+```yaml
+cgwExporter:
+  targets:
+    - sourceV4: 192.0.2.1          # Source address of ICMP requests
+      sourceV6: "2001:0DB8:1::1"   # Source address of ICMP requests
+      pingInterval: 5s             # interval for ICMP requests
+      pingTimeout: 4s              # timeout for ICMP requests
+      pingTargets:                 # list of ICMP targets
+        - 192.0.2.10
+        - 198.51.100.1
+    - sourceV4: 192.0.2.2
+      sourceV6: "2001:0DB8:2::2"
+      pingInterval: 5s
+      pingTimeout: 4s
+      pingTargets:
+        - 203.0.113.1
+        - "2001:0DB8:2::10"
+```
+All parameters are required!
+
+When targets are set in this way, the usage of `ipsec.remote_ping_endpoint` and `ipsec.local_ping_endpoint` will
+be automatically disabled.
