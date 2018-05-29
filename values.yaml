@@ -67,7 +67,7 @@ resources:
      memory: 64Mi
   ipsec:
     limits:
-     cpu: 50m
+     cpu: 200m
      memory: 256Mi
     requests:
      cpu: 200m
