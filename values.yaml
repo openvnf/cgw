@@ -62,7 +62,7 @@ resources:
      memory: 64Mi
   ipsec:
     limits:
-     cpu: 50m
+     cpu: 200m
      memory: 256Mi
     requests:
      cpu: 200m
@@ -82,6 +82,13 @@ resources:
      cpu: 50m
      memory: 64Mi
   vxlanControllerIpSetup:
+    limits:
+     cpu: 50m
+     memory: 64Mi
+    requests:
+     cpu: 50m
+     memory: 64Mi
+  ipSetup:
     limits:
      cpu: 50m
      memory: 64Mi
@@ -142,3 +149,6 @@ vxlanController:
     #bind:
       #- gre9
       #- vxeth0
+
+ipSetup:
+  enabled: false

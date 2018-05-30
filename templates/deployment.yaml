@@ -63,6 +63,7 @@ spec:
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
+      {{- if .Values.ipsec.vti_key }}
       - name: init-vti
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
@@ -85,6 +86,7 @@ spec:
           name: host-kernel-modules-volume
         securityContext:
           privileged: true
+      {{- end }}
 
       {{ if .Values.gre.enabled }}
       ##  GRE Tunneling ##
@@ -127,6 +129,50 @@ spec:
             add: ["NET_ADMIN"]
       {{ end }}
        
+      {{- if .Values.ipSetup.enabled }}
+      {{- if or .Values.ipSetup.ip .Values.ipSetup.staticRoutes }}
+      - name: {{ .Chart.Name }}-ip-setup
+        image: {{ .Values.networkUtility.image.repository }}:{{ .Values.networkUtility.image.tag }}
+        imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.ipSetup | indent 10 }}
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+        command:
+        - sh
+        - -c
+        - |
+          set -ex
+            sleep 5
+          {{- range $element := .Values.ipSetup.ip }}
+            {{- if eq $element.type "bridge" }}
+            brctl addbr {{ $element.interface }}
+            {{- range $bind := $element.bind }}
+            brctl addif {{ $element.interface }} {{ $bind }}
+            ip link set {{ $element.interface }} up
+            {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- range $element := .Values.ipSetup.ip }}
+            {{- if eq $element.type "ip" }}
+            ip addr add {{ $element.addr }} dev {{ $element.interface }}
+            {{- end }}
+            {{- if eq $element.type "interface" }}
+              {{- if eq $element.action "up" }}
+              ip link set {{ $element.interface }} up
+              {{- else if eq $element.action "down" }}
+              ip link set {{ $element.interface }} down
+              {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- range $element := .Values.ipSetup.staticRoutes }}
+            ip route add {{ $element }}
+
+          {{- end }}
+      {{- end }}
+      {{- end }}
+
       {{- if .Values.vxlanController.enabled }}
       {{- if or .Values.vxlanController.ip .Values.vxlanController.staticRoutes }}
       - name: {{ .Chart.Name }}-vxlan-controller-ip-setup
@@ -181,9 +227,11 @@ spec:
         - containerPort: 500
           name: u500
           protocol: UDP
+          #hostPort: 500
         - containerPort: 4500
           name: u4500
           protocol: UDP
+          #hostPort: 4500
         env:
         - name: USE_ENV_CONFIG
           value: "{{ .Values.useEnvConfig }}"
@@ -225,8 +273,10 @@ spec:
         - name: IPSEC_IKELIFETIME
           value: "{{ .Values.ipsec.ikelifetime }}"
         {{- end}}
+        {{- if .Values.ipsec.vti_key }}
         - name: IPSEC_VTI_KEY
           value: "{{ .Values.ipsec.vti_key }}"
+        {{- end }}
         securityContext:
           privileged: true
         volumeMounts:
@@ -263,6 +313,7 @@ spec:
           value: "{{ .Values.ipsec.remote_ping_endpoint }}"
         - name: LOCAL_PING_ENDPOINT
           value: "{{ .Values.ipsec.local_ping_endpoint }}"
+      {{- end }}
       ## VXLAN Connection ##
       {{- if .Values.vxlan.enabled }}
       {{- range $index, $element := .Values.vxlan.connectors }}
