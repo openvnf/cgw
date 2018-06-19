@@ -128,6 +128,8 @@ vxlan:
 
 vxlanController:
   enabled: false
+  annotationKey: vxlan.travelping.com/networks
+  metadataKey: vxlan.travelping.com
   names: "vxeth0, vxeth1"
   image:
     repository: aialferov/kube-vxlan-controller-agent
