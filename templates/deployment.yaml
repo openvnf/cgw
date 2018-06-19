@@ -15,9 +15,9 @@ spec:
         app: {{ template "CGW.name" . }}
         release: {{ .Release.Name }}
         {{- if .Values.vxlanController.enabled }}
-        vxlan: "true"
+        {{ .Values.vxlanController.metadataKey }}: "true"
       annotations:
-        vxlan.travelping.com/names: "{{ .Values.vxlanController.names }}"
+        {{ .Values.vxlanController.annotationKey }}: "{{ .Values.vxlanController.names }}"
         {{ end }}
     spec:
       initContainers:
