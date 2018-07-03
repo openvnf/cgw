@@ -113,7 +113,7 @@ By default the service will be called `<release name>-cgw` and the metrics will 
 To configure additional targets or source addresses, you have to configure the values as follows:
 
 ```yaml
-cgwExporter:
+pingExporter:
   targets:
     - sourceV4: 192.0.2.1          # Source address of ICMP requests
       sourceV6: "2001:0DB8:1::1"   # Source address of ICMP requests

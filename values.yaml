@@ -129,10 +129,10 @@ pingProber:
     tag: "3.7"
     pullPolicy: IfNotPresent
 
-cgwExporter:
+pingExporter:
   image:
-    repository: werft.tpip.net/grundrauschen/cgw-exporter
-    tag: v0.2.0
+    repository: travelping/ping-exporter
+    tag: v0.4.0
     pullPolicy: IfNotPresent
   config:
     web:

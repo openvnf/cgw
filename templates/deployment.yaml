@@ -233,22 +233,22 @@ spec:
         - mountPath: /lib/modules
           name: host-kernel-modules-volume
 
-      - name: cgw-exporter
-        image: {{ .Values.cgwExporter.image.repository }}:{{ .Values.cgwExporter.image.tag }}
-        imagePullPolicy: {{ .Values.cgwExporter.image.pullPolicy | quote }}
+      - name: ping-exporter
+        image: {{ .Values.pingExporter.image.repository }}:{{ .Values.pingExporter.image.tag }}
+        imagePullPolicy: {{ .Values.pingExporter.image.pullPolicy | quote }}
         resources:
-{{ toYaml .Values.resources.cgwExporter | indent 10 }}
+{{ toYaml .Values.resources.pingExporter | indent 10 }}
         env:
-        - name: CGWEXPORTER_PING_TARGET
+        - name: PINGEXPORTER_PING_TARGET
           value: "{{ .Values.ipsec.remote_ping_endpoint }}"
-        - name: CGWEXPORTER_PING_SOURCE_IPV4
+        - name: PINGEXPORTER_PING_SOURCE_IPV4
           value: "{{ .Values.ipsec.local_ping_endpoint }}"
         ports:
         - containerPort: 9427
           protocol: TCP
         volumeMounts:
-          - name: cgw-config
-            mountPath: /etc/cgw-exporter
+          - name: ping-exporter-config
+            mountPath: /etc/ping-exporter
 
       - name: ping-prober
         image: {{ .Values.pingProber.image.repository }}:{{ .Values.pingProber.image.tag }}
@@ -338,9 +338,9 @@ spec:
           path: /lib/modules
       - name: podshare
         emptyDir: {}
-      - name: cgw-config
+      - name: ping-exporter-config
         configMap:
-          name: {{ template "CGW.fullname" . }}
+          name: {{ template "CGW.fullname" . }}-ping-exporter
 
 
     {{- if .Values.image.pullSecrets }}
