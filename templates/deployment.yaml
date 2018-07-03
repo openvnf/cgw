@@ -227,11 +227,9 @@ spec:
         - containerPort: 500
           name: u500
           protocol: UDP
-          #hostPort: 500
         - containerPort: 4500
           name: u4500
           protocol: UDP
-          #hostPort: 4500
         env:
         - name: USE_ENV_CONFIG
           value: "{{ .Values.useEnvConfig }}"
