@@ -45,7 +45,7 @@ vxlanController:
   # The following two values are used to set the key names for the key names
   # and can be infrastructure specific:
   # annotationKey: vxlan.travelping.com/networks
-  * metadataKey: vxlan.travelping.com
+  # metadataKey: vxlan.travelping.com
   names: "vxeth0, vxeth1"
   ip:
   - interface: vxeth1
