@@ -281,6 +281,7 @@ spec:
         - mountPath: /lib/modules
           name: host-kernel-modules-volume
 
+      {{- if .Value.pingExporter.enabled }}
       - name: ping-exporter
         image: {{ .Values.pingExporter.image.repository }}:{{ .Values.pingExporter.image.tag }}
         imagePullPolicy: {{ .Values.pingExporter.image.pullPolicy | quote }}
@@ -297,6 +298,7 @@ spec:
         volumeMounts:
           - name: ping-exporter-config
             mountPath: /etc/ping-exporter
+      {{- end }}
 
       - name: ping-prober
         image: {{ .Values.pingProber.image.repository }}:{{ .Values.pingProber.image.tag }}
