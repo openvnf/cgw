@@ -281,7 +281,7 @@ spec:
         - mountPath: /lib/modules
           name: host-kernel-modules-volume
 
-      {{- if .Value.pingExporter.enabled }}
+      {{- if .Values.pingExporter.enabled }}
       - name: ping-exporter
         image: {{ .Values.pingExporter.image.repository }}:{{ .Values.pingExporter.image.tag }}
         imagePullPolicy: {{ .Values.pingExporter.image.pullPolicy | quote }}
