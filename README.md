@@ -1,15 +1,106 @@
 # cgw
 connectivity gateway
 
-## Configuration
-### VXLAN
+<!-- toc -->
+
+* [IPSEC](#ipsec)
+  * [Manual Strongswan configuration](#manual-strongswan-configuration)
+* [iptables](#iptables)
+* [VXLAN](#vxlan)
+  * [manual VXLAN setup](#manual-vxlan-setup)
+  * [VXLAN-Controller configuration](#vxlan-controller-configuration)
+* [GRE](#gre)
+* [Monitoring](#monitoring)
+  * [Configure targets](#configure-targets)
+  * [disable ping-prober](#disable-ping-prober)
+* [Utilities](#utilities)
+  * [debug container](#debug-container)
+
+<!-- tocstop -->
+
+## IPSEC
+
+### Manual Strongswan configuration
+
+To use a manual configuration of Strongswan instead of using parameters, for example for multi-SA configurations,
+set the following parameters:
+
+```
+ipsec:
+  manualConfig: true # default is false
+  strongswan:
+    ipsecConfig:
+      ipsec.<myconnectionname>.conf: |
+        <add your ipsec config here>
+    ipsecSecrets:
+      ipsec.<myconnectionname>.secrets: |
+        <add your ipsec secret here>
+```
+
+The `ipsec.<myconnectionname>.conf` has to follow the [Strongswan documentation](https://wiki.strongswan.org/projects/strongswan/wiki/IpsecConf).
+
+The `ipsec.<myconnectionname>.secrets` also have to follow the [Strongswan secrets documentation](https://wiki.strongswan.org/projects/strongswan/wiki/IpsecSecrets).
+They will also automatically be base64 encoded into a Kubernetes Secret.
+
+You can repeat the configuration for multiple connections.
+
+NOTE: If the manual configuration is used, the ping-prober must be disabled!! (see [ping-prober](#disable_ping-prober))
+
+## iptables
+
+This deployment might use pods, which have interfaces publicly connected to the internet.
+Therefore the pods have to be secured using a firewall.
+
+By default the corresponding `iptables` container will run and drop all traffic to and from the pod.
+This might not be in your interest when using a deployment called *"Connectivity Gateway"*.
+
+To add your configuration you have to add the following parts to your configuration:
+
+```yaml
+iptables:
+  # enabled: true # the default, you can disable it but this might not be a good idea
+  ipv4Rules: |
+    *filter
+
+    # Block all traffic silently as default policy
+    -P INPUT DROP
+    -P FORWARD DROP
+    -P OUTPUT DROP
+
+    # Allows all loopback (lo0) traffic and drop all traffic to 127/8 that doesn't use lo0
+    -A INPUT -i lo0 -j ACCEPT
+    -A INPUT ! -i lo0 -d 127.0.0.0/8 -j REJECT
+    
+    ######   ADD YOUR RULES TO EXTEND TRAFFIC HERE ######
+    
+    COMMIT
+  ipv6Rules: |
+    *filter
+
+    # Block all traffic silently as default policy
+    -P INPUT DROP
+    -P FORWARD DROP
+    -P OUTPUT DROP
+
+    # Allows all loopback (lo0) traffic and drop all traffic to ::1 that doesn't use lo0
+    -A INPUT -i lo0 -j ACCEPT
+    -A INPUT ! -i lo0 -d ::1 -j REJECT
+    
+    ######   ADD YOUR RULES TO EXTEND TRAFFIC HERE ######
+
+    COMMIT
+```
+
+The configuration parameters `ipv4Rules` and `ipv6Rules` will be used as a rule file for `iptables-restore` literally.
+
+## VXLAN
 
 There are two different ways available of connecting this service with another container.
 
 The first one is the manual way, where the partners have to be configured with values.
 The second one is using the *vxlan-controller* and the vxlans can be configured using annotations.
 
-#### manual VXLAN setup
+### manual VXLAN setup
 
 VXLAN endpoints inside the CGW can be created by adding a configuration under the `vxlan` key.
 
@@ -35,7 +126,7 @@ vxlan:
 Multiple interfaces can be added by adding more entries to the list of connectors.
 `enabled` has to be explicitly set.
 
-#### VXLAN-Controller configuration
+### VXLAN-Controller configuration
 
 To use the *vxlan-controller* add the following section to the configuration:
 
@@ -75,7 +166,7 @@ Additionally `vxlanController.staticRoutes` can be configured with a list of sta
 to be configured in the default routing table of the pod.
 
 
-### GRE
+## GRE
 
 A GRE or GRETAP interface can be added for tunneling of IP or Ethernet traffic respectively.
 
@@ -95,7 +186,7 @@ gre:
 ```
   
 
-### Monitoring
+## Monitoring
 
 The monitoring component of *CGW* supports ICMP echoes to defined endpoints and exposes it via an
 http endpoint in prometheus format.
@@ -108,7 +199,7 @@ A service will be exposed and will be scraped automatically by common configured
 By default the service will be called `<release name>-cgw` and the metrics will be available at
 `http://<release name>-cgw:9427/metrics`
 
-#### Configure targets
+### Configure targets
 
 To configure additional targets or source addresses, you have to configure the values as follows:
 
@@ -134,3 +225,28 @@ All parameters are required!
 
 When targets are set in this way, the usage of `ipsec.remote_ping_endpoint` and `ipsec.local_ping_endpoint` will
 be automatically disabled.
+
+### <a name="disable_ping-prober"></a>disable ping-prober
+
+If *ping-exporter* is configured (see above) the ping-prober can be disabled.
+If the manual IPSEC configuration is used, the ping-prober MUST be disabled.
+
+Disable the ping-prober:
+
+```yaml
+pingProber:
+  enabled: false
+```
+
+## Utilities
+
+### debug container
+
+By default a debug container with networking tools will be created.
+
+If this is not desired, disable it as follows:
+
+```yaml
+debug:
+  enabled: false
+```
