@@ -240,7 +240,7 @@ spec:
       {{- end }}
 
       containers:
-      {{- if .Values.iptables.enabled }}
+      {{- if .Values.debug.enabled }}
       - name: {{ .Chart.Name }}-debug
         image: {{ .Values.debug.image.repository }}:{{ .Values.debug.image.tag }}
         imagePullPolicy: {{ .Values.debug.image.pullPolicy | quote }}
