@@ -268,55 +268,70 @@ spec:
           name: u4500
           protocol: UDP
         env:
-        - name: USE_ENV_CONFIG
-          value: "{{ .Values.useEnvConfig }}"
-        - name: SET_ROUTE_DEFAULT_TABLE
-          value: "{{ .Values.setRouteDefaultTable }}"
-        - name: IPSEC_LOCALPRIVIP
-          value: "{{ .Values.ipsec.localprivip }}"
-#        - name: IPSEC_LOCALPUBIP
-#          value: "{{ .Values.ipsec.localpubip }}"
-        - name: IPSEC_LOCALIP
-          value: "{{ .Values.ipsec.localip }}"
-        - name: IPSEC_LOCALID
-          value: "{{ .Values.ipsec.localid }}"
-        - name: IPSEC_LOCALNET
-          value: "{{ .Values.ipsec.localnet }}"
-        - name: IPSEC_REMOTEIP
-          value: "{{ .Values.ipsec.remoteip }}"
-        - name: IPSEC_REMOTEID
-          value: "{{ .Values.ipsec.remoteid }}"
-        - name: IPSEC_REMOTENET
-          value: "{{ .Values.ipsec.remotenet }}"
-        - name: IPSEC_PSK
-          value: "{{ .Values.ipsec.psk }}"
-        - name: IPSEC_KEYEXCHANGE
-          value: "{{ .Values.ipsec.keyexchange }}"
-        - name: IPSEC_IKECIPHER
-          value: "{{ .Values.ipsec.ikecipher }}"
-        - name: IPSEC_ESPCIPHER
-          value: "{{ .Values.ipsec.espcipher }}"
-        - name: IPSEC_FORCEUDP
-          value: "{{ .Values.ipsec.forceudp }}"
-        - name: IPSEC_IKEREAUTH
-          value: "{{ .Values.ipsec.ikereauth }}"
-        {{- if .Values.ipsec.lifetime }}
-        - name: IPSEC_LIFETIME
-          value: "{{ .Values.ipsec.lifetime }}"
-        {{- end}}
-        {{- if .Values.ipsec.ikelifetime }}
-        - name: IPSEC_IKELIFETIME
-          value: "{{ .Values.ipsec.ikelifetime }}"
-        {{- end}}
-        {{- if .Values.ipsec.vti_key }}
-        - name: IPSEC_VTI_KEY
-          value: "{{ .Values.ipsec.vti_key }}"
+        {{- if not .Values.ipsec.manualConfig }}
+          - name: USE_ENV_CONFIG
+            value: "{{ .Values.useEnvConfig }}"
+          - name: SET_ROUTE_DEFAULT_TABLE
+            value: "{{ .Values.setRouteDefaultTable }}"
+          - name: IPSEC_LOCALPRIVIP
+            value: "{{ .Values.ipsec.localprivip }}"
+  #        - name: IPSEC_LOCALPUBIP
+  #          value: "{{ .Values.ipsec.localpubip }}"
+          - name: IPSEC_LOCALIP
+            value: "{{ .Values.ipsec.localip }}"
+          - name: IPSEC_LOCALID
+            value: "{{ .Values.ipsec.localid }}"
+          - name: IPSEC_LOCALNET
+            value: "{{ .Values.ipsec.localnet }}"
+          - name: IPSEC_REMOTEIP
+            value: "{{ .Values.ipsec.remoteip }}"
+          - name: IPSEC_REMOTEID
+            value: "{{ .Values.ipsec.remoteid }}"
+          - name: IPSEC_REMOTENET
+            value: "{{ .Values.ipsec.remotenet }}"
+          - name: IPSEC_PSK
+            value: "{{ .Values.ipsec.psk }}"
+          - name: IPSEC_KEYEXCHANGE
+            value: "{{ .Values.ipsec.keyexchange }}"
+          - name: IPSEC_IKECIPHER
+            value: "{{ .Values.ipsec.ikecipher }}"
+          - name: IPSEC_ESPCIPHER
+            value: "{{ .Values.ipsec.espcipher }}"
+          - name: IPSEC_FORCEUDP
+            value: "{{ .Values.ipsec.forceudp }}"
+          - name: IPSEC_IKEREAUTH
+            value: "{{ .Values.ipsec.ikereauth }}"
+          {{- if .Values.ipsec.lifetime }}
+          - name: IPSEC_LIFETIME
+            value: "{{ .Values.ipsec.lifetime }}"
+          {{- end}}
+          {{- if .Values.ipsec.ikelifetime }}
+          - name: IPSEC_IKELIFETIME
+            value: "{{ .Values.ipsec.ikelifetime }}"
+          {{- end}}
         {{- end }}
+          {{- if .Values.ipsec.interfaces }}
+          - name: IPSEC_INTERFACES
+            value: "{{ .Values.ipsec.interfaces }}"
+          {{- end }}
+          {{- if .Values.ipsec.vti_key }}
+          - name: IPSEC_VTI_KEY
+            value: "{{ .Values.ipsec.vti_key }}"
+          {{- end }}
         securityContext:
           privileged: true
         volumeMounts:
         - mountPath: /lib/modules
           name: host-kernel-modules-volume
+          readOnly: true
+        {{- if .Values.ipsec.manualConfig }}
+        - name: strongswan-ipsec-config
+          mountPath: /etc/ipsec.config.d/
+          readOnly: true
+        - name: strongswan-ipsec-secrets
+          mountPath: strongswan-ipsec-secrets
+          readOnly: true
+        {{- end }}
 
       {{- if .Values.pingExporter.enabled }}
       - name: ping-exporter
@@ -439,6 +454,14 @@ spec:
             path: iptables.rules
           - key: ip6tables.rules
             path: ip6tables.rules
+      {{- end }}
+      {{- if .Values.ipsec.manualConfig }}
+      - name: strongswan-ipsec-config
+        configMap:
+          name: {{ template "CGW.fullname" . }}-strongswan-config
+      - name: strongswan-ipsec-secrets
+        secret:
+          secretName: {{ template "CGW.fullname" . }}-strongswan-secrets
       {{- end }}
 
 

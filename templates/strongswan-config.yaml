@@ -1,0 +1,12 @@
+{{- if .Values.ipsec.manualConfig }}
+kind: ConfigMap
+metadata:
+  name: {{ template "CGW.fullname" . }}-ping-exporter
+  labels:
+    app: {{ template "CGW.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+{{ toYaml .Values.ipsec.strongswan.ipsecConfig | indent 2 }}
+{{- end -}}

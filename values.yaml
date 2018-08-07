@@ -15,6 +15,7 @@ ipsec:
   psk: secret
   forceudp: "yes"
   vti_key: 1304
+  manualConfig: false
 replicaCount: 1
 image:
   repository: openvnf/vnf-ipsec
