@@ -115,6 +115,20 @@ resources:
     requests:
      cpu: 50m
      memory: 64Mi
+  iptables:
+    limits:
+     cpu: 50m
+     memory: 64Mi
+    requests:
+     cpu: 50m
+     memory: 64Mi
+  debug:
+    limits:
+     cpu: 50m
+     memory: 64Mi
+    requests:
+     cpu: 50m
+     memory: 64Mi
 
 ## Values used to set up GRE usage
 gre:
@@ -127,10 +141,51 @@ gre:
 networkUtility:
   image:
     repository: travelping/nettools
-    tag: 1.2.0
+    tag: 1.7.0
+    pullPolicy: IfNotPresent
+
+iptables:
+  enabled: true
+  image:
+    repository: travelping/nettools
+    tag: 1.7.0
+    pullPolicy: IfNotPresent
+  ipv4Rules: |
+    *filter
+
+    # Block all traffic silently as default policy
+    -P INPUT DROP
+    -P FORWARD DROP
+    -P OUTPUT DROP
+
+    # Allows all loopback (lo0) traffic and drop all traffic to 127/8 that doesn't use lo0
+    -A INPUT -i lo0 -j ACCEPT
+    -A INPUT ! -i lo0 -d 127.0.0.0/8 -j REJECT
+
+    COMMIT
+  ipv6Rules: |
+    *filter
+
+    # Block all traffic silently as default policy
+    -P INPUT DROP
+    -P FORWARD DROP
+    -P OUTPUT DROP
+
+    # Allows all loopback (lo0) traffic and drop all traffic to ::1 that doesn't use lo0
+    -A INPUT -i lo0 -j ACCEPT
+    -A INPUT ! -i lo0 -d ::1 -j REJECT
+
+    COMMIT
+
+debug:
+  enabled: true
+  image:
+    repository: travelping/nettools
+    tag: 1.7.0
     pullPolicy: IfNotPresent
 
 pingProber:
+  enabled: true
   image:
     repository: alpine
     tag: "3.7"

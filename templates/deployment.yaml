@@ -217,7 +217,44 @@ spec:
       {{- end }}
       {{- end }}
 
+      {{- if .Values.iptables.enabled }}
+      - name: {{ .Chart.Name }}-iptables
+        image: {{ .Values.iptables.image.repository }}:{{ .Values.iptables.image.tag }}
+        imagePullPolicy: {{ .Values.iptables.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.iptables | indent 10 }}
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+        command:
+        - sh
+        - -c
+        - |
+          set -ex
+          iptables-restore < /etc/iptables/iptables.rules
+          ip6tables-restore < /etc/iptables/ip6tables.rules
+        volumeMounts:
+        - name: iptables-rules
+          mountPath: /etc/iptables/
+          readOnly: true
+      {{- end }}
+
       containers:
+      {{- if .Values.iptables.enabled }}
+      - name: {{ .Chart.Name }}-debug
+        image: {{ .Values.debug.image.repository }}:{{ .Values.debug.image.tag }}
+        imagePullPolicy: {{ .Values.debug.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.debug | indent 10 }}
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+        command:
+        - sh
+        - -c
+        - "trap : TERM INT; (while true; do sleep 1000; done) & wait"
+      {{- end }}
+
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
@@ -300,6 +337,7 @@ spec:
             mountPath: /etc/ping-exporter
       {{- end }}
 
+      {{- if .Values.pingProber.enabled }}
       - name: ping-prober
         image: {{ .Values.pingProber.image.repository }}:{{ .Values.pingProber.image.tag }}
         imagePullPolicy: {{ .Values.pingProber.image.pullPolicy | quote }}
@@ -392,6 +430,16 @@ spec:
       - name: ping-exporter-config
         configMap:
           name: {{ template "CGW.fullname" . }}-ping-exporter
+      {{- if .Values.iptables.enabled }}
+      - name: iptables-rules
+        configMap:
+          name: {{ template "CGW.fullname" . }}-ping-exporter
+          items:
+          - key: iptables.rules
+            path: iptables.rules
+          - key: ip6tables.rules
+            path: ip6tables.rules
+      {{- end }}
 
 
     {{- if .Values.image.pullSecrets }}
