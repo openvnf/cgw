@@ -5,6 +5,8 @@ connectivity gateway
 
 * [IPSEC](#ipsec)
   * [Manual Strongswan configuration](#manual-strongswan-configuration)
+    * [disable setting of routes](#disable-setting-of-routes)
+  * [setting interfaces](#setting-interfaces)
 * [iptables](#iptables)
 * [BGP](#bgp)
   * [BIRD Internet Routing Daemon](#bird-internet-routing-daemon)
