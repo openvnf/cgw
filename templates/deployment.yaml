@@ -217,6 +217,25 @@ spec:
       {{- end }}
       {{- end }}
 
+
+      {{- if .Values.initScript.enabled }}
+      - name: {{ .Chart.Name }}-initScript
+        image: {{ .Values.initScript.image.repository }}:{{ .Values.initScript.image.tag }}
+        imagePullPolicy: {{ .Values.initScript.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.initScript | indent 10 }}
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+        command:
+        - sh
+        - /opt/initScript/initScript.sh
+        volumeMounts:
+        - name: init-script
+          mountPath: /opt/initScript/
+          readOnly: true
+      {{- end }}
+
       {{- if .Values.iptables.enabled }}
       - name: {{ .Chart.Name }}-iptables
         image: {{ .Values.iptables.image.repository }}:{{ .Values.iptables.image.tag }}
@@ -424,6 +443,24 @@ spec:
       {{- end }}
       {{- end }}
 
+      {{- if .Values.bird.enabled }}
+      - name: bird
+        image: {{ .Values.bird.image.repository }}:{{ .Values.bird.image.tag }}
+        imagePullPolicy: {{ .Values.bird.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.bird | indent 10 }}
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+            - SYS_ADMIN
+            - SETPCAP
+            - NET_RAW
+        volumeMounts:
+        - name: bird-config
+          mountPath: /run/bird/
+      {{- end }}
+
       {{- if .Values.vxlanController.enabled }}
       - name: vxlan-controller-agent
         image: {{ .Values.vxlanController.image.repository }}:{{ .Values.vxlanController.image.tag }}
@@ -462,6 +499,20 @@ spec:
       - name: strongswan-ipsec-secrets
         secret:
           secretName: {{ template "CGW.fullname" . }}-strongswan-secrets
+      {{- end }}
+      {{- if .Values.initScript.enabled }}
+      - name: init-script
+        configMap:
+          name: {{ template "CGW.fullname" . }}-init-script
+          items:
+            - key: initScript.sh
+              name: initScript.sh
+              defaultMode: 0544
+      {{- end }}
+      {{- if .Values.bird.enabled }}
+      - name: bird-config
+        configMap:
+          name: {{ template "CGW.fullname" . }}-bird-config
       {{- end }}
 
 

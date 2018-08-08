@@ -7,6 +7,8 @@
   - **all your traffic will be blocked to the container, if you do not overwrite the firewall config!**
 - add flag to disable ping-prober if not needed or ping-exporter is used
 - add debug container as first container including networking tools
+- add init script container to run custom initialization
+- add BIRD as BGP daemon
 
 ### 0.5.0
 

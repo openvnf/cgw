@@ -54,82 +54,96 @@ resources:
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   initGre:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
   initVti:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
   ipsec:
     limits:
-     cpu: 200m
-     memory: 256Mi
+      cpu: 200m
+      memory: 256Mi
     requests:
-     cpu: 200m
-     memory: 128Mi
+      cpu: 200m
+      memory: 128Mi
   cgwExporter:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
   pingProber:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
   vxlanControllerAgent:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
   vxlanControllerIpSetup:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
   ipSetup:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
   
   vxlanControllerAgentInit:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
   iptables:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
   debug:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
+  initScript:
+    limits:
+      cpu: 50m
+      memory: 64Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+  bird:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 200m
+      memory: 128Mi
 
 ## Values used to set up GRE usage
 gre:
@@ -138,6 +152,22 @@ gre:
   remoteip: 203.0.113.0
   name: gre9
   gretap: false
+
+bird:
+  enabled: false
+  image:
+    repository: openvnf/vnf-bird
+    tag: v0.1.0
+    pullPolicy: IfNotPresent
+
+initScript:
+  enabled: false
+  image:
+    repository: travelping/nettools
+    tag: 1.7.0
+    pullPolicy: IfNotPresent
+  script: |
+    echo "script configuration is missing"
 
 networkUtility:
   image:

@@ -6,6 +6,8 @@ connectivity gateway
 * [IPSEC](#ipsec)
   * [Manual Strongswan configuration](#manual-strongswan-configuration)
 * [iptables](#iptables)
+* [BGP](#bgp)
+  * [BIRD Internet Routing Daemon](#bird-internet-routing-daemon)
 * [VXLAN](#vxlan)
   * [manual VXLAN setup](#manual-vxlan-setup)
   * [VXLAN-Controller configuration](#vxlan-controller-configuration)
@@ -15,6 +17,7 @@ connectivity gateway
   * [disable ping-prober](#disable-ping-prober)
 * [Utilities](#utilities)
   * [debug container](#debug-container)
+  * [init script](#init-script)
 
 <!-- tocstop -->
 
@@ -92,6 +95,27 @@ iptables:
 ```
 
 The configuration parameters `ipv4Rules` and `ipv6Rules` will be used as a rule file for `iptables-restore` literally.
+
+## BGP
+
+### BIRD Internet Routing Daemon
+
+To use BGP in the CGW deployment, you can enable BIRD as follows:
+
+```yaml
+bird:
+  enabled: true # default is false
+  configuration:
+    bird: |
+      < add the bird IPv4 configuration here>
+    bird6: |
+      < add the bird6 IPv6 configuration here>
+```
+
+At the moment, you have to configure BIRD manually following the [BIRD documentation](http://bird.network.cz/?get_doc&v=16&f=bird-3.html).
+
+The version used is `1.6` which differs in its configuration from version `2.0`.
+
 
 ## VXLAN
 
@@ -249,4 +273,19 @@ If this is not desired, disable it as follows:
 ```yaml
 debug:
   enabled: false
+```
+
+### init script
+
+To run initialization steps, which are outside of the provided configuration parameters for standard models, you can provide a shellscript to run in a special init container with `NET_ADMIN` priviledges.
+
+To do so, provide the following parameters:
+
+```yaml
+initScript:
+  enabled: true # default is false
+  script: |
+    set -e
+    echo "This runs my magic shell script"
+    echo "also multi line"
 ```
