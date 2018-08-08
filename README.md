@@ -28,7 +28,7 @@ connectivity gateway
 To use a manual configuration of Strongswan instead of using parameters, for example for multi-SA configurations,
 set the following parameters:
 
-```
+```yaml
 ipsec:
   manualConfig: true # default is false
   strongswan:
@@ -49,26 +49,41 @@ You can repeat the configuration for multiple connections.
 
 NOTE: If the manual configuration is used, the ping-prober must be disabled!! (see [ping-prober](#disable_ping-prober))
 
+#### disable setting of routes
+
+If Strongswan shall not install routes into its routing table, you have to set the value `ipsec.vti_key: true`.
+
+### setting interfaces
+
+To set the interfaces Strongswan shall bind on, set `ipsec.interfaces` with a comma seperated list of interfaces.
+
+For example:
+
+```yaml
+ipsec:
+  interfaces: "eth0,net1"
+```
+
 ## iptables
 
 This deployment might use pods, which have interfaces publicly connected to the internet.
 Therefore the pods have to be secured using a firewall.
 
-By default the corresponding `iptables` container will run and drop all traffic to and from the pod.
-This might not be in your interest when using a deployment called *"Connectivity Gateway"*.
+By default the corresponding `iptables` container is disabled as well as the rule files.
 
-To add your configuration you have to add the following parts to your configuration:
+To secure your CGW you have to add rules to in the following part of configuration:
 
 ```yaml
 iptables:
-  # enabled: true # the default, you can disable it but this might not be a good idea
+  enabled: true # disable is false
   ipv4Rules: |
     *filter
 
     # Block all traffic silently as default policy
-    -P INPUT DROP
-    -P FORWARD DROP
-    -P OUTPUT DROP
+    # just use this one with care
+    #-P INPUT DROP
+    #-P FORWARD DROP
+    #-P OUTPUT DROP
 
     # Allows all loopback (lo0) traffic and drop all traffic to 127/8 that doesn't use lo0
     -A INPUT -i lo0 -j ACCEPT
@@ -81,9 +96,10 @@ iptables:
     *filter
 
     # Block all traffic silently as default policy
-    -P INPUT DROP
-    -P FORWARD DROP
-    -P OUTPUT DROP
+    # just use this one with care
+    #-P INPUT DROP
+    #-P FORWARD DROP
+    #-P OUTPUT DROP
 
     # Allows all loopback (lo0) traffic and drop all traffic to ::1 that doesn't use lo0
     -A INPUT -i lo0 -j ACCEPT
@@ -284,8 +300,12 @@ To do so, provide the following parameters:
 ```yaml
 initScript:
   enabled: true # default is false
+  env:
+    # Add environmental variables here
+    GREETING: "Hello World"
   script: |
     set -e
     echo "This runs my magic shell script"
     echo "also multi line"
+    echo $GREETING
 ```

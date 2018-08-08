@@ -227,6 +227,9 @@ spec:
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
+        envFrom:
+          - configMapRef:
+              name: {{ template "CGW.fullname" . }}-init-script-env
         command:
         - sh
         - /opt/initScript/initScript.sh
