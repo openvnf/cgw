@@ -8,6 +8,7 @@
 - add debug container as first container including networking tools
 - add init script container to run custom initialization
 - add BIRD as BGP daemon
+- add bird_exporter to expose BIRD metrics in prometheus format
 
 ### 0.5.0
 

@@ -462,6 +462,27 @@ spec:
         volumeMounts:
         - name: bird-config
           mountPath: /run/bird/
+        - name: bird-socket
+          mountPath: /var/run/bird/
+      {{- end }}
+
+      {{- if and .Values.bird.enabled .Values.bird.birdExporter.enabled }}
+      - name: bird-exporter
+        image: {{ .Values.bird.birdExporter.image.repository }}:{{ .Values.bird.birdExporter.image.tag }}
+        imagePullPolicy: {{ .Values.bird.birdExporter.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.birdExporter | indent 10 }}
+        args:
+          - '-format.new=true'
+          - '-bird.socket=/var/run/bird/bird.ctl'
+          - '-bird.socket6=/var/run/bird/bird6.ctl'
+        ports:
+        - name: p9324
+          containerPort: 9324
+          protocol: TCP
+        volumeMounts:
+        - name: bird-socket
+          mountPath: /var/run/bird/
       {{- end }}
 
       {{- if .Values.vxlanController.enabled }}
@@ -516,6 +537,9 @@ spec:
       - name: bird-config
         configMap:
           name: {{ template "CGW.fullname" . }}-bird-config
+      - name: bird-socket
+        emptyDir:
+          medium: Memory
       {{- end }}
 
 

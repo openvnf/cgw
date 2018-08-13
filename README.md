@@ -10,6 +10,7 @@ connectivity gateway
 * [iptables](#iptables)
 * [BGP](#bgp)
   * [BIRD Internet Routing Daemon](#bird-internet-routing-daemon)
+  * [bird_exporter](#bird_exporter)
 * [VXLAN](#vxlan)
   * [manual VXLAN setup](#manual-vxlan-setup)
   * [VXLAN-Controller configuration](#vxlan-controller-configuration)
@@ -134,6 +135,25 @@ At the moment, you have to configure BIRD manually following the [BIRD documenta
 
 The version used is `1.6` which differs in its configuration from version `2.0`.
 
+### bird_exporter
+
+By default `bird_exporter` will be enabled, when bird is enabled and expose prometheus metrics for *BIRD*.
+
+To disable `bird_exporter` or change images or annotations, change the following parameteres:
+
+```yaml
+bird:
+  birdExporter:
+    enabled: true # default
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9324"
+    image:
+      repository: openvnf/bird_exporter
+      tag: v0.1.0
+      pullPolicy: IfNotPresent
+```
 
 ## VXLAN
 
