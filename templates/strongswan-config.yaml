@@ -1,7 +1,7 @@
 {{- if .Values.ipsec.manualConfig }}
 kind: ConfigMap
 metadata:
-  name: {{ template "CGW.fullname" . }}-ping-exporter
+  name: {{ template "CGW.fullname" . }}-strongswan-config
   labels:
     app: {{ template "CGW.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}

@@ -19,16 +19,13 @@ ipsec:
 replicaCount: 1
 image:
   repository: openvnf/vnf-ipsec
-  tag: 1.1.0
+  tag: 1.3.0
   pullPolicy: IfNotPresent
   pullSecrets:
     - name: werft
 service:
   name: ipsec
   type: ClusterIP
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "9427"
 #  protocol: UDP
 #  externalPort: 4500
 #  internalPort: 4500
@@ -175,7 +172,7 @@ bird:
         prometheus.io/port: "9324"
     image:
       repository: openvnf/bird_exporter
-      tag: v1.2.1
+      tag: latest
       pullPolicy: IfNotPresent
 
 initScript:
@@ -245,8 +242,12 @@ pingExporter:
   enabled: true
   image:
     repository: travelping/ping-exporter
-    tag: v0.4.0
+    tag: 0.4.0
     pullPolicy: IfNotPresent
+  service:
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9427"
   config:
     web:
       listen-address: ":9427"

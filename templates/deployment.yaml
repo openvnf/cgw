@@ -31,6 +31,7 @@ spec:
           capabilities:
             add: ["NET_ADMIN"]
       {{- end }}
+      {{- if not .Values.ipsec.manualConfig }}
       - name: init-ip
         image: {{ .Values.networkUtility.image.repository }}:{{ .Values.networkUtility.image.tag }}
         imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
@@ -63,7 +64,8 @@ spec:
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
-      {{- if .Values.ipsec.vti_key }}
+      {{- end }}
+      {{- if and .Values.ipsec.vti_key (not .Values.ipsec.manualConfig) }}
       - name: init-vti
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
@@ -219,9 +221,10 @@ spec:
 
 
       {{- if .Values.initScript.enabled }}
-      - name: {{ .Chart.Name }}-initScript
+      - name: {{ .Chart.Name }}-init-script
         image: {{ .Values.initScript.image.repository }}:{{ .Values.initScript.image.tag }}
         imagePullPolicy: {{ .Values.initScript.image.pullPolicy | quote }}
+        restartPolicy: Never
         resources:
 {{ toYaml .Values.resources.initScript | indent 10 }}
         securityContext:
@@ -331,6 +334,9 @@ spec:
           - name: IPSEC_IKELIFETIME
             value: "{{ .Values.ipsec.ikelifetime }}"
           {{- end}}
+        {{- else }}
+          - name: IPSEC_USE_MANUAL_CONFIG
+            value: "True"
         {{- end }}
           {{- if .Values.ipsec.interfaces }}
           - name: IPSEC_INTERFACES
@@ -530,7 +536,7 @@ spec:
           name: {{ template "CGW.fullname" . }}-init-script
           items:
             - key: initScript.sh
-              name: initScript.sh
+              path: initScript.sh
               defaultMode: 0544
       {{- end }}
       {{- if .Values.bird.enabled }}

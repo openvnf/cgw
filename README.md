@@ -55,6 +55,7 @@ NOTE: If the manual configuration is used, the ping-prober must be disabled!! (s
 #### disable setting of routes
 
 If Strongswan shall not install routes into its routing table, you have to set the value `ipsec.vti_key: true`.
+This is strongly advised, when using VTI interfaces and route-based VPN.
 
 ### setting interfaces
 
@@ -66,6 +67,40 @@ For example:
 ipsec:
   interfaces: "eth0,net1"
 ```
+
+### Route-based vs Policy based VPN
+
+The default model of Strongswan uses policy-based vpn.
+This means XFRM rules will be installed on the machine and every packet with destination in vpn connected networks will be transfered to there.
+
+If you have different flows of traffic though and just want steer a certain part through the vpn, it is advised to use [route-based VPN](https://wiki.strongswan.org/projects/strongswan/wiki/RouteBasedVPN).
+
+For that you have to set `ipsec.vti_key: true` to disable setting of internal routes.
+Further you have to create a VTI interface, which sets a mark, which has to be configured in Strongswan correspondingly.
+
+To create a VTI interface you can execute the following:
+
+```sh
+IPSEC_VTI_KEY=10
+IPSEC_REMOTEIP=198.51.100.1
+IPSEC_LOCALIP=192.0.2.1
+IPSEC_VTI_ADDR_LOCAL=203.0.113.10
+IPSEC_VTI_ADDR_PEER=203.0.113.11
+
+ip tunnel add vti${IPSEC_VTI_KEY} mode vti remote $IPSEC_REMOTEIP local $IPSEC_LOCALIP key $IPSEC_VTI_KEY
+ip address add ${IPSEC_VTI_ADDR_LOCAL}/32 peer ${IPSEC_VTI_ADDR_PEER}/32 dev vti${IPSEC_VTI_KEY}
+ip link set vti${IPSEC_VTI_KEY} up
+```
+
+The `vti_key` is the actuall number the packets will be marked with and has to correspond with the Strongswan config.
+
+The local and remote ip can be the public IPs of the link, but also arbitrary documentation addresses could be used.
+The kernel will not actually use the IP addresses, but remove the IP header when handed to Strongswan, but the parameters are required by `iproute2` as it is a virtual tunnel.
+
+The `IPSEC_VTI_ADDR_LOCAL` and `IPSEC_VTI_ADDR_PEER` should be set to a sensible value out of a private network.
+The `IPSEC_VTI_ADDR_PEER` address is then be used to set the routes for packets to the other side of the VPN connection.
+
+Because the VTI interface is virtual, the peer address does not have to be set on the other machine.
 
 ## iptables
 
