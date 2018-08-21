@@ -161,7 +161,7 @@ bird:
   enabled: false
   image:
     repository: openvnf/vnf-bird
-    tag: v0.2.0
+    tag: v0.4.0
     pullPolicy: IfNotPresent
 
   birdExporter:
@@ -172,7 +172,7 @@ bird:
         prometheus.io/port: "9324"
     image:
       repository: openvnf/bird_exporter
-      tag: latest
+      tag: stable
       pullPolicy: IfNotPresent
 
 initScript:

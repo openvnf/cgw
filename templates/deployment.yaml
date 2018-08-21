@@ -224,7 +224,6 @@ spec:
       - name: {{ .Chart.Name }}-init-script
         image: {{ .Values.initScript.image.repository }}:{{ .Values.initScript.image.tag }}
         imagePullPolicy: {{ .Values.initScript.image.pullPolicy | quote }}
-        restartPolicy: Never
         resources:
 {{ toYaml .Values.resources.initScript | indent 10 }}
         securityContext:
@@ -467,7 +466,7 @@ spec:
             - NET_RAW
         volumeMounts:
         - name: bird-config
-          mountPath: /run/bird/
+          mountPath: /opt/bird/
         - name: bird-socket
           mountPath: /var/run/bird/
       {{- end }}
@@ -480,8 +479,12 @@ spec:
 {{ toYaml .Values.resources.birdExporter | indent 10 }}
         args:
           - '-format.new=true'
+          {{- if .Values.bird.configuration.bird }}
           - '-bird.socket=/var/run/bird/bird.ctl'
+          {{- end }}
+          {{- if .Values.bird.configuration.bird6 }}
           - '-bird.socket6=/var/run/bird/bird6.ctl'
+          {{- end }}
         ports:
         - name: p9324
           containerPort: 9324
