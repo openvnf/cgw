@@ -356,7 +356,7 @@ spec:
           mountPath: /etc/ipsec.config.d/
           readOnly: true
         - name: strongswan-ipsec-secrets
-          mountPath: strongswan-ipsec-secrets
+          mountPath: /etc/ipsec.secrets.d/
           readOnly: true
         {{- end }}
 
