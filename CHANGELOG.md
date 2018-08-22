@@ -9,6 +9,8 @@
 - add init script container to run custom initialization
 - add BIRD as BGP daemon
 - add bird_exporter to expose BIRD metrics in prometheus format
+- add checksums of configmaps and secrets to deployment to redeploy and restart
+  them when the configuration changes
 
 ### 0.5.0
 

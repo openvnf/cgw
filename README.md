@@ -3,10 +3,13 @@ connectivity gateway
 
 <!-- toc -->
 
+* [General](#general)
+  * [upgrade of the helm chart](#upgrade-of-the-helm-chart)
 * [IPSEC](#ipsec)
   * [Manual Strongswan configuration](#manual-strongswan-configuration)
     * [disable setting of routes](#disable-setting-of-routes)
   * [setting interfaces](#setting-interfaces)
+  * [Route-based vs Policy based VPN](#route-based-vs-policy-based-vpn)
 * [iptables](#iptables)
 * [BGP](#bgp)
   * [BIRD Internet Routing Daemon](#bird-internet-routing-daemon)
@@ -23,6 +26,12 @@ connectivity gateway
   * [init script](#init-script)
 
 <!-- tocstop -->
+
+## General
+
+### upgrade of the helm chart
+When configurations or secrets are changed, the pods will be redeployed automatically.
+This will cause a short interruption of the traffic at the moment.
 
 ## IPSEC
 
