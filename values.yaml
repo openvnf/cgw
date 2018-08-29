@@ -16,6 +16,14 @@ ipsec:
   forceudp: "yes"
   vti_key: 1304
   manualConfig: false
+  service:
+    enabled: true
+service:
+  name: ipsec
+  type: ClusterIP
+  #  protocol: UDP
+  #  externalPort: 4500
+  #  internalPort: 4500
 replicaCount: 1
 image:
   repository: openvnf/vnf-ipsec
@@ -23,12 +31,6 @@ image:
   pullPolicy: IfNotPresent
   pullSecrets:
     - name: werft
-service:
-  name: ipsec
-  type: ClusterIP
-#  protocol: UDP
-#  externalPort: 4500
-#  internalPort: 4500
 ingress:
   enabled: false
   # Used to create an Ingress record.
