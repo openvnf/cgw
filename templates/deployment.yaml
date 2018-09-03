@@ -21,11 +21,15 @@ spec:
         {{- if .Values.vxlanController.enabled }}
         {{ .Values.vxlanController.annotationKey }}: "{{ .Values.vxlanController.names }}"
         {{- end }}
-        checksum/strongswan-config: {{ include (print $.Template.BasePath "/strongswan-config.yaml") . | sha256sum }}
-        checksum/strongswan-secret: {{ include (print $.Template.BasePath "/strongswan-secret.yaml") . | sha256sum }}
-        checksum/bird-config: {{ include (print $.Template.BasePath "/bird-config.yaml") . | sha256sum }}
-        checksum/iptables-config: {{ include (print $.Template.BasePath "/iptables-configmap.yaml") . | sha256sum }}
-        checksum/ping-exporter-config: {{ include (print $.Template.BasePath "/ping-exporter-configmap.yaml") . | sha256sum }}
+        checksum/strongswan-config-template: {{ include (print $.Template.BasePath "/strongswan-config.yaml") . | sha256sum }}
+        checksum/strongswan-secret-template: {{ include (print $.Template.BasePath "/strongswan-secret.yaml") . | sha256sum }}
+        checksum/bird-config-template: {{ include (print $.Template.BasePath "/bird-config.yaml") . | sha256sum }}
+        checksum/iptables-config-template: {{ include (print $.Template.BasePath "/iptables-configmap.yaml") . | sha256sum }}
+        checksum/ping-exporter-config-template: {{ include (print $.Template.BasePath "/ping-exporter-configmap.yaml") . | sha256sum }}
+        checksum/strongswan-config: {{ toYaml .Values.ipsec.strongswan | sha256sum }}
+        checksum/bird-config: {{ toYaml .Values.bird.configuration | sha256sum }}
+        checksum/iptables-ipv4-config: {{ toYaml .Values.iptables.ipv4Rules | sha256sum }}
+        checksum/iptables-ipv6-config: {{ toYaml .Values.iptables.ipv6Rules | sha256sum }}
     spec:
       initContainers:
       {{- if .Values.vxlanController.enabled }}
