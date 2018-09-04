@@ -371,6 +371,28 @@ spec:
           mountPath: /etc/ipsec.secrets.d/
           readOnly: true
         {{- end }}
+        {{- if .Values.ipsec.certBasedIPSEC }}
+        {{- if or .Values.ipsec.certs.privateKeys .Values.ipsec.certs.externalPrivateKeys }}
+        - name: strongswan-ipsec-privatekeys
+          mountPath: /etc/ipsec.d/private/
+          readOnly: true
+        {{- end }}
+        {{- if or .Values.ipsec.certs.certificates .Values.ipsec.certs.externalCertificates }}
+        - name: strongswan-ipsec-certs
+          mountPath: /etc/ipsec.d/certs/
+          readOnly: true
+        {{- end }}
+        {{- if or .Values.ipsec.certs.caCertificates .Values.ipsec.certs.externalCaCertificates }}
+        - name: strongswan-ipsec-cacerts
+          mountPath: /etc/ipsec.d/cacerts/
+          readOnly: true
+        {{- end }}
+        {{- if or .Values.ipsec.certs.certificateRevocationsLists .Values.ipsec.certs.externalCertificateRevocationLists }}
+        - name: strongswan-ipsec-crls
+          mountPath: /etc/ipsec/crls/
+          readOnly: true
+        {{- end }}
+        {{- end }}
         {{- end }}
 
       {{- if .Values.pingExporter.enabled }}
@@ -539,6 +561,7 @@ spec:
             path: ip6tables.rules
       {{- end }}
       {{- if .Values.ipsec.manualConfig }}
+      ##### IPSEC
       - name: strongswan-ipsec-config
         configMap:
           name: {{ template "CGW.fullname" . }}-strongswan-config
@@ -546,6 +569,47 @@ spec:
         secret:
           secretName: {{ template "CGW.fullname" . }}-strongswan-secrets
       {{- end }}
+      ##### IPSEC Certificates et. al.
+      {{- if .Values.ipsec.certBasedIPSEC }}
+      {{- if or .Values.ipsec.certs.privateKeys .Values.ipsec.certs.externalPrivateKeys }}
+      - name: strongswan-ipsec-privatekeys
+        secret:
+          {{- if .Values.ipsec.certs.externalPrivateKeys }}
+          secretName: {{ .Values.ipsec.certs.externalPrivateKeys }}
+          {{- else }}
+          secretName: {{ template "CGW.fullname" . }}-strongswan-ipsec-privatekeys
+          {{- end }}
+      {{- end }}
+      {{- if or .Values.ipsec.certs.certificates .Values.ipsec.certs.externalCertificates }}
+      - name: strongswan-ipsec-certs
+        secret:
+          {{- if .Values.ipsec.certs.externalCertificates }}
+          secretName: {{ .Values.ipsec.certs.externalCertificates }}
+          {{- else }}
+          secretName: {{ template "CGW.fullname" . }}-strongswan-ipsec-certs
+          {{- end }}
+      {{- end }}
+      {{- if or .Values.ipsec.certs.caCertificates .Values.ipsec.certs.externalCaCertificates }}
+      - name: strongswan-ipsec-cacerts
+        secret:
+          {{- if .Values.ipsec.certs.externalCaCertificates }}
+          secretName: {{ .Values.ipsec.certs.externalCaCertificates }}
+          {{- else }}
+          secretName: {{ template "CGW.fullname" . }}-strongswan-ipsec-cacerts
+          {{- end }}
+      {{- end }}
+      {{- if or .Values.ipsec.certs.certificateRevocationsLists .Values.ipsec.certs.externalCertificateRevocationLists }}
+      - name: strongswan-ipsec-crls
+        secret:
+          {{- if .Values.ipsec.certs.externalCertificateRevocationLists }}
+          secretName: {{ .Values.ipsec.certs.externalCertificateRevocationLists }}
+          {{- else }}
+          secretName: {{ template "CGW.fullname" . }}-strongswan-ipsec-crls
+          {{- end }}
+      {{- end }}
+      {{- end }}
+
+
       {{- if .Values.initScript.enabled }}
       - name: init-script
         configMap:

@@ -1,0 +1,13 @@
+{{- if and .Values.ipsec.enabled .Values.ipsec.certs.certificates }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ template "CGW.fullname" . }}-strongswan-certs
+  labels:
+    app: {{ template "CGW.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+{{ toYaml .Values.ipsec.certs.certificates | indent 2 }}
+{{- end -}}
