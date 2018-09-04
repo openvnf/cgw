@@ -1,15 +1,212 @@
 # cgw
 connectivity gateway
 
-## Configuration
-### VXLAN
+<!-- toc -->
+
+* [General](#general)
+  * [upgrade of the helm chart](#upgrade-of-the-helm-chart)
+* [IPSEC](#ipsec)
+  * [Manual Strongswan configuration](#manual-strongswan-configuration)
+    * [disable setting of routes](#disable-setting-of-routes)
+  * [setting interfaces](#setting-interfaces)
+  * [Route-based vs Policy based VPN](#route-based-vs-policy-based-vpn)
+* [iptables](#iptables)
+* [BGP](#bgp)
+  * [BIRD Internet Routing Daemon](#bird-internet-routing-daemon)
+  * [bird_exporter](#bird_exporter)
+* [VXLAN](#vxlan)
+  * [manual VXLAN setup](#manual-vxlan-setup)
+  * [VXLAN-Controller configuration](#vxlan-controller-configuration)
+* [GRE](#gre)
+* [Monitoring](#monitoring)
+  * [Configure targets](#configure-targets)
+  * [disable ping-prober](#disable-ping-prober)
+* [Utilities](#utilities)
+  * [debug container](#debug-container)
+  * [init script](#init-script)
+
+<!-- tocstop -->
+
+## General
+
+### upgrade of the helm chart
+When configurations or secrets are changed, the pods will be redeployed automatically.
+This will cause a short interruption of the traffic at the moment.
+
+## IPSEC
+
+### Manual Strongswan configuration
+
+To use a manual configuration of Strongswan instead of using parameters, for example for multi-SA configurations,
+set the following parameters:
+
+```yaml
+ipsec:
+  manualConfig: true # default is false
+  strongswan:
+    ipsecConfig:
+      ipsec.<myconnectionname>.conf: |
+        <add your ipsec config here>
+    ipsecSecrets:
+      ipsec.<myconnectionname>.secrets: |
+        <add your ipsec secret here>
+```
+
+The `ipsec.<myconnectionname>.conf` has to follow the [Strongswan documentation](https://wiki.strongswan.org/projects/strongswan/wiki/IpsecConf).
+
+The `ipsec.<myconnectionname>.secrets` also have to follow the [Strongswan secrets documentation](https://wiki.strongswan.org/projects/strongswan/wiki/IpsecSecrets).
+They will also automatically be base64 encoded into a Kubernetes Secret.
+
+You can repeat the configuration for multiple connections.
+
+NOTE: If the manual configuration is used, the ping-prober must be disabled!! (see [ping-prober](#disable_ping-prober))
+
+#### disable setting of routes
+
+If Strongswan shall not install routes into its routing table, you have to set the value `ipsec.vti_key: true`.
+This is strongly advised, when using VTI interfaces and route-based VPN.
+
+### setting interfaces
+
+To set the interfaces Strongswan shall bind on, set `ipsec.interfaces` with a comma seperated list of interfaces.
+
+For example:
+
+```yaml
+ipsec:
+  interfaces: "eth0,net1"
+```
+
+### Route-based vs Policy based VPN
+
+The default model of Strongswan uses policy-based vpn.
+This means XFRM rules will be installed on the machine and every packet with destination in vpn connected networks will be transfered to there.
+
+If you have different flows of traffic though and just want steer a certain part through the vpn, it is advised to use [route-based VPN](https://wiki.strongswan.org/projects/strongswan/wiki/RouteBasedVPN).
+
+For that you have to set `ipsec.vti_key: true` to disable setting of internal routes.
+Further you have to create a VTI interface, which sets a mark, which has to be configured in Strongswan correspondingly.
+
+To create a VTI interface you can execute the following:
+
+```sh
+IPSEC_VTI_KEY=10
+IPSEC_REMOTEIP=198.51.100.1
+IPSEC_LOCALIP=192.0.2.1
+IPSEC_VTI_ADDR_LOCAL=203.0.113.10
+IPSEC_VTI_ADDR_PEER=203.0.113.11
+
+ip tunnel add vti${IPSEC_VTI_KEY} mode vti remote $IPSEC_REMOTEIP local $IPSEC_LOCALIP key $IPSEC_VTI_KEY
+ip address add ${IPSEC_VTI_ADDR_LOCAL}/32 peer ${IPSEC_VTI_ADDR_PEER}/32 dev vti${IPSEC_VTI_KEY}
+ip link set vti${IPSEC_VTI_KEY} up
+```
+
+The `vti_key` is the actuall number the packets will be marked with and has to correspond with the Strongswan config.
+
+The local and remote ip can be the public IPs of the link, but also arbitrary documentation addresses could be used.
+The kernel will not actually use the IP addresses, but remove the IP header when handed to Strongswan, but the parameters are required by `iproute2` as it is a virtual tunnel.
+
+The `IPSEC_VTI_ADDR_LOCAL` and `IPSEC_VTI_ADDR_PEER` should be set to a sensible value out of a private network.
+The `IPSEC_VTI_ADDR_PEER` address is then be used to set the routes for packets to the other side of the VPN connection.
+
+Because the VTI interface is virtual, the peer address does not have to be set on the other machine.
+
+## iptables
+
+This deployment might use pods, which have interfaces publicly connected to the internet.
+Therefore the pods have to be secured using a firewall.
+
+By default the corresponding `iptables` container is disabled as well as the rule files.
+
+To secure your CGW you have to add rules to in the following part of configuration:
+
+```yaml
+iptables:
+  enabled: true # disable is false
+  ipv4Rules: |
+    *filter
+
+    # Block all traffic silently as default policy
+    # just use this one with care
+    #-P INPUT DROP
+    #-P FORWARD DROP
+    #-P OUTPUT DROP
+
+    # Allows all loopback (lo0) traffic and drop all traffic to 127/8 that doesn't use lo0
+    -A INPUT -i lo0 -j ACCEPT
+    -A INPUT ! -i lo0 -d 127.0.0.0/8 -j REJECT
+    
+    ######   ADD YOUR RULES TO EXTEND TRAFFIC HERE ######
+    
+    COMMIT
+  ipv6Rules: |
+    *filter
+
+    # Block all traffic silently as default policy
+    # just use this one with care
+    #-P INPUT DROP
+    #-P FORWARD DROP
+    #-P OUTPUT DROP
+
+    # Allows all loopback (lo0) traffic and drop all traffic to ::1 that doesn't use lo0
+    -A INPUT -i lo0 -j ACCEPT
+    -A INPUT ! -i lo0 -d ::1 -j REJECT
+    
+    ######   ADD YOUR RULES TO EXTEND TRAFFIC HERE ######
+
+    COMMIT
+```
+
+The configuration parameters `ipv4Rules` and `ipv6Rules` will be used as a rule file for `iptables-restore` literally.
+
+## BGP
+
+### BIRD Internet Routing Daemon
+
+To use BGP in the CGW deployment, you can enable BIRD as follows:
+
+```yaml
+bird:
+  enabled: true # default is false
+  configuration:
+    bird: |
+      < add the bird IPv4 configuration here>
+    bird6: |
+      < add the bird6 IPv6 configuration here>
+```
+
+At the moment, you have to configure BIRD manually following the [BIRD documentation](http://bird.network.cz/?get_doc&v=16&f=bird-3.html).
+
+The version used is `1.6` which differs in its configuration from version `2.0`.
+
+### bird_exporter
+
+By default `bird_exporter` will be enabled, when bird is enabled and expose prometheus metrics for *BIRD*.
+
+To disable `bird_exporter` or change images or annotations, change the following parameteres:
+
+```yaml
+bird:
+  birdExporter:
+    enabled: true # default
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9324"
+    image:
+      repository: openvnf/bird_exporter
+      tag: v0.1.0
+      pullPolicy: IfNotPresent
+```
+
+## VXLAN
 
 There are two different ways available of connecting this service with another container.
 
 The first one is the manual way, where the partners have to be configured with values.
 The second one is using the *vxlan-controller* and the vxlans can be configured using annotations.
 
-#### manual VXLAN setup
+### manual VXLAN setup
 
 VXLAN endpoints inside the CGW can be created by adding a configuration under the `vxlan` key.
 
@@ -35,7 +232,7 @@ vxlan:
 Multiple interfaces can be added by adding more entries to the list of connectors.
 `enabled` has to be explicitly set.
 
-#### VXLAN-Controller configuration
+### VXLAN-Controller configuration
 
 To use the *vxlan-controller* add the following section to the configuration:
 
@@ -75,7 +272,7 @@ Additionally `vxlanController.staticRoutes` can be configured with a list of sta
 to be configured in the default routing table of the pod.
 
 
-### GRE
+## GRE
 
 A GRE or GRETAP interface can be added for tunneling of IP or Ethernet traffic respectively.
 
@@ -95,7 +292,7 @@ gre:
 ```
   
 
-### Monitoring
+## Monitoring
 
 The monitoring component of *CGW* supports ICMP echoes to defined endpoints and exposes it via an
 http endpoint in prometheus format.
@@ -108,7 +305,7 @@ A service will be exposed and will be scraped automatically by common configured
 By default the service will be called `<release name>-cgw` and the metrics will be available at
 `http://<release name>-cgw:9427/metrics`
 
-#### Configure targets
+### Configure targets
 
 To configure additional targets or source addresses, you have to configure the values as follows:
 
@@ -134,3 +331,47 @@ All parameters are required!
 
 When targets are set in this way, the usage of `ipsec.remote_ping_endpoint` and `ipsec.local_ping_endpoint` will
 be automatically disabled.
+
+### <a name="disable_ping-prober"></a>disable ping-prober
+
+If *ping-exporter* is configured (see above) the ping-prober can be disabled.
+If the manual IPSEC configuration is used, the ping-prober MUST be disabled.
+
+Disable the ping-prober:
+
+```yaml
+pingProber:
+  enabled: false
+```
+
+## Utilities
+
+### debug container
+
+By default a debug container with networking tools will be created.
+
+If this is not desired, disable it as follows:
+
+```yaml
+debug:
+  enabled: false
+```
+
+### init script
+
+To run initialization steps, which are outside of the provided configuration parameters for standard models, you can provide a shellscript to run in a special init container with `NET_ADMIN` priviledges.
+
+To do so, provide the following parameters:
+
+```yaml
+initScript:
+  enabled: true # default is false
+  env:
+    # Add environmental variables here
+    GREETING: "Hello World"
+  script: |
+    set -e
+    echo "This runs my magic shell script"
+    echo "also multi line"
+    echo $GREETING
+```

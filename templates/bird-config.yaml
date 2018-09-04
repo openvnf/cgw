@@ -1,0 +1,18 @@
+{{- if .Values.bird.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "CGW.fullname" . }}-bird-config
+  labels:
+    app: {{ template "CGW.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  {{- if .Values.bird.configuration.bird }}
+  bird.conf: {{ .Values.bird.configuration.bird | quote }}
+  {{- end }}
+  {{- if .Values.bird.configuration.bird6 }}
+  bird6.conf: {{ .Values.bird.configuration.bird6 | quote }}
+  {{- end }}
+{{- end }}

@@ -1,3 +1,4 @@
+{{- if .Values.ipsec.service.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -15,10 +16,6 @@ spec:
   {{ if not .Values.service.externalIPs }}type: {{ .Values.service.type }}{{ end }}
   {{ if .Values.service.externalIPs }}externalIPs: {{ .Values.service.externalIPs }}{{ end }}
   ports:
-    - port: 9427
-      targetPort: 9427
-      protocol: TCP
-      name: p9427
     - port: 500
       targetPort: 500
       protocol: UDP
@@ -36,3 +33,4 @@ spec:
   selector:
     app: {{ template "CGW.name" . }}
     release: {{ .Release.Name }}
+{{- end }}

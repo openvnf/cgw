@@ -1,0 +1,26 @@
+{{- if and .Values.bird.enabled .Values.bird.birdExporter.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "CGW.fullname" . }}-bird-exporter
+  labels:
+    app: {{ template "CGW.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.bird.birdExporter.service.annotations }}
+  annotations:
+{{ toYaml .Values.bird.birdExporter.service.annotations | indent 4 }}
+{{- end }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: 9324
+      targetPort: 9324
+      protocol: TCP
+      name: p9324
+  selector:
+    app: {{ template "CGW.name" . }}
+    release: {{ .Release.Name }}
+{{- end -}}

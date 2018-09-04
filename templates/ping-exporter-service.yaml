@@ -1,0 +1,26 @@
+{{- if .Values.pingExporter.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "CGW.fullname" . }}-ping-exporter-service
+  labels:
+    app: {{ template "CGW.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.pingExporter.service.annotations }}
+  annotations:
+{{ toYaml .Values.pingExporter.service.annotations | indent 4 }}
+{{- end }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: 9427
+      targetPort: 9427
+      protocol: TCP
+      name: p9427
+  selector:
+    app: {{ template "CGW.name" . }}
+    release: {{ .Release.Name }}
+{{- end -}}

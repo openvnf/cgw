@@ -16,9 +16,20 @@ spec:
         release: {{ .Release.Name }}
         {{- if .Values.vxlanController.enabled }}
         {{ .Values.vxlanController.metadataKey }}: "true"
+        {{- end }}
       annotations:
+        {{- if .Values.vxlanController.enabled }}
         {{ .Values.vxlanController.annotationKey }}: "{{ .Values.vxlanController.names }}"
-        {{ end }}
+        {{- end }}
+        checksum/strongswan-config-template: {{ include (print $.Template.BasePath "/strongswan-config.yaml") . | sha256sum }}
+        checksum/strongswan-secret-template: {{ include (print $.Template.BasePath "/strongswan-secret.yaml") . | sha256sum }}
+        checksum/bird-config-template: {{ include (print $.Template.BasePath "/bird-config.yaml") . | sha256sum }}
+        checksum/iptables-config-template: {{ include (print $.Template.BasePath "/iptables-configmap.yaml") . | sha256sum }}
+        checksum/ping-exporter-config-template: {{ include (print $.Template.BasePath "/ping-exporter-configmap.yaml") . | sha256sum }}
+        checksum/strongswan-config: {{ toYaml .Values.ipsec.strongswan | sha256sum }}
+        checksum/bird-config: {{ toYaml .Values.bird.configuration | sha256sum }}
+        checksum/iptables-ipv4-config: {{ toYaml .Values.iptables.ipv4Rules | sha256sum }}
+        checksum/iptables-ipv6-config: {{ toYaml .Values.iptables.ipv6Rules | sha256sum }}
     spec:
       initContainers:
       {{- if .Values.vxlanController.enabled }}
@@ -31,6 +42,7 @@ spec:
           capabilities:
             add: ["NET_ADMIN"]
       {{- end }}
+      {{- if not .Values.ipsec.manualConfig }}
       - name: init-ip
         image: {{ .Values.networkUtility.image.repository }}:{{ .Values.networkUtility.image.tag }}
         imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
@@ -63,7 +75,8 @@ spec:
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
-      {{- if .Values.ipsec.vti_key }}
+      {{- end }}
+      {{- if and .Values.ipsec.vti_key (not .Values.ipsec.manualConfig) }}
       - name: init-vti
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
@@ -217,7 +230,66 @@ spec:
       {{- end }}
       {{- end }}
 
+
+      {{- if .Values.initScript.enabled }}
+      - name: {{ .Chart.Name }}-init-script
+        image: {{ .Values.initScript.image.repository }}:{{ .Values.initScript.image.tag }}
+        imagePullPolicy: {{ .Values.initScript.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.initScript | indent 10 }}
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+        envFrom:
+          - configMapRef:
+              name: {{ template "CGW.fullname" . }}-init-script-env
+        command:
+        - sh
+        - /opt/initScript/initScript.sh
+        volumeMounts:
+        - name: init-script
+          mountPath: /opt/initScript/
+          readOnly: true
+      {{- end }}
+
+      {{- if .Values.iptables.enabled }}
+      - name: {{ .Chart.Name }}-iptables
+        image: {{ .Values.iptables.image.repository }}:{{ .Values.iptables.image.tag }}
+        imagePullPolicy: {{ .Values.iptables.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.iptables | indent 10 }}
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+        command:
+        - sh
+        - -c
+        - |
+          set -ex
+          iptables-restore < /etc/iptables/iptables.rules
+          ip6tables-restore < /etc/iptables/ip6tables.rules
+        volumeMounts:
+        - name: iptables-rules
+          mountPath: /etc/iptables/
+          readOnly: true
+      {{- end }}
+
       containers:
+      {{- if .Values.debug.enabled }}
+      - name: {{ .Chart.Name }}-debug
+        image: {{ .Values.debug.image.repository }}:{{ .Values.debug.image.tag }}
+        imagePullPolicy: {{ .Values.debug.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.debug | indent 10 }}
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+        command:
+        - sh
+        - -c
+        - "trap : TERM INT; (while true; do sleep 1000; done) & wait"
+      {{- end }}
+
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
@@ -231,55 +303,73 @@ spec:
           name: u4500
           protocol: UDP
         env:
-        - name: USE_ENV_CONFIG
-          value: "{{ .Values.useEnvConfig }}"
-        - name: SET_ROUTE_DEFAULT_TABLE
-          value: "{{ .Values.setRouteDefaultTable }}"
-        - name: IPSEC_LOCALPRIVIP
-          value: "{{ .Values.ipsec.localprivip }}"
-#        - name: IPSEC_LOCALPUBIP
-#          value: "{{ .Values.ipsec.localpubip }}"
-        - name: IPSEC_LOCALIP
-          value: "{{ .Values.ipsec.localip }}"
-        - name: IPSEC_LOCALID
-          value: "{{ .Values.ipsec.localid }}"
-        - name: IPSEC_LOCALNET
-          value: "{{ .Values.ipsec.localnet }}"
-        - name: IPSEC_REMOTEIP
-          value: "{{ .Values.ipsec.remoteip }}"
-        - name: IPSEC_REMOTEID
-          value: "{{ .Values.ipsec.remoteid }}"
-        - name: IPSEC_REMOTENET
-          value: "{{ .Values.ipsec.remotenet }}"
-        - name: IPSEC_PSK
-          value: "{{ .Values.ipsec.psk }}"
-        - name: IPSEC_KEYEXCHANGE
-          value: "{{ .Values.ipsec.keyexchange }}"
-        - name: IPSEC_IKECIPHER
-          value: "{{ .Values.ipsec.ikecipher }}"
-        - name: IPSEC_ESPCIPHER
-          value: "{{ .Values.ipsec.espcipher }}"
-        - name: IPSEC_FORCEUDP
-          value: "{{ .Values.ipsec.forceudp }}"
-        - name: IPSEC_IKEREAUTH
-          value: "{{ .Values.ipsec.ikereauth }}"
-        {{- if .Values.ipsec.lifetime }}
-        - name: IPSEC_LIFETIME
-          value: "{{ .Values.ipsec.lifetime }}"
-        {{- end}}
-        {{- if .Values.ipsec.ikelifetime }}
-        - name: IPSEC_IKELIFETIME
-          value: "{{ .Values.ipsec.ikelifetime }}"
-        {{- end}}
-        {{- if .Values.ipsec.vti_key }}
-        - name: IPSEC_VTI_KEY
-          value: "{{ .Values.ipsec.vti_key }}"
+        {{- if not .Values.ipsec.manualConfig }}
+          - name: USE_ENV_CONFIG
+            value: "{{ .Values.useEnvConfig }}"
+          - name: SET_ROUTE_DEFAULT_TABLE
+            value: "{{ .Values.setRouteDefaultTable }}"
+          - name: IPSEC_LOCALPRIVIP
+            value: "{{ .Values.ipsec.localprivip }}"
+  #        - name: IPSEC_LOCALPUBIP
+  #          value: "{{ .Values.ipsec.localpubip }}"
+          - name: IPSEC_LOCALIP
+            value: "{{ .Values.ipsec.localip }}"
+          - name: IPSEC_LOCALID
+            value: "{{ .Values.ipsec.localid }}"
+          - name: IPSEC_LOCALNET
+            value: "{{ .Values.ipsec.localnet }}"
+          - name: IPSEC_REMOTEIP
+            value: "{{ .Values.ipsec.remoteip }}"
+          - name: IPSEC_REMOTEID
+            value: "{{ .Values.ipsec.remoteid }}"
+          - name: IPSEC_REMOTENET
+            value: "{{ .Values.ipsec.remotenet }}"
+          - name: IPSEC_PSK
+            value: "{{ .Values.ipsec.psk }}"
+          - name: IPSEC_KEYEXCHANGE
+            value: "{{ .Values.ipsec.keyexchange }}"
+          - name: IPSEC_IKECIPHER
+            value: "{{ .Values.ipsec.ikecipher }}"
+          - name: IPSEC_ESPCIPHER
+            value: "{{ .Values.ipsec.espcipher }}"
+          - name: IPSEC_FORCEUDP
+            value: "{{ .Values.ipsec.forceudp }}"
+          - name: IPSEC_IKEREAUTH
+            value: "{{ .Values.ipsec.ikereauth }}"
+          {{- if .Values.ipsec.lifetime }}
+          - name: IPSEC_LIFETIME
+            value: "{{ .Values.ipsec.lifetime }}"
+          {{- end}}
+          {{- if .Values.ipsec.ikelifetime }}
+          - name: IPSEC_IKELIFETIME
+            value: "{{ .Values.ipsec.ikelifetime }}"
+          {{- end}}
+        {{- else }}
+          - name: IPSEC_USE_MANUAL_CONFIG
+            value: "True"
         {{- end }}
+          {{- if .Values.ipsec.interfaces }}
+          - name: IPSEC_INTERFACES
+            value: "{{ .Values.ipsec.interfaces }}"
+          {{- end }}
+          {{- if .Values.ipsec.vti_key }}
+          - name: IPSEC_VTI_KEY
+            value: "{{ .Values.ipsec.vti_key }}"
+          {{- end }}
         securityContext:
           privileged: true
         volumeMounts:
         - mountPath: /lib/modules
           name: host-kernel-modules-volume
+          readOnly: true
+        {{- if .Values.ipsec.manualConfig }}
+        - name: strongswan-ipsec-config
+          mountPath: /etc/ipsec.config.d/
+          readOnly: true
+        - name: strongswan-ipsec-secrets
+          mountPath: /etc/ipsec.secrets.d/
+          readOnly: true
+        {{- end }}
 
       {{- if .Values.pingExporter.enabled }}
       - name: ping-exporter
@@ -300,6 +390,7 @@ spec:
             mountPath: /etc/ping-exporter
       {{- end }}
 
+      {{- if .Values.pingProber.enabled }}
       - name: ping-prober
         image: {{ .Values.pingProber.image.repository }}:{{ .Values.pingProber.image.tag }}
         imagePullPolicy: {{ .Values.pingProber.image.pullPolicy | quote }}
@@ -371,6 +462,49 @@ spec:
       {{- end }}
       {{- end }}
 
+      {{- if .Values.bird.enabled }}
+      - name: bird
+        image: {{ .Values.bird.image.repository }}:{{ .Values.bird.image.tag }}
+        imagePullPolicy: {{ .Values.bird.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.bird | indent 10 }}
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+            - SYS_ADMIN
+            - SETPCAP
+            - NET_RAW
+        volumeMounts:
+        - name: bird-config
+          mountPath: /opt/bird/
+        - name: bird-socket
+          mountPath: /var/run/bird/
+      {{- end }}
+
+      {{- if and .Values.bird.enabled .Values.bird.birdExporter.enabled }}
+      - name: bird-exporter
+        image: {{ .Values.bird.birdExporter.image.repository }}:{{ .Values.bird.birdExporter.image.tag }}
+        imagePullPolicy: {{ .Values.bird.birdExporter.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.birdExporter | indent 10 }}
+        args:
+          - '-format.new=true'
+          {{- if .Values.bird.configuration.bird }}
+          - '-bird.socket=/var/run/bird/bird.ctl'
+          {{- end }}
+          {{- if .Values.bird.configuration.bird6 }}
+          - '-bird.socket6=/var/run/bird/bird6.ctl'
+          {{- end }}
+        ports:
+        - name: p9324
+          containerPort: 9324
+          protocol: TCP
+        volumeMounts:
+        - name: bird-socket
+          mountPath: /var/run/bird/
+      {{- end }}
+
       {{- if .Values.vxlanController.enabled }}
       - name: vxlan-controller-agent
         image: {{ .Values.vxlanController.image.repository }}:{{ .Values.vxlanController.image.tag }}
@@ -392,6 +526,41 @@ spec:
       - name: ping-exporter-config
         configMap:
           name: {{ template "CGW.fullname" . }}-ping-exporter
+      {{- if .Values.iptables.enabled }}
+      - name: iptables-rules
+        configMap:
+          name: {{ template "CGW.fullname" . }}-ping-exporter
+          items:
+          - key: iptables.rules
+            path: iptables.rules
+          - key: ip6tables.rules
+            path: ip6tables.rules
+      {{- end }}
+      {{- if .Values.ipsec.manualConfig }}
+      - name: strongswan-ipsec-config
+        configMap:
+          name: {{ template "CGW.fullname" . }}-strongswan-config
+      - name: strongswan-ipsec-secrets
+        secret:
+          secretName: {{ template "CGW.fullname" . }}-strongswan-secrets
+      {{- end }}
+      {{- if .Values.initScript.enabled }}
+      - name: init-script
+        configMap:
+          name: {{ template "CGW.fullname" . }}-init-script
+          items:
+            - key: initScript.sh
+              path: initScript.sh
+              defaultMode: 0544
+      {{- end }}
+      {{- if .Values.bird.enabled }}
+      - name: bird-config
+        configMap:
+          name: {{ template "CGW.fullname" . }}-bird-config
+      - name: bird-socket
+        emptyDir:
+          medium: Memory
+      {{- end }}
 
 
     {{- if .Values.image.pullSecrets }}

@@ -1,0 +1,14 @@
+{{- if .Values.iptables.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "CGW.fullname" . }}-iptables
+  labels:
+    app: {{ template "CGW.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  iptables.rules: {{ .Values.iptables.ipv4Rules | quote }}
+  ip6tables.rules: {{ .Values.iptables.ipv6Rules | quote }}
+{{- end }}

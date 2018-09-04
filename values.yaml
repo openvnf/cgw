@@ -15,22 +15,22 @@ ipsec:
   psk: secret
   forceudp: "yes"
   vti_key: 1304
-replicaCount: 1
-image:
-  repository: openvnf/vnf-ipsec
-  tag: 1.1.0
-  pullPolicy: IfNotPresent
-  pullSecrets:
-    - name: werft
+  manualConfig: false
+  service:
+    enabled: true
 service:
   name: ipsec
   type: ClusterIP
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "9427"
-#  protocol: UDP
-#  externalPort: 4500
-#  internalPort: 4500
+  #  protocol: UDP
+  #  externalPort: 4500
+  #  internalPort: 4500
+replicaCount: 1
+image:
+  repository: openvnf/vnf-ipsec
+  tag: 1.3.0
+  pullPolicy: IfNotPresent
+  pullSecrets:
+    - name: werft
 ingress:
   enabled: false
   # Used to create an Ingress record.
@@ -53,68 +53,103 @@ resources:
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   initGre:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
   initVti:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
   ipsec:
     limits:
-     cpu: 200m
-     memory: 256Mi
+      cpu: 200m
+      memory: 256Mi
     requests:
-     cpu: 200m
-     memory: 128Mi
+      cpu: 200m
+      memory: 128Mi
   cgwExporter:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
   pingProber:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
   vxlanControllerAgent:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
   vxlanControllerIpSetup:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
   ipSetup:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
   
   vxlanControllerAgentInit:
     limits:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
     requests:
-     cpu: 50m
-     memory: 64Mi
+      cpu: 50m
+      memory: 64Mi
+  iptables:
+    limits:
+      cpu: 50m
+      memory: 64Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+  debug:
+    limits:
+      cpu: 50m
+      memory: 64Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+  initScript:
+    limits:
+      cpu: 50m
+      memory: 64Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+  bird:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 200m
+      memory: 128Mi
+  birdExporter:
+    limits:
+      cpu: 50m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
 
 ## Values used to set up GRE usage
 gre:
@@ -124,13 +159,82 @@ gre:
   name: gre9
   gretap: false
 
+bird:
+  enabled: false
+  image:
+    repository: openvnf/vnf-bird
+    tag: v0.4.0
+    pullPolicy: IfNotPresent
+
+  birdExporter:
+    enabled: true
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9324"
+    image:
+      repository: openvnf/bird_exporter
+      tag: stable
+      pullPolicy: IfNotPresent
+
+initScript:
+  enabled: false
+  env: {}
+  image:
+    repository: travelping/nettools
+    tag: 1.7.0
+    pullPolicy: IfNotPresent
+  script: |
+    echo "script configuration is missing"
+
 networkUtility:
   image:
     repository: travelping/nettools
-    tag: 1.2.0
+    tag: 1.7.0
+    pullPolicy: IfNotPresent
+
+iptables:
+  enabled: true
+  image:
+    repository: travelping/nettools
+    tag: 1.7.0
+    pullPolicy: IfNotPresent
+  ipv4Rules: ""
+    #*filter
+
+    ## Block all traffic silently as default policy
+    #-P INPUT DROP
+    #-P FORWARD DROP
+    #-P OUTPUT DROP
+
+    ## Allows all loopback (lo0) traffic and drop all traffic to 127/8 that doesn't use lo0
+    #-A INPUT -i lo0 -j ACCEPT
+    #-A INPUT ! -i lo0 -d 127.0.0.0/8 -j REJECT
+
+    #COMMIT
+  ipv6Rules: ""
+    #*filter
+
+    ## Block all traffic silently as default policy
+    #-P INPUT DROP
+    #-P FORWARD DROP
+    #-P OUTPUT DROP
+
+    ## Allows all loopback (lo0) traffic and drop all traffic to ::1 that doesn't use lo0
+    #-A INPUT -i lo0 -j ACCEPT
+    #-A INPUT ! -i lo0 -d ::1 -j REJECT
+
+    #COMMIT
+
+debug:
+  enabled: true
+  image:
+    repository: travelping/nettools
+    tag: 1.7.0
     pullPolicy: IfNotPresent
 
 pingProber:
+  enabled: true
   image:
     repository: alpine
     tag: "3.7"
@@ -140,8 +244,12 @@ pingExporter:
   enabled: true
   image:
     repository: travelping/ping-exporter
-    tag: v0.4.0
+    tag: 0.4.0
     pullPolicy: IfNotPresent
+  service:
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9427"
   config:
     web:
       listen-address: ":9427"
