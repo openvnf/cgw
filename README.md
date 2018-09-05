@@ -12,6 +12,7 @@ connectivity gateway
     * [disable setting of routes](#disable-setting-of-routes)
   * [setting interfaces](#setting-interfaces)
   * [disable IPsec service](#disable-ipsec-service)
+  * [certificate based VPN](#certificate-based-vpn)
   * [Route-based vs Policy based VPN](#route-based-vs-policy-based-vpn)
 * [BGP](#bgp)
   * [BIRD Internet Routing Daemon](#bird-internet-routing-daemon)
@@ -106,6 +107,10 @@ ipsec:
 ```
 
 Deprecation: The service will be disabled by default in the future.
+
+### certificate based VPN
+
+see [certificate based VPN](./docs/CertificateBasedVPN.md).
 
 ### Route-based vs Policy based VPN
 
