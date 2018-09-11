@@ -36,6 +36,15 @@ To follow this tutorial it is assumed, that the following components are already
 The [Strongswan Documentation](https://wiki.strongswan.org/projects/strongswan/wiki/SimpleCA) can be used
 as a starting point to learn how to create keys and certificates.
 
+## enable mounting of certificates
+
+Set the following parameters to enable mounting of certificates to be used in later configurations:
+
+```yaml
+ipsec:
+  certBasedIPSEC: true
+```
+
 ## manage secrets
 
 There are four different kinds of data, which are managed in secrets and are part
@@ -116,7 +125,7 @@ The same applies for the values:
 
 * `externalCertificates`
 * `externalCertificateRevocationLists`
-* `externalKeys`
+* `externalPrivateKeys`
 
 NOTE: If the files are defined in the value files as well as external certificates are set,
 the external ones will preferred:
