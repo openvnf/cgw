@@ -387,7 +387,7 @@ spec:
           mountPath: /etc/ipsec.d/cacerts/
           readOnly: true
         {{- end }}
-        {{- if or .Values.ipsec.certs.certificateRevocationsLists .Values.ipsec.certs.externalCertificateRevocationLists }}
+        {{- if or .Values.ipsec.certs.certificateRevocationLists .Values.ipsec.certs.externalCertificateRevocationLists }}
         - name: strongswan-ipsec-crls
           mountPath: /etc/ipsec/crls/
           readOnly: true
@@ -577,7 +577,7 @@ spec:
           {{- if .Values.ipsec.certs.externalPrivateKeys }}
           secretName: {{ .Values.ipsec.certs.externalPrivateKeys }}
           {{- else }}
-          secretName: {{ template "CGW.fullname" . }}-strongswan-ipsec-privatekeys
+          secretName: {{ template "CGW.fullname" . }}-strongswan-privatekeys
           {{- end }}
       {{- end }}
       {{- if or .Values.ipsec.certs.certificates .Values.ipsec.certs.externalCertificates }}
@@ -586,7 +586,7 @@ spec:
           {{- if .Values.ipsec.certs.externalCertificates }}
           secretName: {{ .Values.ipsec.certs.externalCertificates }}
           {{- else }}
-          secretName: {{ template "CGW.fullname" . }}-strongswan-ipsec-certs
+          secretName: {{ template "CGW.fullname" . }}-strongswan-certs
           {{- end }}
       {{- end }}
       {{- if or .Values.ipsec.certs.caCertificates .Values.ipsec.certs.externalCaCertificates }}
@@ -595,16 +595,16 @@ spec:
           {{- if .Values.ipsec.certs.externalCaCertificates }}
           secretName: {{ .Values.ipsec.certs.externalCaCertificates }}
           {{- else }}
-          secretName: {{ template "CGW.fullname" . }}-strongswan-ipsec-cacerts
+          secretName: {{ template "CGW.fullname" . }}-strongswan-cacerts
           {{- end }}
       {{- end }}
-      {{- if or .Values.ipsec.certs.certificateRevocationsLists .Values.ipsec.certs.externalCertificateRevocationLists }}
+      {{- if or .Values.ipsec.certs.certificateRevocationLists .Values.ipsec.certs.externalCertificateRevocationLists }}
       - name: strongswan-ipsec-crls
         secret:
           {{- if .Values.ipsec.certs.externalCertificateRevocationLists }}
           secretName: {{ .Values.ipsec.certs.externalCertificateRevocationLists }}
           {{- else }}
-          secretName: {{ template "CGW.fullname" . }}-strongswan-ipsec-crls
+          secretName: {{ template "CGW.fullname" . }}-strongswan-crls
           {{- end }}
       {{- end }}
       {{- end }}
