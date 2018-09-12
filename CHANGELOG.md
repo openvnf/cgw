@@ -5,6 +5,7 @@
 - change name of ipsec container
 - add flag to enable ipsec component
 - add documentation for using `iptables` with CGW
+- add support for certificate based VPN
 
 ### 0.6.0
 
