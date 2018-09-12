@@ -553,7 +553,7 @@ spec:
       {{- if .Values.iptables.enabled }}
       - name: iptables-rules
         configMap:
-          name: {{ template "CGW.fullname" . }}-ping-exporter
+          name: {{ template "CGW.fullname" . }}-iptables
           items:
           - key: iptables.rules
             path: iptables.rules
