@@ -1,0 +1,68 @@
+*filter
+
+## Block all traffic silently as default policy
+## Take care because this can cause harm if wrongly configured
+#-P INPUT DROP
+#-P FORWARD DROP
+#-P OUTPUT DROP
+
+## Allows all loopback (lo) traffic and drop all traffic to 127/8 that doesn't use lo0
+-A INPUT -i lo -j ACCEPT
+-A INPUT ! -i lo -d 127.0.0.0/8 -j REJECT
+
+## Allow all traffic from and to Calcio network
+-A INPUT -i eth0 -j ACCEPT
+-A OUTPUT -i eth0 -j ACCEPT
+
+# questionable if FWD for vxlan is needed
+
+## allow incoming and outgoing traffic on vti interface
+-A INPUT -i vti42 -j ACCEPT
+-A OUTPUT -i vti42 -j ACCEPT
+## allow routing on vti42 only if gre is not used
+# -A FORWARD -i vti42 ACCEPT
+# -A FORWARD -o vti42 ACCEPT
+
+## add rules for bgp interface
+#-A INPUT -i gre1 -j ACCEPT -p tcp --dport 179
+#-A OUTPUT -i gre1 -j ACCEPT -p tcp --dport 179
+
+## reject forwarding on inet0 for debugging
+-A FORWARD -i inet0 -j REJECT --reject-with icmp-host-prohibited
+
+## allow icmp on inet0
+-A INPUT -i inet0 -j ACCEPT -p icmp
+-A OUTPUT -in inet0 -j ACCEPT -p icmp
+
+## add rules for ipsec on external interface
+# ESP
+-A INPUT  -p esp -i inet0 -j ACCEPT
+-A OUTPUT -p esp -o inet0 -s -j ACCEPT
+# IKE (udp 500)
+-A INPUT  -p udp -i inet0 --sport 500 --dport 500 -j ACCEPT
+-A OUTPUT -p udp -o inet0 --sport 500 --dport 500 -j ACCEPT
+# NAT-Traversal
+-A INPUT  -p udp -i inet0 --sport 4500 --dport 4500 -j ACCEPT
+-A OUTPUT -p udp -o inet0 --sport 4500 --dport 4500 -j ACCEPT
+
+## via IPsec <--> Gateway: PING et. al.
+# Allow all ICMP messages
+-A INPUT  -p icmp -j ACCEPT
+-A OUPTUT -p icmp -j ACCEPT
+
+## via IPsec <--> sgi1
+-A FORWARD -i gre1 -o sgi2 -p tcp -j ACCEPT
+-A FORWARD -i gre2 -o sgi2 -p tcp -j ACCEPT
+-A FORWARD -i sgo2 -o gre1 -p tcp -j ACCEPT
+-A FORWARD -i sgo2 -o gre2 -p tcp -j ACCEPT
+ 
+# Block and reject traffic on net0 and net1 for debugging (if commented out will be dropped)
+-A INPUT -i net0 -j REJECT --reject-with icmp-host-prohibited
+-A INPUT -i net1 -j REJECT --reject-with icmp-host-prohibited
+-A OUTPUT -i net0 -j REJECT --reject-with icmp-host-prohibited
+-A OUTPUT -i net1 -j REJECT --reject-with icmp-host-prohibited
+
+# 1250 needs to be confirmed, 1387 was too much
+-t mangle -A POSTROUTING -p tcp --tcp-flags SYN,RST SYN -o inet0 -j TCPMSS --set-mss 1250
+-t mangle -A POSTROUTING -p tcp --tcp-flags SYN,RST SYN -o sgi2 -j TCPMSS --set-mss 1250
+COMMIT
