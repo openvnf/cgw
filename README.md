@@ -5,10 +5,12 @@ connectivity gateway
 
 * [General](#general)
   * [upgrade of the helm chart](#upgrade-of-the-helm-chart)
-* [IPSEC](#ipsec)
+* [IPsec](#ipsec)
+  * [disable IPsec](#disable-ipsec)
   * [Manual Strongswan configuration](#manual-strongswan-configuration)
     * [disable setting of routes](#disable-setting-of-routes)
   * [setting interfaces](#setting-interfaces)
+  * [disable IPsec service](#disable-ipsec-service)
   * [Route-based vs Policy based VPN](#route-based-vs-policy-based-vpn)
 * [iptables](#iptables)
 * [BGP](#bgp)
