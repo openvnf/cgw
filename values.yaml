@@ -4,6 +4,7 @@
 useEnvConfig: "HIDDEN_PUBIP_HOST"
 setRouteDefaultTable: FALSE
 ipsec:
+  enabled: true
   remoteip: 192.0.2.0
   remotenet: 192.168.23.0/24
   localprivip: "%any"

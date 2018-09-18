@@ -1,5 +1,10 @@
 # Changelog
 ## pre 1.0.0
+### 0.7.0
+
+- change name of ipsec container
+- add flag to enable ipsec component
+
 ### 0.6.0
 
 - add flag to use manual configuration for ipsec-config of Strongswan

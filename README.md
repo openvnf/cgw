@@ -31,9 +31,18 @@ connectivity gateway
 
 ### upgrade of the helm chart
 When configurations or secrets are changed, the pods will be redeployed automatically.
-This will cause a short interruption of the traffic at the moment.
+This will cause a short interruption of the traffic at the moment.
 
-## IPSEC
+## IPsec
+
+### disable IPsec
+
+To disable the IPsec module, add the following:
+
+```yaml
+ipsec:
+  enabled: false  # defaults to `true`
+```
 
 ### Manual Strongswan configuration
 
@@ -76,6 +85,21 @@ For example:
 ipsec:
   interfaces: "eth0,net1"
 ```
+
+### disable IPsec service
+
+By default a service will be created, which exposes the IPsec ports.
+It is advised to disable the service, if a public IP is used inside the pod.
+
+To disable it set the following:
+
+```yaml
+ipsec:
+  service:
+    enabled: false
+```
+
+Deprecation: The service will be disabled by default in the future.
 
 ### Route-based vs Policy based VPN
 
