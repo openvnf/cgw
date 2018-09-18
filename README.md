@@ -3,6 +3,7 @@ connectivity gateway
 
 <!-- toc -->
 
+* [Additional documents of CGW with specific topics](#additional-documents-of-cgw-with-specific-topics)
 * [General](#general)
   * [upgrade of the helm chart](#upgrade-of-the-helm-chart)
 * [IPsec](#ipsec)
@@ -28,6 +29,10 @@ connectivity gateway
   * [init script](#init-script)
 
 <!-- tocstop -->
+
+## Additional documents of CGW with specific topics
+
+* [Configuring firewall with iptables](docs/Firewall.md)
 
 ## General
 
