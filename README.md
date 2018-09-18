@@ -13,7 +13,6 @@ connectivity gateway
   * [setting interfaces](#setting-interfaces)
   * [disable IPsec service](#disable-ipsec-service)
   * [Route-based vs Policy based VPN](#route-based-vs-policy-based-vpn)
-* [iptables](#iptables)
 * [BGP](#bgp)
   * [BIRD Internet Routing Daemon](#bird-internet-routing-daemon)
   * [bird_exporter](#bird_exporter)
@@ -141,54 +140,6 @@ The `IPSEC_VTI_ADDR_LOCAL` and `IPSEC_VTI_ADDR_PEER` should be set to a sensible
 The `IPSEC_VTI_ADDR_PEER` address is then be used to set the routes for packets to the other side of the VPN connection.
 
 Because the VTI interface is virtual, the peer address does not have to be set on the other machine.
-
-## iptables
-
-This deployment might use pods, which have interfaces publicly connected to the internet.
-Therefore the pods have to be secured using a firewall.
-
-By default the corresponding `iptables` container is disabled as well as the rule files.
-
-To secure your CGW you have to add rules to in the following part of configuration:
-
-```yaml
-iptables:
-  enabled: true # disable is false
-  ipv4Rules: |
-    *filter
-
-    # Block all traffic silently as default policy
-    # just use this one with care
-    #-P INPUT DROP
-    #-P FORWARD DROP
-    #-P OUTPUT DROP
-
-    # Allows all loopback (lo0) traffic and drop all traffic to 127/8 that doesn't use lo0
-    -A INPUT -i lo0 -j ACCEPT
-    -A INPUT ! -i lo0 -d 127.0.0.0/8 -j REJECT
-    
-    ######   ADD YOUR RULES TO EXTEND TRAFFIC HERE ######
-    
-    COMMIT
-  ipv6Rules: |
-    *filter
-
-    # Block all traffic silently as default policy
-    # just use this one with care
-    #-P INPUT DROP
-    #-P FORWARD DROP
-    #-P OUTPUT DROP
-
-    # Allows all loopback (lo0) traffic and drop all traffic to ::1 that doesn't use lo0
-    -A INPUT -i lo0 -j ACCEPT
-    -A INPUT ! -i lo0 -d ::1 -j REJECT
-    
-    ######   ADD YOUR RULES TO EXTEND TRAFFIC HERE ######
-
-    COMMIT
-```
-
-The configuration parameters `ipv4Rules` and `ipv6Rules` will be used as a rule file for `iptables-restore` literally.
 
 ## BGP
 
