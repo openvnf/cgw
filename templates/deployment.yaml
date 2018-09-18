@@ -290,7 +290,8 @@ spec:
         - "trap : TERM INT; (while true; do sleep 1000; done) & wait"
       {{- end }}
 
-      - name: {{ .Chart.Name }}
+      {{- if .Values.ipsec.enabled }}
+      - name: ipsec
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
         resources:
@@ -369,6 +370,7 @@ spec:
         - name: strongswan-ipsec-secrets
           mountPath: /etc/ipsec.secrets.d/
           readOnly: true
+        {{- end }}
         {{- end }}
 
       {{- if .Values.pingExporter.enabled }}

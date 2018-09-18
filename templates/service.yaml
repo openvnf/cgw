@@ -1,4 +1,4 @@
-{{- if .Values.ipsec.service.enabled }}
+{{- if and .Values.ipsec.enabled .Values.ipsec.service.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
