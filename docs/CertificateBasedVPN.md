@@ -13,6 +13,7 @@ To configure CGW to use secrets for VPN connections there are two steps to fulfi
 <!-- toc -->
 
 * [prerequisites](#prerequisites)
+* [enable mounting of certificates](#enable-mounting-of-certificates)
 * [manage secrets](#manage-secrets)
   * [define secrets for certificates and keys](#define-secrets-for-certificates-and-keys)
   * [convert certificates and keys into secrets](#convert-certificates-and-keys-into-secrets)
