@@ -7,6 +7,7 @@ This is especially important if a public IP is attached to the pod.
 
 * [Concepts](#concepts)
   * [available tables](#available-tables)
+  * [dropping vs rejecting traffic](#dropping-vs-rejecting-traffic)
 * [enable `iptables` firewall configuration](#enable-iptables-firewall-configuration)
 * [configure `iptables` rules](#configure-iptables-rules)
   * [basic format](#basic-format)
