@@ -8,6 +8,10 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+  terminationGracePeriodSeconds: 0
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
   replicas: {{ .Values.replicaCount }}
   template:
     metadata:
