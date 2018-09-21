@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "CGW.fullname" . }}-vrrp
+  labels:
+    app: {{ template "CGW.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  keepalived.conf: |
+    vrrp_instance {{ .Values.vrrp.instance }} {
+      state MASTER
+      interface {{ .Values.vrrp.interface }}
+      virtual_router_id {{ .Values.vrrp.virtual_router_id }}
+      priority {{ .Values.vrrp.priority }}
+      advert_int 1
+      authentication {
+          auth_type PASS
+          auth_pass {{ .Values.vrrp.authPath }}
+      }
+      virtual_ipaddress {
+          {{ .Values.vrrp.vip }}
+      }
+    }
+

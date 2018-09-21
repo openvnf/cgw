@@ -21,6 +21,7 @@ connectivity gateway
   * [manual VXLAN setup](#manual-vxlan-setup)
   * [VXLAN-Controller configuration](#vxlan-controller-configuration)
 * [GRE](#gre)
+* [VRRP](#vrrp)
 * [Monitoring](#monitoring)
   * [Configure targets](#configure-targets)
   * [disable ping-prober](#disable-ping-prober)
@@ -278,6 +279,28 @@ gre:
   gretap: <true | false> 
 ```
   
+## VRRP
+
+VRRP based on keepalived can be activated and configured.
+
+For example:
+
+```yaml
+
+vrrp:
+  enabled: false
+  # virtual IP address
+  vip: 198.18.0.1/24
+  # instance name, must only be adjusted for parallel VRRP sessions
+  instance: instance01
+  interface: eth0
+  # route id, must only be adjusted for parallel VRRP sessions
+  virtual_router_id: 50
+  # priority, should differ between routing functions
+  priority: 50
+  authPath: secret
+```
+
 
 ## Monitoring
 

@@ -26,6 +26,7 @@ spec:
         checksum/bird-config-template: {{ include (print $.Template.BasePath "/bird-config.yaml") . | sha256sum }}
         checksum/iptables-config-template: {{ include (print $.Template.BasePath "/iptables-configmap.yaml") . | sha256sum }}
         checksum/ping-exporter-config-template: {{ include (print $.Template.BasePath "/ping-exporter-configmap.yaml") . | sha256sum }}
+        checksum/vrrp-config-template: {{ include (print $.Template.BasePath "/vrrp-configmap.yaml") . | sha256sum }}
         checksum/strongswan-config: {{ toYaml .Values.ipsec.strongswan | sha256sum }}
         checksum/bird-config: {{ toYaml .Values.bird.configuration | sha256sum }}
         checksum/iptables-ipv4-config: {{ toYaml .Values.iptables.ipv4Rules | sha256sum }}
@@ -528,7 +529,28 @@ spec:
         - name: bird-socket
           mountPath: /var/run/bird/
       {{- end }}
-
+      {{ if .Values.vrrp.enabled }}
+      ## VRRP ##
+      - name: vrrp
+        image: {{ .Values.networkUtility.image.repository }}:{{ .Values.networkUtility.image.tag }}
+        imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.vrrp | indent 10 }}
+        command:
+        - /usr/sbin/keepalived
+        - --use-file=/etc/keepalived/keepalived.conf
+        - --vrrp
+        - -Dl
+        - -n
+        securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
+              - SYS_MODULE
+        volumeMounts:
+        - name: {{ template "CGW.fullname" . }}-vrrp
+          mountPath: /etc/keepalived/
+      {{ end }}
       {{- if .Values.vxlanController.enabled }}
       - name: vxlan-controller-agent
         image: {{ .Values.vxlanController.image.repository }}:{{ .Values.vxlanController.image.tag }}
@@ -627,8 +649,9 @@ spec:
         emptyDir:
           medium: Memory
       {{- end }}
-
-
+      - name: {{ template "CGW.fullname" . }}-vrrp
+        configMap:
+          name: {{ template "CGW.fullname" . }}-vrrp
     {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.image.pullSecrets | indent 8 }}
