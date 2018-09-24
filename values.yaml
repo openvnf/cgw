@@ -19,6 +19,7 @@ ipsec:
   manualConfig: false
   service:
     enabled: true
+  certs: {}
 service:
   name: ipsec
   type: ClusterIP
