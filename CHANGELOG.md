@@ -6,6 +6,7 @@
 - add flag to enable ipsec component
 - add documentation for using `iptables` with CGW
 - add support for certificate based VPN
+- add support for using VRRP for internal router redundancy
 
 ### 0.6.0
 
