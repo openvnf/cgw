@@ -88,6 +88,13 @@ resources:
     requests:
       cpu: 50m
       memory: 64Mi
+  vrrp:
+    limits:
+      cpu: 50m
+      memory: 64Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
   vxlanControllerAgent:
     limits:
       cpu: 50m
@@ -295,3 +302,12 @@ vxlanController:
 
 ipSetup:
   enabled: false
+
+vrrp:
+  enabled: false
+  vip: 198.18.0.1/24
+  instance: instance01
+  interface: eth0
+  virtual_router_id: 50
+  priority: 50
+  authPath: secret
