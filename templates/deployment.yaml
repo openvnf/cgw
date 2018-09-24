@@ -8,6 +8,10 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+  terminationGracePeriodSeconds: 0
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
   replicas: {{ .Values.replicaCount }}
   template:
     metadata:
@@ -90,10 +94,16 @@ spec:
 #          value: "{{ .Values.ipsec.localip }}"
         - name: IPSEC_VTI_STATICROUTES
           value: "{{ .Values.ipsec.vti_staticroutes }}"
+        - name: IPSEC_LOCALIP
+          value: "{{ .Values.ipsec.localip }}"
+        - name: IPSEC_LOCALNET
+          value: "{{ .Values.ipsec.localnet }}"
         - name: IPSEC_REMOTEIP
           value: "{{ .Values.ipsec.remoteip }}"
         - name: IPSEC_REMOTENET
           value: "{{ .Values.ipsec.remotenet }}"
+        - name: IPSEC_PSK
+          value: "{{ .Values.ipsec.psk }}"
         volumeMounts:
         - mountPath: /lib/modules
           name: host-kernel-modules-volume
