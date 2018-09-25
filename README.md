@@ -37,6 +37,8 @@ connectivity gateway
 
 ## General
 
+see [General Usage](docs/tutorials/general_usage.md).
+
 ### upgrade of the helm chart
 When configurations or secrets are changed, the pods will be redeployed automatically.
 This will cause a short interruption of the traffic at the moment.
