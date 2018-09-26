@@ -1,4 +1,5 @@
 DOCS := $(wildcard docs/*.md)
+TOPICS := $(wildcard docs/*/*.md)
 
 all: create-toc create-doc-tocs create-up-tocs
 
@@ -8,7 +9,7 @@ create-up-tocs:
 create-toc:
 	markdown-toc --bullets="*" -i README.md
 
-create-doc-tocs: $(DOCS)
+create-doc-tocs: $(DOCS) $(TOPICS)
 	$(foreach f,$^,markdown-toc --bullets="*" -i $(f);)
 
 .PHONY: create-toc create-doc-tocs create-up-tocs
