@@ -7,6 +7,8 @@
 - add documentation for using `iptables` with CGW
 - add support for certificate based VPN
 - add support for using VRRP for internal router redundancy
+- update version of `vnf-ipsec` to `1.3.1` to fix problem with enabled
+  `farp` plugin
 
 ### 0.6.0
 
