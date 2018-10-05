@@ -9,10 +9,10 @@
 - add support for using VRRP for internal router redundancy
 - update version of `vnf-ipsec` to `1.3.1` to fix problem with enabled
   `farp` plugin
-- update VXLAN-Controller to use image from openvnf docker repository and
+- [breaking] update VXLAN-Controller to use image from new docker repository and
   use corresponding annotations
-  - If the default settings have been used on current clusters, the value file
-    has to be changed to set the old names explicitly.
+  - from `aialferov/kube-vxlan-controller-agent` to `openvnf/kube-vxlan-controller-agent`
+  - If the default settings have been used on current clusters, the value file has to be changed to set the old names explicitly.
 
 ### 0.6.0
 
