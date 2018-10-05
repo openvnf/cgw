@@ -283,11 +283,11 @@ vxlan:
 
 vxlanController:
   enabled: false
-  annotationKey: vxlan.travelping.com/networks
-  metadataKey: vxlan.travelping.com
+  annotationKey: vxlan.openvnf.org/networks
+  metadataKey: vxlan.openvnf.org
   names: "vxeth0, vxeth1"
   image:
-    repository: aialferov/kube-vxlan-controller-agent
+    repository: openvnf/kube-vxlan-controller-agent
     tag: 2.1.0
     pullPolicy: IfNotPresent
   #ip:
