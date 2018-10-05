@@ -81,7 +81,7 @@ spec:
           capabilities:
             add: ["NET_ADMIN"]
       {{- end }}
-      {{- if and .Values.ipsec.vti_key (not .Values.ipsec.manualConfig) }}
+      {{- if and .Values.ipsec.enabled (and .Values.ipsec.vti_key (not .Values.ipsec.manualConfig)) }}
       - name: init-vti
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
