@@ -12,5 +12,6 @@ script:
 deploy:
   script:
     - 'pkg=$(ls *.tgz) ; curl --data-binary "@${pkg}" $CHART_REPO/api/charts'
-  if: tag IS present
+  on:
+    tag: true
 
