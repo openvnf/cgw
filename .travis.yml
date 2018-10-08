@@ -11,7 +11,8 @@ script:
 
 deploy:
   provider: script
-  script: bash -c 'pkg=$(ls *.tgz); echo ${pkg}; curl --data-binary "@${pkg}" $CHART_REPO/api/charts'
+  script: bash -c 'pkg=$(ls *.tgz); echo "uploading ${pkg}\n"; curl --data-binary "@${pkg}" $CHART_REPO/api/charts'
+  skip_cleanup: true
   on:
     tags: true
     all_branches: true
