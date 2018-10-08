@@ -14,5 +14,6 @@ deploy:
   script:
     - 'pkg=$(ls *.tgz) ; curl --data-binary "@${pkg}" $CHART_REPO/api/charts'
   on:
-    tag: true
+    tags: true
+    all_branches: true
 
