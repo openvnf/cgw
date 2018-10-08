@@ -14,7 +14,7 @@
 
 #### VXLAN controller annotations
 
-Due to the change to using the ****openvnf* repositories for VXLAN controller,
+Due to the change to using the *openvnf* repositories for VXLAN controller,
 the default keys for the annotations also changed.
 
 The default in this version is:
