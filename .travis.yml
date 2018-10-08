@@ -12,7 +12,9 @@ script:
 deploy:
   provider: script
   script:
-    - 'pkg=$(ls *.tgz) ; curl --data-binary "@${pkg}" $CHART_REPO/api/charts'
+    - 'pkg=$(ls *.tgz)'
+    - 'echo ${pkg}'
+    - 'curl --data-binary "@${pkg}" $CHART_REPO/api/charts'
   on:
     tags: true
     all_branches: true
