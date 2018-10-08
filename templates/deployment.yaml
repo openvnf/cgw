@@ -659,9 +659,11 @@ spec:
         emptyDir:
           medium: Memory
       {{- end }}
+      {{- if .Values.vrrp.enabled }}
       - name: {{ template "CGW.fullname" . }}-vrrp
         configMap:
           name: {{ template "CGW.fullname" . }}-vrrp
+      {{- end }}
     {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.image.pullSecrets | indent 8 }}
