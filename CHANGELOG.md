@@ -15,6 +15,8 @@
   - If the default settings have been used on current clusters, the value file has to be changed to set the old names explicitly.
 - [bugfix] strongswan configmap will not be created, if ipsec is disabled
 - [bugfix] pingExporter configmap will not be created, if pingExporter is disabled
+- add `selector` to deployment spec, which is required in newer versions of Kubernetes and encouraged in older ones.
+  - see <https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#selector>
 
 ### 0.6.0
 
