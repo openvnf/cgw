@@ -18,6 +18,8 @@
 - add `selector` to deployment spec, which is required in newer versions of Kubernetes and encouraged in older ones
   - see <https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#selector>
 - disable `init-ip` init container to set local ping endpoint if `ipsec` is not enabled
+- update vnf-ipsec to 1.4.0
+  - also fixes *CVE-2018-17540*
 
 ### 0.6.0
 
