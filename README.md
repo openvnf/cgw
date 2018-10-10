@@ -1,6 +1,9 @@
 # cgw
 connectivity gateway
 
+NOTE: features described with [beta] or [alpha] are not considered stable
+in the current version and therefore not recommended for production use.
+
 <!-- toc -->
 
 * [Additional documents of CGW with specific topics](#additional-documents-of-cgw-with-specific-topics)
@@ -322,7 +325,7 @@ gre:
   gretap: <true | false> 
 ```
   
-### VRRP
+### VRRP [alpha]
 
 VRRP based on keepalived can be activated and configured.
 
