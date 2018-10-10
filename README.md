@@ -6,25 +6,27 @@ connectivity gateway
 * [Additional documents of CGW with specific topics](#additional-documents-of-cgw-with-specific-topics)
 * [General](#general)
   * [upgrade of the helm chart](#upgrade-of-the-helm-chart)
-* [IPsec](#ipsec)
-  * [disable IPsec](#disable-ipsec)
-  * [Manual Strongswan configuration](#manual-strongswan-configuration)
-    * [disable setting of routes](#disable-setting-of-routes)
-  * [setting interfaces](#setting-interfaces)
-  * [disable IPsec service](#disable-ipsec-service)
+* [Configuration](#configuration)
+  * [Starting Point](#starting-point)
+  * [IPsec](#ipsec)
+    * [disable IPsec](#disable-ipsec)
+    * [Manual Strongswan configuration](#manual-strongswan-configuration)
+      * [disable setting of routes](#disable-setting-of-routes)
+    * [setting interfaces](#setting-interfaces)
+    * [disable IPsec service](#disable-ipsec-service)
   * [certificate based VPN](#certificate-based-vpn)
   * [Route-based vs Policy based VPN](#route-based-vs-policy-based-vpn)
-* [BGP](#bgp)
-  * [BIRD Internet Routing Daemon](#bird-internet-routing-daemon)
-  * [bird_exporter](#bird_exporter)
-* [VXLAN](#vxlan)
-  * [manual VXLAN setup](#manual-vxlan-setup)
-  * [VXLAN-Controller configuration](#vxlan-controller-configuration)
-* [GRE](#gre)
-* [VRRP](#vrrp)
-* [Monitoring](#monitoring)
-  * [Configure targets](#configure-targets)
-  * [disable ping-prober](#disable-ping-prober)
+  * [BGP](#bgp)
+    * [BIRD Internet Routing Daemon](#bird-internet-routing-daemon)
+    * [bird_exporter](#bird_exporter)
+  * [VXLAN](#vxlan)
+    * [manual VXLAN setup](#manual-vxlan-setup)
+    * [VXLAN-Controller configuration](#vxlan-controller-configuration)
+  * [GRE](#gre)
+  * [VRRP](#vrrp)
+  * [Monitoring](#monitoring)
+    * [Configure targets](#configure-targets)
+    * [disable ping-prober](#disable-ping-prober)
 * [Utilities](#utilities)
   * [debug container](#debug-container)
   * [init script](#init-script)
@@ -37,15 +39,54 @@ connectivity gateway
 
 ## General
 
-see [General Usage](docs/tutorials/general_usage.md).
+see [General Usage](docs/tutorials/general_usage.md) for general installation overview.
 
 ### upgrade of the helm chart
 When configurations or secrets are changed, the pods will be redeployed automatically.
 This will cause a short interruption of the traffic at the moment.
 
-## IPsec
+## Configuration
+### Starting Point
 
-### disable IPsec
+Many people using the `values.yaml` from this Helm chart as a starting point for their own
+configuration.
+This is in general considered a bad habit, because it contains quite some values, which are
+considered implementation detail and should not be changed besides during development of
+CGW itself.
+
+Therefore please start with the following [configuration example](examples/values.yaml).
+
+```yaml
+debug:
+  enabled: true
+
+ipsec:
+  enabled: false
+
+vxlanController:
+  enabled: false
+
+iptables:
+  enabled: false
+
+initScript:
+  enabled: false
+
+pingExporter:
+  enabled: false
+
+pingProber:
+  enabled: false
+```
+
+Due to compatibility with recent versions, there are some modules, which are enabled by default.
+With the above configration you get a minimal pod with just the debug container enabled.
+Please follow the below configuration documentation to enable and configure the necessary
+components for your deployment.
+
+### IPsec
+
+#### disable IPsec
 
 To disable the IPsec module, add the following:
 
@@ -54,7 +95,7 @@ ipsec:
   enabled: false  # defaults to `true`
 ```
 
-### Manual Strongswan configuration
+#### Manual Strongswan configuration
 
 To use a manual configuration of Strongswan instead of using parameters, for example for multi-SA configurations,
 set the following parameters:
@@ -80,12 +121,12 @@ You can repeat the configuration for multiple connections.
 
 NOTE: If the manual configuration is used, the ping-prober must be disabled!! (see [ping-prober](#disable_ping-prober))
 
-#### disable setting of routes
+##### disable setting of routes
 
 If Strongswan shall not install routes into its routing table, you have to set the value `ipsec.vti_key: true`.
 This is strongly advised, when using VTI interfaces and route-based VPN.
 
-### setting interfaces
+#### setting interfaces
 
 To set the interfaces Strongswan shall bind on, set `ipsec.interfaces` with a comma seperated list of interfaces.
 
@@ -96,7 +137,7 @@ ipsec:
   interfaces: "eth0,net1"
 ```
 
-### disable IPsec service
+#### disable IPsec service
 
 By default a service will be created, which exposes the IPsec ports.
 It is advised to disable the service, if a public IP is used inside the pod.
@@ -149,9 +190,9 @@ The `IPSEC_VTI_ADDR_PEER` address is then be used to set the routes for packets 
 
 Because the VTI interface is virtual, the peer address does not have to be set on the other machine.
 
-## BGP
+### BGP
 
-### BIRD Internet Routing Daemon
+#### BIRD Internet Routing Daemon
 
 To use BGP in the CGW deployment, you can enable BIRD as follows:
 
@@ -169,7 +210,7 @@ At the moment, you have to configure BIRD manually following the [BIRD documenta
 
 The version used is `1.6` which differs in its configuration from version `2.0`.
 
-### bird_exporter
+#### bird_exporter
 
 By default `bird_exporter` will be enabled, when bird is enabled and expose prometheus metrics for *BIRD*.
 
@@ -189,14 +230,14 @@ bird:
       pullPolicy: IfNotPresent
 ```
 
-## VXLAN
+### VXLAN
 
 There are two different ways available of connecting this service with another container.
 
 The first one is the manual way, where the partners have to be configured with values.
 The second one is using the *vxlan-controller* and the vxlans can be configured using annotations.
 
-### manual VXLAN setup
+#### manual VXLAN setup
 
 VXLAN endpoints inside the CGW can be created by adding a configuration under the `vxlan` key.
 
@@ -222,7 +263,7 @@ vxlan:
 Multiple interfaces can be added by adding more entries to the list of connectors.
 `enabled` has to be explicitly set.
 
-### VXLAN-Controller configuration
+#### VXLAN-Controller configuration
 
 To use the *vxlan-controller* add the following section to the configuration:
 
@@ -262,7 +303,7 @@ Additionally `vxlanController.staticRoutes` can be configured with a list of sta
 to be configured in the default routing table of the pod.
 
 
-## GRE
+### GRE
 
 A GRE or GRETAP interface can be added for tunneling of IP or Ethernet traffic respectively.
 
@@ -281,7 +322,7 @@ gre:
   gretap: <true | false> 
 ```
   
-## VRRP
+### VRRP
 
 VRRP based on keepalived can be activated and configured.
 
@@ -304,7 +345,7 @@ vrrp:
 ```
 
 
-## Monitoring
+### Monitoring
 
 The monitoring component of *CGW* supports ICMP echoes to defined endpoints and exposes it via an
 http endpoint in prometheus format.
@@ -317,7 +358,7 @@ A service will be exposed and will be scraped automatically by common configured
 By default the service will be called `<release name>-cgw` and the metrics will be available at
 `http://<release name>-cgw:9427/metrics`
 
-### Configure targets
+#### Configure targets
 
 To configure additional targets or source addresses, you have to configure the values as follows:
 
@@ -344,7 +385,7 @@ All parameters are required!
 When targets are set in this way, the usage of `ipsec.remote_ping_endpoint` and `ipsec.local_ping_endpoint` will
 be automatically disabled.
 
-### <a name="disable_ping-prober"></a>disable ping-prober
+#### <a name="disable_ping-prober"></a>disable ping-prober
 
 If *ping-exporter* is configured (see above) the ping-prober can be disabled.
 If the manual IPSEC configuration is used, the ping-prober MUST be disabled.

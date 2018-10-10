@@ -1,0 +1,27 @@
+ipsec:
+  # sets up an IPSEC connection to other sites
+  enabled: false
+
+vxlanController:
+  # vxlanController attaches defined virtual networks to the pod
+  enabled: false
+
+iptables:
+  # iptables module to load iptables rules for the pod
+  enabled: false
+
+initScript:
+  # imperative init script to configure network setting of the kernel
+  enabled: false
+
+pingExporter:
+  # modern exporter for Prometheus to test ICMP Echo requests
+  enabled: false
+
+pingProber:
+  # legacy component to ping other host and return results on STDOUT
+  enabled: false
+
+debug:
+  # debug contianer to exec commands in the pod
+  enabled: true

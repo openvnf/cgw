@@ -66,7 +66,7 @@ Throughout this documentation I will use `tp/cgw` as the chart, which you have t
 Because there are plenty deployment models for CGW, it is not possible to create a minimum valuable configuration
 as a default.
 
-This documentation will guide you through the creation of configurations.
+The [configuration documentation](../../README.md#configuration) will guide you through the creation of configurations.
 If you just get the job done and already know the basics you can also follow the [How Tos](../howtos/howtos.md).
 
 After you have created your configuration, just install the CGW as follows when using the Helm repository:
