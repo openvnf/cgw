@@ -54,6 +54,7 @@ spec:
           capabilities:
             add: ["NET_ADMIN"]
       {{- end }}
+      {{- if .Values.ipsec.enabled }}
       {{- if not .Values.ipsec.manualConfig }}
       - name: init-ip
         image: {{ .Values.networkUtility.image.repository }}:{{ .Values.networkUtility.image.tag }}
@@ -88,7 +89,7 @@ spec:
           capabilities:
             add: ["NET_ADMIN"]
       {{- end }}
-      {{- if and .Values.ipsec.enabled (and .Values.ipsec.vti_key (not .Values.ipsec.manualConfig)) }}
+      {{- if and .Values.ipsec.vti_key (not .Values.ipsec.manualConfig) }}
       - name: init-vti
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
@@ -117,6 +118,7 @@ spec:
           name: host-kernel-modules-volume
         securityContext:
           privileged: true
+      {{- end }}
       {{- end }}
 
       {{ if .Values.gre.enabled }}

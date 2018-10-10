@@ -12,11 +12,12 @@
 - [breaking] update VXLAN-Controller to use image from new docker repository and
   use corresponding annotations
   - from `aialferov/kube-vxlan-controller-agent` to `openvnf/kube-vxlan-controller-agent`
-  - If the default settings have been used on current clusters, the value file has to be changed to set the old names explicitly.
+  - If the default settings have been used on current clusters, the value file has to be changed to set the old names explicitly
 - [bugfix] strongswan configmap will not be created, if ipsec is disabled
 - [bugfix] pingExporter configmap will not be created, if pingExporter is disabled
-- add `selector` to deployment spec, which is required in newer versions of Kubernetes and encouraged in older ones.
+- add `selector` to deployment spec, which is required in newer versions of Kubernetes and encouraged in older ones
   - see <https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#selector>
+- disable `init-ip` init container to set local ping endpoint if `ipsec` is not enabled
 
 ### 0.6.0
 
