@@ -13,6 +13,8 @@
   use corresponding annotations
   - from `aialferov/kube-vxlan-controller-agent` to `openvnf/kube-vxlan-controller-agent`
   - If the default settings have been used on current clusters, the value file has to be changed to set the old names explicitly.
+- [bugfix] strongswan configmap will not be created, if ipsec is disabled
+- [bugfix] pingExporter configmap will not be created, if pingExporter is disabled
 
 ### 0.6.0
 

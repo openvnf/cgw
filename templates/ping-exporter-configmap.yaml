@@ -1,3 +1,4 @@
+{{- if .Values.pingExporter.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -14,4 +15,5 @@ data:
     ping:
       configurations:
 {{ toYaml .Values.pingExporter.targets | indent 8 }}
+{{- end }}
 {{- end }}

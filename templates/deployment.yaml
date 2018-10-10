@@ -579,9 +579,11 @@ spec:
           path: /lib/modules
       - name: podshare
         emptyDir: {}
+      {{- if .Values.pingExporter.enabled }}
       - name: ping-exporter-config
         configMap:
           name: {{ template "CGW.fullname" . }}-ping-exporter
+      {{- end }}
       {{- if .Values.iptables.enabled }}
       - name: iptables-rules
         configMap:
@@ -592,8 +594,10 @@ spec:
           - key: ip6tables.rules
             path: ip6tables.rules
       {{- end }}
+      {{- if .Values.ipsec.enabled }}
+      ##### IPSEC volumes
       {{- if .Values.ipsec.manualConfig }}
-      ##### IPSEC
+      ##### IPSEC manual config and secrets
       - name: strongswan-ipsec-config
         configMap:
           name: {{ template "CGW.fullname" . }}-strongswan-config
@@ -638,6 +642,7 @@ spec:
           {{- else }}
           secretName: {{ template "CGW.fullname" . }}-strongswan-crls
           {{- end }}
+      {{- end }}
       {{- end }}
       {{- end }}
 

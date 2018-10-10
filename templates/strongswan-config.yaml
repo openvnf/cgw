@@ -1,4 +1,4 @@
-{{- if .Values.ipsec.manualConfig }}
+{{- if and .Values.ipsec.enabled .Values.ipsec.manualConfig }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
