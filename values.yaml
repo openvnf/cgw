@@ -29,7 +29,7 @@ service:
 replicaCount: 1
 image:
   repository: openvnf/vnf-ipsec
-  tag: 1.3.1
+  tag: 1.4.0
   pullPolicy: IfNotPresent
   pullSecrets:
     - name: werft
