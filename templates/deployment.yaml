@@ -17,9 +17,6 @@ spec:
     matchLabels:
       app: {{ template "CGW.name" . }}
       release: {{ .Release.Name }}
-      {{- if .Values.vxlanController.enabled }}
-      {{ .Values.vxlanController.metadataKey }}: "true"
-      {{- end }}
   template:
     metadata:
       labels:
