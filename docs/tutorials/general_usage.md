@@ -40,12 +40,28 @@ My result is the following:
 
 ```
 NAME                            CHART VERSION   APP VERSION     DESCRIPTION
-tp/mons                         0.10.1          1.0             Monitoring service
+tp/cgw                          0.7.0-alpha.6                   A Helm chart for Kubernetes
 ```
 
-TODO: to be exchanged with CGW if available
-
 Therefore the name of the chart will be `tp/cgw`.
+
+#### installing development versions
+
+By default, Helm will just use versions, which are no development versions.
+Therefore when using for example `helm install -f myvalues.yaml tp/cgw` to install CGW,
+it will use the last stable version.
+
+To use a development version, you have to use either:
+
+```sh
+helm install -f myvalues.yaml --devel tp/cgw
+```
+
+Or specify the version directly:
+
+```sh
+helm install -f myvalues.yaml --version 0.7.0-alpha.6 tp/cgw
+```
 
 ### using git
 
