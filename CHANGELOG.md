@@ -20,6 +20,7 @@
 - disable `init-ip` init container to set local ping endpoint if `ipsec` is not enabled
 - update vnf-ipsec to 1.4.0
   - also fixes *CVE-2018-17540*
+- add parameter for additional pod annotations
 
 ### 0.6.0
 

@@ -39,6 +39,9 @@ spec:
         checksum/bird-config: {{ toYaml .Values.bird.configuration | sha256sum }}
         checksum/iptables-ipv4-config: {{ toYaml .Values.iptables.ipv4Rules | sha256sum }}
         checksum/iptables-ipv6-config: {{ toYaml .Values.iptables.ipv6Rules | sha256sum }}
+        {{- if .Values.additionalAnnotations }}
+{{ toYaml .Values.additionalAnnotations | indent 8 }}
+        {{- end }}
     spec:
       initContainers:
       {{- if .Values.vxlanController.enabled }}
