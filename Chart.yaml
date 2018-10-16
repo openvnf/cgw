@@ -5,4 +5,4 @@ name: cgw
 home: https://github.com/openvnf/cgw
 sources:
   - https://github.com/openvnf/cgw
-version: 0.7.0-dev
+version: 0.7.0-beta.1
