@@ -26,10 +26,13 @@ in the current version and therefore not recommended for production use.
     * [manual VXLAN setup](#manual-vxlan-setup)
     * [VXLAN-Controller configuration](#vxlan-controller-configuration)
   * [GRE](#gre)
-  * [VRRP](#vrrp)
+  * [VRRP [alpha]](#vrrp-alpha)
   * [Monitoring](#monitoring)
     * [Configure targets](#configure-targets)
     * [disable ping-prober](#disable-ping-prober)
+  * [Pod wide configurations](#pod-wide-configurations)
+    * [additional pod annotations](#additional-pod-annotations)
+    * [enable IPv6 routing](#enable-ipv6-routing)
 * [Utilities](#utilities)
   * [debug container](#debug-container)
   * [init script](#init-script)
@@ -398,6 +401,26 @@ Disable the ping-prober:
 ```yaml
 pingProber:
   enabled: false
+```
+
+### Pod wide configurations
+
+#### additional pod annotations
+
+Besides the default annotations to the pod, you can add additional ones by adding:
+
+```yaml
+additionalAnnoations:
+  <your annotations here>
+```
+
+#### enable IPv6 routing
+
+The additional annotations can be used to enable IPv6 Routing by setting:
+
+```yaml
+additionalAnnotations:
+  security.alpha.kubernetes.io/unsafe-sysctls: net.ipv6.conf.default.forwarding=1,net.ipv6.conf.all.forwarding=1
 ```
 
 ## Utilities
