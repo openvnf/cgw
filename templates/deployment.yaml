@@ -33,6 +33,8 @@ spec:
         checksum/strongswan-secret-template: {{ include (print $.Template.BasePath "/strongswan-secret.yaml") . | sha256sum }}
         checksum/bird-config-template: {{ include (print $.Template.BasePath "/bird-config.yaml") . | sha256sum }}
         checksum/iptables-config-template: {{ include (print $.Template.BasePath "/iptables-configmap.yaml") . | sha256sum }}
+        checksum/ip-init-config-template: {{ include (print $.Template.BasePath "/init-script-config.yaml") . | sha256sum }}
+        checksum/ip-init-env-template: {{ include (print $.Template.BasePath "/init-script-env.yaml") . | sha256sum }}
         checksum/ping-exporter-config-template: {{ include (print $.Template.BasePath "/ping-exporter-configmap.yaml") . | sha256sum }}
         checksum/vrrp-config-template: {{ include (print $.Template.BasePath "/vrrp-configmap.yaml") . | sha256sum }}
         checksum/strongswan-config: {{ toYaml .Values.ipsec.strongswan | sha256sum }}
