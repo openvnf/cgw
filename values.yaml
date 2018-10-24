@@ -305,9 +305,4 @@ ipSetup:
 
 vrrp:
   enabled: false
-  vip: 198.18.0.1/24
-  instance: instance01
-  interface: eth0
-  virtual_router_id: 50
-  priority: 50
-  authPath: secret
+  instances: {}

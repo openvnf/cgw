@@ -6,7 +6,7 @@
 - add flag to enable ipsec component
 - add documentation for using `iptables` with CGW
 - add support for certificate based VPN
-- add support for using VRRP for internal router redundancy
+- add support for using VRRP for internal router redundancy [alpha]
 - update version of `vnf-ipsec` to `1.3.1` to fix problem with enabled
   `farp` plugin
 - [breaking] update VXLAN-Controller to use image from new docker repository and

@@ -331,23 +331,26 @@ gre:
 ### VRRP [alpha]
 
 VRRP based on keepalived can be activated and configured.
+It is possible to create multiple instances,
+but the names and router ids have to be different.
 
 For example:
 
 ```yaml
 
 vrrp:
-  enabled: false
-  # virtual IP address
-  vip: 198.18.0.1/24
-  # instance name, must only be adjusted for parallel VRRP sessions
-  instance: instance01
-  interface: eth0
-  # route id, must only be adjusted for parallel VRRP sessions
-  virtual_router_id: 50
-  # priority, should differ between routing functions
-  priority: 50
-  authPath: secret
+  enabled: true
+  instances:
+    # virtual IP address
+  - vip: 192.0.2.1/24
+    # instance name, must only be adjusted for parallel VRRP sessions
+    name: instance01
+    interface: eth0
+    # route id, must only be adjusted for parallel VRRP sessions
+    virtual_router_id: 50
+    # priority, should differ between routing functions
+    priority: 50
+    authPath: secret
 ```
 
 

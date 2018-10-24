@@ -10,18 +10,20 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   keepalived.conf: |
-    vrrp_instance {{ .Values.vrrp.instance }} {
+    {{- range $instance := .Values.vrrp.instances }}
+    vrrp_instance {{ $instance.name }} {
       state MASTER
-      interface {{ .Values.vrrp.interface }}
-      virtual_router_id {{ .Values.vrrp.virtual_router_id }}
-      priority {{ .Values.vrrp.priority }}
+      interface {{ $instance.interface }}
+      virtual_router_id {{ $instance.virtual_router_id }}
+      priority {{ $instance.priority }}
       advert_int 1
       authentication {
           auth_type PASS
-          auth_pass {{ .Values.vrrp.authPath }}
+          auth_pass {{ $instance.authPath }}
       }
       virtual_ipaddress {
-          {{ .Values.vrrp.vip }}
+          {{ $instance.vip }}
       }
     }
+    {{- end -}}
 {{- end }}
