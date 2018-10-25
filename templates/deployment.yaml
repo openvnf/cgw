@@ -538,9 +538,13 @@ spec:
           - '-format.new=true'
           {{- if .Values.bird.configuration.bird }}
           - '-bird.socket=/var/run/bird/bird.ctl'
+          {{- else }}
+          - '-bird.ipv4=false'
           {{- end }}
           {{- if .Values.bird.configuration.bird6 }}
           - '-bird.socket6=/var/run/bird/bird6.ctl'
+          {{- else }}
+          - '-bird.ipv6=false'
           {{- end }}
         ports:
         - name: p9324
