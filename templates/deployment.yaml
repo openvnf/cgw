@@ -45,6 +45,10 @@ spec:
 {{ toYaml .Values.additionalAnnotations | indent 8 }}
         {{- end }}
     spec:
+        {{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+        {{- end }}
       initContainers:
       {{- if .Values.vxlanController.enabled }}
       - name: vxlan-controller-agent-init
