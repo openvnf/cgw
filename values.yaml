@@ -159,6 +159,13 @@ resources:
     requests:
       cpu: 50m
       memory: 64Mi
+  pcap:
+    limits:
+      cpu: 50m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
 
 ## Values used to set up GRE usage
 gre:
@@ -306,3 +313,10 @@ ipSetup:
 vrrp:
   enabled: false
   instances: {}
+
+pcap:
+  enabled: false
+  image:
+    repository: travelping/pcap
+    tag: 1.0.0
+    pullPolicy: IfNotPresent

@@ -27,6 +27,7 @@ in the current version and therefore not recommended for production use.
     * [VXLAN-Controller configuration](#vxlan-controller-configuration)
   * [GRE](#gre)
   * [VRRP [alpha]](#vrrp-alpha)
+  * [PCAP [alpha]](#pcap-alpha)
   * [Monitoring](#monitoring)
     * [Configure targets](#configure-targets)
     * [disable ping-prober](#disable-ping-prober)
@@ -353,6 +354,15 @@ vrrp:
     authPath: secret
 ```
 
+### PCAP [alpha]
+To capture traffic in the pod, you have to enable `pcap` and configure it using environmental variables as described in the [pcap container documentation](https://hub.docker.com/r/travelping/pcap/):
+
+```
+pcap:
+  enabled: true
+  env:
+    <add environmental variables here>
+``` 
 
 ### Monitoring
 

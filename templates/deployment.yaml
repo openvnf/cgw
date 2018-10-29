@@ -591,6 +591,24 @@ spec:
             add:
             - NET_ADMIN
       {{- end }}
+      {{- if .Values.pcap.enabled }}
+      ## PCAP
+      - name: pcap
+        image: {{ .Values.pcap.image.repository }}:{{ .Values.pcap.image.tag }}
+        imagePullPolicy: {{ .Values.pcap.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.pcap | indent 10 }}
+        securityContext:
+          capabilities:
+            add:
+            - NET_RAW
+        envFrom:
+          - configMapRef:
+              name: {{ template "CGW.fullname" . }}-pcap-env
+        volumeMounts:
+        - name: pcap-data
+          mountPath: /data/
+      {{- end }}
 
       volumes:
       - name: host-kernel-modules-volume
@@ -687,6 +705,11 @@ spec:
       - name: {{ template "CGW.fullname" . }}-vrrp
         configMap:
           name: {{ template "CGW.fullname" . }}-vrrp
+      {{- end }}
+      {{- if .Values.pcap.enabled }}
+      - name: pcap-data
+        emptyDir:
+          sizeLimit: 2Gi
       {{- end }}
     {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
