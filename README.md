@@ -28,6 +28,7 @@ in the current version and therefore not recommended for production use.
   * [GRE](#gre)
   * [VRRP [alpha]](#vrrp-alpha)
   * [PCAP [alpha]](#pcap-alpha)
+  * [Router Advertisement Daemon](#router-advertisement-daemon)
   * [Monitoring](#monitoring)
     * [Configure targets](#configure-targets)
     * [disable ping-prober](#disable-ping-prober)
@@ -357,12 +358,24 @@ vrrp:
 ### PCAP [alpha]
 To capture traffic in the pod, you have to enable `pcap` and configure it using environmental variables as described in the [pcap container documentation](https://hub.docker.com/r/travelping/pcap/):
 
-```
+```yaml
 pcap:
   enabled: true
   env:
     <add environmental variables here>
 ``` 
+
+### Router Advertisement Daemon
+To enable router advertisement of IPv6 routing CGWs, enable the daemon as follows:
+
+```yaml
+radvd:
+  enabled: true
+  config: |
+    <add configuration here>
+```
+
+The configuration is described in the [radvd documentation](https://linux.die.net/man/5/radvd.conf) itself.
 
 ### Monitoring
 

@@ -1,0 +1,13 @@
+{{- if .Values.radvd.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "CGW.fullname" . }}-radvd-config
+  labels:
+    app: {{ template "CGW.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  radvd.conf: {{ .Values.radvd.config | quote }}
+{{- end }}

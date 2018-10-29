@@ -166,6 +166,13 @@ resources:
     requests:
       cpu: 50m
       memory: 64Mi
+  radvd:
+    limits:
+      cpu: 50m
+      memory: 64Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
 
 ## Values used to set up GRE usage
 gre:
@@ -319,4 +326,11 @@ pcap:
   image:
     repository: travelping/pcap
     tag: 1.0.0
+    pullPolicy: IfNotPresent
+
+radvd:
+  enabled: false
+  image:
+    repository: quay.io/openvnf/radvd
+    tag: v0.1.0
     pullPolicy: IfNotPresent

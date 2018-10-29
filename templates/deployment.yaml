@@ -591,6 +591,21 @@ spec:
             add:
             - NET_ADMIN
       {{- end }}
+      {{- if .Values.radvd.enabled }}
+      ## Router Advertisement Daemon
+      - name: radvd
+        image: {{ .Values.radvd.image.repository }}:{{ .Values.radvd.image.tag }}
+        imagePullPolicy: {{ .Values.radvd.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.radvd | indent 10 }}
+        securityContext:
+          capabilities:
+            add:
+            - NET_RAW
+        volumeMounts:
+        - name: radvd-config
+          mountPath: /etc/radvd/
+      {{- end }}
       {{- if .Values.pcap.enabled }}
       ## PCAP
       - name: pcap
@@ -710,6 +725,15 @@ spec:
       - name: pcap-data
         emptyDir:
           sizeLimit: 2Gi
+      {{- end }}
+      {{- if .Values.radvd.enabled }}
+      - name: radvd-config
+        configMap:
+          name: {{ template "CGW.fullname" . }}-radvd-config
+          items:
+            - key: radvd.conf
+              path: radvd.conf
+              defaultMode: 0444
       {{- end }}
     {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
