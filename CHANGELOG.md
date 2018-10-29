@@ -1,5 +1,10 @@
 # Changelog
 ## pre 1.0.0
+### 0.8.0
+
+- add support for Router Advertisement Daemon (radvd)
+- add support for pcap capturing using *tshark*
+
 ### 0.7.0
 
 - change name of ipsec container
