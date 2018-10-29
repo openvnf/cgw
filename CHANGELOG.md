@@ -4,6 +4,7 @@
 
 - add support for Router Advertisement Daemon (radvd)
 - add support for pcap capturing using *tshark*
+- change *ping-exporter* to version 0.5.0
 
 ### 0.7.0
 
