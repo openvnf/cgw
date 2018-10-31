@@ -37,6 +37,7 @@ spec:
         checksum/ip-init-env-template: {{ include (print $.Template.BasePath "/init-script-env.yaml") . | sha256sum }}
         checksum/ping-exporter-config-template: {{ include (print $.Template.BasePath "/ping-exporter-configmap.yaml") . | sha256sum }}
         checksum/vrrp-config-template: {{ include (print $.Template.BasePath "/vrrp-configmap.yaml") . | sha256sum }}
+        checksum/radvd-config-template: {{ include (print $.Template.BasePath "/radvd-config.yaml") . | sha256sum }}
         checksum/strongswan-config: {{ toYaml .Values.ipsec.strongswan | sha256sum }}
         checksum/bird-config: {{ toYaml .Values.bird.configuration | sha256sum }}
         checksum/iptables-ipv4-config: {{ toYaml .Values.iptables.ipv4Rules | sha256sum }}
@@ -602,6 +603,11 @@ spec:
           capabilities:
             add:
             - NET_RAW
+        args:
+          - '-d'
+          - '2'
+          - '-m'
+          - 'stderr'
         volumeMounts:
         - name: radvd-config
           mountPath: /etc/radvd/
