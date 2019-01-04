@@ -116,7 +116,6 @@ resources:
     requests:
       cpu: 50m
       memory: 64Mi
-  
   vxlanControllerAgentInit:
     limits:
       cpu: 50m
@@ -170,6 +169,13 @@ resources:
     limits:
       cpu: 50m
       memory: 64Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+  initIp:
+    limits:
+      cpu: 50m
+      memory: 128Mi
     requests:
       cpu: 50m
       memory: 64Mi
