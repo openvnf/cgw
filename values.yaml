@@ -179,7 +179,13 @@ resources:
     requests:
       cpu: 50m
       memory: 64Mi
-
+  pingExporter:
+    limits:
+      cpu: 50m
+      memory: 32Mi
+    requests:
+      cpu: 25m
+      memory: 16Mi
 ## Values used to set up GRE usage
 gre:
   enabled: false
