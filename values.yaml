@@ -331,7 +331,7 @@ pcap:
   enabled: false
   image:
     repository: travelping/pcap
-    tag: 1.0.0
+    tag: 1.0.1
     pullPolicy: IfNotPresent
 
 radvd:
