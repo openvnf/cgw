@@ -1,5 +1,12 @@
 # Changelog
 ## pre 1.0.0
+
+### 0.8.1
+
+- add default resource requests and limits for initIP container
+- add default resource requests and limits for pingExporter container
+- change pcap container image to version `1.0.1` for a bugfix
+
 ### 0.8.0
 
 - add support for Router Advertisement Daemon (radvd)
