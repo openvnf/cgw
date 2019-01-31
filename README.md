@@ -35,6 +35,7 @@ in the current version and therefore not recommended for production use.
   * [Pod wide configurations](#pod-wide-configurations)
     * [additional pod annotations](#additional-pod-annotations)
     * [enable IPv6 routing](#enable-ipv6-routing)
+    * [run CGW on exclusive nodes](#run-cgw-on-exclusive-nodes)
 * [Utilities](#utilities)
   * [debug container](#debug-container)
   * [init script](#init-script)
@@ -447,6 +448,25 @@ The additional annotations can be used to enable IPv6 Routing by setting:
 ```yaml
 additionalAnnotations:
   security.alpha.kubernetes.io/unsafe-sysctls: net.ipv6.conf.default.forwarding=1,net.ipv6.conf.all.forwarding=1
+```
+
+#### Run CGW on exclusive nodes:
+
+For activate this features setup nodeSelector and tolerations:
+```
+nodeSelector:
+  cgw-service: "true"
+
+tolerations:
+- key: "node-role"
+  operator: "Equal"
+  value: "cgw-services"
+  effect: "NoSchedule"
+```
+And add label and taint to the right nodes, for example on node1:
+```
+kubectl label nodes node1 cgw-service=true
+kubectl taint nodes node1 node-role=cgw-services:NoSchedule
 ```
 
 ## Utilities
