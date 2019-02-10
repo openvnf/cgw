@@ -217,7 +217,7 @@ initScript:
   env: {}
   image:
     repository: travelping/nettools
-    tag: 1.7.0
+    tag: 1.9.0
     pullPolicy: IfNotPresent
   script: |
     echo "script configuration is missing"
@@ -225,14 +225,14 @@ initScript:
 networkUtility:
   image:
     repository: travelping/nettools
-    tag: 1.7.0
+    tag: 1.9.0
     pullPolicy: IfNotPresent
 
 iptables:
   enabled: true
   image:
     repository: travelping/nettools
-    tag: 1.7.0
+    tag: 1.9.0
     pullPolicy: IfNotPresent
   ipv4Rules: ""
     #*filter
@@ -265,7 +265,7 @@ debug:
   enabled: true
   image:
     repository: travelping/nettools
-    tag: 1.7.0
+    tag: 1.9.0
     pullPolicy: IfNotPresent
 
 pingProber:
@@ -279,7 +279,7 @@ pingExporter:
   enabled: true
   image:
     repository: travelping/ping-exporter
-    tag: 0.5.0
+    tag: 0.5.1
     pullPolicy: IfNotPresent
   service:
     annotations:
