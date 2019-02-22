@@ -630,7 +630,40 @@ spec:
         - name: pcap-data
           mountPath: /data/
       {{- end }}
-
+      {{- if .Values.rclone.enabled }}
+      ## Rclone ##
+      - name: rclone
+        image: {{ .Values.rclone.image.repository }}:{{ .Values.rclone.image.tag }}
+        volumeMounts:
+        - name: pcap-data
+          mountPath: /data/
+        imagePullPolicy: {{ .Values.rclone.image.pullPolicy | quote }}
+        ports:
+        - containerPort: 22
+          name: ssh-sftp
+        resources:
+{{ toYaml .Values.resources.rclone | indent 10 }}
+        securityContext:
+        capabilities:
+          add:
+          - NET_ADMIN
+        envFrom:
+          - configMapRef:
+              name: {{ template "CGW.fullname" . }}-rclone-env
+        command:
+        - sh
+        - -c
+        - |
+           mkdir data/finished
+           watchnames=''
+           [ -d /data/ ] && watchnames="$watchnames /data/"
+           inotifywait --monitor -e close_write --format %w%f $watchnames | while read FILE
+           do
+            echo "$FILE is finished. Moving to data/finished/"
+            mv $FILE/ data/finished/
+            rclone move /data/finished/ $RCLONE_REMOTE_NAME:data/
+           done
+      {{- end }}
       volumes:
       - name: host-kernel-modules-volume
         hostPath:
