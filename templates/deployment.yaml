@@ -659,9 +659,9 @@ spec:
            [ -d /data/ ] && watchnames="$watchnames /data/"
            inotifywait --monitor -e close_write --format %w%f $watchnames | while read FILE
            do
-            echo "$FILE is finished. Moving to data/finished/"
+            echo "$FILE is finished. Moving to data/finished/. Attempting to push to $RCLONE_REMOTE_PATH/ on remote device."
             mv $FILE/ data/finished/
-            rclone move /data/finished/ $RCLONE_REMOTE_NAME:data/
+            rclone move /data/finished/ $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/
            done
       {{- end }}
       volumes:

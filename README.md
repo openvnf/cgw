@@ -371,10 +371,11 @@ pcap:
 ### Rclone [alpha]
 To publish captured traffic in the pod by pcap, you have to enable `Rclone` and
 configure it using environmental variables and use `RCLONE_REMOTE_NAME` to use
-the correct remote. `Rclone` is defined generically through the container
-environment. To find the name of the environment variable, first, take the long
-option name, strip the leading --, change - to _ make upper case and prepend
-RCLONE_. All available endpoints are described in the [official rclone documentation](https://rclone.org/commands/rclone_move/).
+the correct remote and `RCLONE_REMOTE_PATH` for the correct destination path.
+`Rclone` is defined generically through the container environment.
+To find the name of the environment variable, first, take the long option name,
+strip the leading --, change - to _ make upper case and prepend RCLONE_.
+All available endpoints are described in the [official rclone documentation](https://rclone.org/commands/rclone_move/).
 An [inotify](https://linux.die.net/man/1/inotifywait)-pattern is watching for captures, pushing them from the directory `/data/finished`.
 
 ```yaml

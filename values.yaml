@@ -355,6 +355,7 @@ rclone:
     pullPolicy: IfNotPresent
   env:
     RCLONE_REMOTE_NAME: "sftp"
+    RCLONE_REMOTE_PATH: "data"
     RCLONE_CONFIG_SFTP_TYPE: "sftp"
     RCLONE_CONFIG_SFTP_HOST: "host.com" #hostname or ip of sftp-server
     RCLONE_CONFIG_SFTP_USER: "name"
