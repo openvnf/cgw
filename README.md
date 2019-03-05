@@ -296,7 +296,7 @@ vxlanController:
     type: interface
     action: up
   staticRoutes:
-  - "203.0.113.15 via 192.0.2.1" 
+  - "203.0.113.15 via 192.0.2.1"
   - "203.0.113.16 via 192.0.2.1"
 ```
 
@@ -327,9 +327,9 @@ gre:
   name: <name of the interface to be created>
   # if Ethernet traffic shall be tunneled,
   # a GRETAP interface has to be used instead of a GRE interface
-  gretap: <true | false> 
+  gretap: <true | false>
 ```
-  
+
 ### VRRP [alpha]
 
 VRRP based on keepalived can be activated and configured.
@@ -362,8 +362,34 @@ To capture traffic in the pod, you have to enable `pcap` and configure it using 
 pcap:
   enabled: true
   env:
-    <add environmental variables here>
-``` 
+    IFACE: "eth0"
+    DURATION: "300"
+    FILTER: "80"
+    FILENAME: "http"
+```
+
+### Rclone [alpha]
+To publish captured traffic in the pod by pcap, you have to enable `Rclone` and
+configure it using environmental variables and use `RCLONE_REMOTE_NAME` to use
+the correct remote and `RCLONE_REMOTE_PATH` for the correct destination path.
+`Rclone` is defined generically through the container environment.
+To find the name of the environment variable, first, take the long option name,
+strip the leading --, change - to _ make upper case and prepend RCLONE_.
+All available endpoints are described in the [official rclone documentation](https://rclone.org/commands/rclone_move/).
+An [inotify](https://linux.die.net/man/1/inotifywait)-pattern is watching for captures, moving them from the directory `/data/finished`.
+
+```yaml
+rclone:
+  enabled: true
+  env:
+    RCLONE_REMOTE_NAME: "sftp" #Mandatory, when defining multiple devices, this is your selector.
+# sftp
+    RCLONE_CONFIG_SFTP_TYPE: "sftp"
+    RCLONE_CONFIG_SFTP_HOST: "host.com" #hostname or ip of sftp-server
+    RCLONE_CONFIG_SFTP_USER: "name"
+    RCLONE_CONFIG_SFTP_PORT: "22"
+    RCLONE_CONFIG_SFTP_PASS: "password" # Encoded "password". Leave blank to use ssh-agent
+```
 
 ### Router Advertisement Daemon
 To enable router advertisement of IPv6 routing CGWs, enable the daemon as follows:
