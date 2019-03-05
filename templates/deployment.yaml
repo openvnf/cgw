@@ -638,9 +638,6 @@ spec:
         - name: pcap-data
           mountPath: /data/
         imagePullPolicy: {{ .Values.rclone.image.pullPolicy | quote }}
-        ports:
-        - containerPort: 22
-          name: ssh-sftp
         resources:
 {{ toYaml .Values.resources.rclone | indent 10 }}
         securityContext:
@@ -661,7 +658,7 @@ spec:
            do
             echo "$FILE is finished. Moving to data/finished/. Attempting to push to $RCLONE_REMOTE_PATH/ on remote device."
             mv $FILE/ data/finished/
-            rclone move /data/finished/ $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/
+            rclone copy /data/finished/ $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/
            done
       {{- end }}
       volumes:

@@ -276,7 +276,7 @@ pingProber:
     pullPolicy: IfNotPresent
 
 pingExporter:
-  enabled: false
+  enabled: true
   image:
     repository: travelping/ping-exporter
     tag: 0.5.0
