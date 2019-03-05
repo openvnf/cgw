@@ -186,6 +186,13 @@ resources:
     requests:
       cpu: 25m
       memory: 16Mi
+  rclone:
+    limits:
+      cpu: 50m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
 ## Values used to set up GRE usage
 gre:
   enabled: false
