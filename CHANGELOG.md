@@ -1,6 +1,13 @@
 # Changelog
 ## pre 1.0.0
 
+### 0.9.0
+
+- update nettools image to `1.9.0`
+- update ping-exporter to `0.5.1`
+- add support for pcap-file sftp-pushing using *rclone* 
+- change *pcap* to version 1.0.2
+
 ### 0.8.1
 
 - add default resource requests and limits for initIP container
