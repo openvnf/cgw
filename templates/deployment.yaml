@@ -658,7 +658,7 @@ spec:
            do
             echo "$FILE is finished. Moving to data/finished/. Attempting to push to $RCLONE_REMOTE_PATH/ on remote device."
             mv $FILE/ data/finished/
-            rclone copy /data/finished/ $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/
+            rclone move /data/finished/ $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/
            done
       {{- end }}
       volumes:

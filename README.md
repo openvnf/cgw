@@ -368,9 +368,9 @@ pcap:
     FILENAME: "http"
 ```
 
-### Rclone [alpha]
-To publish captured traffic in the pod by pcap, you have to enable `Rclone` and
-configure it using environmental variables and use `RCLONE_REMOTE_NAME` to use
+### Rclone
+To publish captured traffic in the pod by pcap, you have to enable `Rclone` along `pcap` and
+configure it using environmental variables. Use `RCLONE_REMOTE_NAME` to use
 the correct remote and `RCLONE_REMOTE_PATH` for the correct destination path.
 `Rclone` is defined generically through the container environment.
 To find the name of the environment variable, first, take the long option name,
@@ -390,6 +390,16 @@ rclone:
     RCLONE_CONFIG_SFTP_PORT: "22"
     RCLONE_CONFIG_SFTP_PASS: "password" # Encoded "password". Leave blank to use ssh-agent
 ```
+
+Note that using `rclone_move` implies that transferred files will be removed from
+the source path `data/finished`. This keeps the containers memory-footprint manageable
+and enables file-cycling. If the process crashes during transfer no garbage data will remain
+on the destination address and you will notice a `Terminated` in the container log.
+When attempting to push duplicate files they will be removed from the source path but
+not overwritten/modified on the destination if [MD5/SHA](https://github.com/ncw/rclone#features)
+checksums and file-name are the same on both ends.
+Be aware this can cause data loss, if you were happen to lose the destination. Consider testing
+first using `--dry-run` flag first.
 
 ### Router Advertisement Daemon
 To enable router advertisement of IPv6 routing CGWs, enable the daemon as follows:
