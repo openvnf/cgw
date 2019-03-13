@@ -1,6 +1,11 @@
 # Changelog
 ## pre 1.0.0
 
+### 0.10.0
+
+- update *ping-exporter* to `0.6.0`
+  - [breaking] configuration of ping-exporter changed (see [UPDATING](./UPDATING.md))
+
 ### 0.9.0
 
 - update nettools image to `1.9.0`
