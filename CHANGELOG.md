@@ -15,10 +15,10 @@
 
 ### 0.9.0
 
-  - update nettools image to `1.9.0`
-  - update ping-exporter to `0.5.1`
-  - add support for pcap-file sftp-pushing using *rclone*
-  - change *pcap* to version 1.0.2
+- update nettools image to `1.9.0`
+- update ping-exporter to `0.5.1`
+- add support for pcap-file sftp-pushing using *rclone*
+- change *pcap* to version 1.0.2
 
 ### 0.8.1
 
