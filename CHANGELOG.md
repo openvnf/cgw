@@ -4,6 +4,9 @@
 ### 0.9.1
 
 - fixed known issue in *rclone* to enable proper file cycling.
+- added `useSSHkeyFile` to *rclone* to utilise ssh-keys properly.
+- enhanced readme for *rclone* to describe configurations using ssh-keys.
+- removed default values from *rclone* to enable generic endpoints without overwrites.
 
 ### 0.9.0
 

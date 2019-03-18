@@ -355,6 +355,7 @@ radvd:
 
 rclone:
   enabled: false
+  useSSHkeyFile: false
   image:
     repository: travelping/docker-rclone
     tag: v1.0
@@ -362,8 +363,3 @@ rclone:
   env:
     RCLONE_REMOTE_NAME: "sftp"
     RCLONE_REMOTE_PATH: "data"
-    RCLONE_CONFIG_SFTP_TYPE: "sftp"
-    RCLONE_CONFIG_SFTP_HOST: "host.com" #hostname or ip of sftp-server
-    RCLONE_CONFIG_SFTP_USER: "name"
-    RCLONE_CONFIG_SFTP_PORT: "22"
-    RCLONE_CONFIG_SFTP_PASS: "password" # Encoded for "password".

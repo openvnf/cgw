@@ -637,6 +637,11 @@ spec:
         volumeMounts:
         - name: pcap-data
           mountPath: /data/
+        {{- if .Values.rclone.useSSHkeyFile }}
+        - name: rclone-secrets
+          mountPath: /etc/ssh
+          readOnly: true
+        {{- end }}
         imagePullPolicy: {{ .Values.rclone.image.pullPolicy | quote }}
         resources:
 {{ toYaml .Values.resources.rclone | indent 10 }}
@@ -733,6 +738,12 @@ spec:
       {{- end }}
       {{- end }}
       {{- end }}
+      {{- if .Values.rclone.useSSHkeyFile }}
+      - name: rclone-secrets
+        secret:
+          secretName: rclone-ssh-key
+      {{- end }}
+
 
 
       {{- if .Values.initScript.enabled }}
