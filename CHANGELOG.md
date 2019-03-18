@@ -1,17 +1,15 @@
 # Changelog
 ## pre 1.0.0
 
-### 0.10.1
-
-- fixed known issue in *rclone* to enable proper file cycling.
-- added `useSSHkeyFile` to *rclone* to utilise ssh-keys properly.
-- enhanced readme for *rclone* to describe configurations using ssh-keys.
-- removed default values from *rclone* to enable generic endpoints without overwrites.
-
 ### 0.10.0
 
 - update *ping-exporter* to `0.6.0`
   - [breaking] configuration of ping-exporter changed (see [UPDATING](./UPDATING.md))
+- major changes to *rclone*
+  - fixed known issue in *rclone* to enable proper file cycling.
+  - added `useSSHkeyFile` to *rclone* to utilise ssh-keys properly.
+  - enhanced readme for *rclone* to describe configurations using ssh-keys.
+  - removed default values from *rclone* to enable generic endpoints without overwrites.
 
 ### 0.9.0
 
