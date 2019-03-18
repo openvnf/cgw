@@ -465,17 +465,19 @@ pingExporter:
       pingInterval: 5s             # interval for ICMP requests
       pingTimeout: 4s              # timeout for ICMP requests
       pingTargets:                 # list of ICMP targets
-        - 192.0.2.10
-        - 198.51.100.1
+        - pingTarget: 192.0.2.10
+        - pingTarget: 198.51.100.1
     - sourceV4: 192.0.2.2
       sourceV6: "2001:0DB8:2::2"
       pingInterval: 5s
       pingTimeout: 4s
       pingTargets:
-        - 203.0.113.1
-        - "2001:0DB8:2::10"
+        - pingTarget: 203.0.113.1
+        - pingTarget: "2001:0DB8:2::10"
 ```
 All parameters are required!
+
+For more informations refer to the [ping-exporter documentation](https://github.com/travelping/ping-exporter/blob/v0.6.0/README.md#multiple-ping-configurations).
 
 When targets are set in this way, the usage of `ipsec.remote_ping_endpoint` and `ipsec.local_ping_endpoint` will
 be automatically disabled.

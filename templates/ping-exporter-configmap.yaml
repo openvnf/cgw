@@ -11,6 +11,7 @@ metadata:
 data:
   ping-exporter.yaml: |
 {{ toYaml .Values.pingExporter.config | indent 4 }}
+    version: "1.0"
 {{- if .Values.pingExporter.targets }}
     ping:
       configurations:
