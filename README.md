@@ -28,6 +28,7 @@ in the current version and therefore not recommended for production use.
   * [GRE](#gre)
   * [VRRP [alpha]](#vrrp-alpha)
   * [PCAP [alpha]](#pcap-alpha)
+  * [Rclone [alpha]](#rclone-alpha)
   * [Router Advertisement Daemon](#router-advertisement-daemon)
   * [Monitoring](#monitoring)
     * [Configure targets](#configure-targets)
