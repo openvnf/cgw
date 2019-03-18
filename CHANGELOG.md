@@ -1,6 +1,13 @@
 # Changelog
 ## pre 1.0.0
 
+### 0.10.1
+
+- fixed known issue in *rclone* to enable proper file cycling.
+- added `useSSHkeyFile` to *rclone* to utilise ssh-keys properly.
+- enhanced readme for *rclone* to describe configurations using ssh-keys.
+- removed default values from *rclone* to enable generic endpoints without overwrites.
+
 ### 0.10.0
 
 - update *ping-exporter* to `0.6.0`
@@ -10,7 +17,7 @@
 
 - update nettools image to `1.9.0`
 - update ping-exporter to `0.5.1`
-- add support for pcap-file sftp-pushing using *rclone* 
+- add support for pcap-file sftp-pushing using *rclone*
 - change *pcap* to version 1.0.2
 
 ### 0.8.1
