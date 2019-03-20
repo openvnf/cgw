@@ -6,18 +6,15 @@ in the current version and therefore not recommended for production use.
 
 <!-- toc -->
 
-* [Additional documents of CGW with specific topics](#additional-documents-of-cgw-with-specific-topics)
 * [General](#general)
   * [upgrade of the helm chart](#upgrade-of-the-helm-chart)
-* [Configuration](#configuration)
+* [Current Documentation](#current-documentation)
+* [Additional documents of CGW with specific topics](#additional-documents-of-cgw-with-specific-topics)
+* [Old Configuration Documentation](#old-configuration-documentation)
   * [Starting Point](#starting-point)
   * [IPsec](#ipsec)
-    * [disable IPsec](#disable-ipsec)
-    * [Manual Strongswan configuration](#manual-strongswan-configuration)
       * [disable setting of routes](#disable-setting-of-routes)
-    * [setting interfaces](#setting-interfaces)
     * [disable IPsec service](#disable-ipsec-service)
-  * [certificate based VPN](#certificate-based-vpn)
   * [Route-based vs Policy based VPN](#route-based-vs-policy-based-vpn)
   * [BGP](#bgp)
     * [BIRD Internet Routing Daemon](#bird-internet-routing-daemon)

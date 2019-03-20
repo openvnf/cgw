@@ -8,6 +8,19 @@ The focus is to get an understanding of the IPSEC part of the CGW, therefore, we
 
 <!-- toc -->
 
+* [Preconditions](#preconditions)
+* [enable Strongswan](#enable-strongswan)
+* [setting Interface](#setting-interface)
+* [Manual configuration of Strongswan](#manual-configuration-of-strongswan)
+  * [ipsecConfig](#ipsecconfig)
+    * [sts-base](#sts-base)
+    * [second-site](#second-site)
+    * [left and right](#left-and-right)
+  * [ipsecSecrets](#ipsecsecrets)
+* [further reading](#further-reading)
+
+<!-- tocstop -->
+
 ## Preconditions
 
 You have already an interface `inet0` configured, which is connected to the internet and has a public IP address.

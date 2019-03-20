@@ -2,6 +2,12 @@
 
 <!-- toc -->
 
+* [what is policy based VPN](#what-is-policy-based-vpn)
+* [what is route based VPN](#what-is-route-based-vpn)
+* [Caveat with VTI interfaces](#caveat-with-vti-interfaces)
+
+<!-- tocstop -->
+
 ## what is policy based VPN
 
 The default routing mode ode Strongswan and also the older model of IPSEC VPNs in general
