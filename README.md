@@ -42,10 +42,6 @@ in the current version and therefore not recommended for production use.
 
 <!-- tocstop -->
 
-## Additional documents of CGW with specific topics
-
-* [Configuring firewall with iptables](docs/Firewall.md)
-
 ## General
 
 see [General Usage](docs/tutorials/general_usage.md) for general installation overview.
@@ -54,7 +50,24 @@ see [General Usage](docs/tutorials/general_usage.md) for general installation ov
 When configurations or secrets are changed, the pods will be redeployed automatically.
 This will cause a short interruption of the traffic at the moment.
 
-## Configuration
+## Current Documentation
+
+The new documentation is split in four different parts.
+
+* [Tutorials](docs/tutorials/index.md)
+* [How Tos](docs/how-tos/index.md)
+* [Concepts](docs/concepts/index.md)
+* [Reference](docs/reference/index.md)
+
+Depending wheter you learn better top down or bottom up, it makes sense to start with *Concepts* or *Tutorials*.
+
+The *How Tos* expect you to have a basic understanding of CGW and its components, as the settings will not be explained in details, when they are not specific to the *How to* itself.
+
+## Additional documents of CGW with specific topics
+
+* [Configuring firewall with iptables](docs/Firewall.md)
+
+## Old Configuration Documentation
 ### Starting Point
 
 Many people using the `values.yaml` from this Helm chart as a starting point for their own
@@ -95,39 +108,6 @@ components for your deployment.
 
 ### IPsec
 
-#### disable IPsec
-
-To disable the IPsec module, add the following:
-
-```yaml
-ipsec:
-  enabled: false  # defaults to `true`
-```
-
-#### Manual Strongswan configuration
-
-To use a manual configuration of Strongswan instead of using parameters, for example for multi-SA configurations,
-set the following parameters:
-
-```yaml
-ipsec:
-  manualConfig: true # default is false
-  strongswan:
-    ipsecConfig:
-      ipsec.<myconnectionname>.conf: |
-        <add your ipsec config here>
-    ipsecSecrets:
-      ipsec.<myconnectionname>.secrets: |
-        <add your ipsec secret here>
-```
-
-The `ipsec.<myconnectionname>.conf` has to follow the [Strongswan documentation](https://wiki.strongswan.org/projects/strongswan/wiki/IpsecConf).
-
-The `ipsec.<myconnectionname>.secrets` also have to follow the [Strongswan secrets documentation](https://wiki.strongswan.org/projects/strongswan/wiki/IpsecSecrets).
-They will also automatically be base64 encoded into a Kubernetes Secret.
-
-You can repeat the configuration for multiple connections.
-
 NOTE: If the manual configuration is used, the ping-prober must be disabled!! (see [ping-prober](#disable_ping-prober))
 
 ##### disable setting of routes
@@ -135,16 +115,6 @@ NOTE: If the manual configuration is used, the ping-prober must be disabled!! (s
 If Strongswan shall not install routes into its routing table, you have to set the value `ipsec.vti_key: true`.
 This is strongly advised, when using VTI interfaces and route-based VPN.
 
-#### setting interfaces
-
-To set the interfaces Strongswan shall bind on, set `ipsec.interfaces` with a comma seperated list of interfaces.
-
-For example:
-
-```yaml
-ipsec:
-  interfaces: "eth0,net1"
-```
 
 #### disable IPsec service
 
@@ -161,9 +131,6 @@ ipsec:
 
 Deprecation: The service will be disabled by default in the future.
 
-### certificate based VPN
-
-see [certificate based VPN](./docs/CertificateBasedVPN.md).
 
 ### Route-based vs Policy based VPN
 
