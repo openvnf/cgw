@@ -27,7 +27,8 @@ TODO
 * [set up IP configuration declaratively](./declarative_ip_configuration.md)
 * [set up IP configuration imperatively](./imperative_ip_configuration.md)
 * [set up IPSEC](./setup_ipsec.md)
-* [set up routing](./setup_routing.md)
+* [set up route based vpn](./route_based_vpn.md)
+* [set up BGP routing](./setup_routing.md)
 * [set up VXLAN](./setup_vxlan.md)
 * [set up Monitoring](./setup_monitoring.md)
-* [set up route based vpn](./route_based_vpn.md)
+

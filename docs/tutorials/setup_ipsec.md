@@ -114,7 +114,6 @@ ipsec:
             left=2001:db8:0:1::1
             rightsubnet=::/0
             right=2001:db8:0:2::1
-            mark=42
 ```
 
 We will now go through the configuration line by line to explain the most common parameters beeing set.
@@ -170,17 +169,16 @@ The second part of the configuration stating at line 22 is the actual connection
 These will then be extended or overwritten in this configuration.
 
 `leftsubnet` and `rightsubnet` set the subnets, for which traffic will be transferred of the connection or what packets will be allowed.
-If you have not had a look at [Route-based vs Policy-based VPN](../concepts/policy_route_based_vpn.md), please read it first.
+In this case, all packets with an IP address from `leftsubnet`, as sender on the left side and as receiver on the right side, will be send thorough the tunnel.
 
-In the case of route-based vpn, it is common to set both subnets to `::/0` or `0.0.0.0/0` and decide based on the routes, which traffic to send over link.
-Often other routers will not accept the setting though, and therefore the example above also shows a specific network.
+The mode used here is called *policy-based routing*.
+When the source and destination of a packets are matched by the rules, the packets will be transferred over the VPN.
+
+For further information about differences between Route-based and Policy-based VPN, please have a look at the [concepts](../concepts/policy_route_based_vpn.md) or the [tutorial for route-based vpn](./route_based_vpn.md).
 
 `left` and `right` set the IP, which is used on the corresponding nodes.
 Besides setting a specific IP, it is also possible to set the value to `%any` to allow connections from any IP address.
 This is common in the road warrior scenario but uncommon in site to site VPNs.
-
-`mark` sets the value used to mark the packets to use in conjunction with a *Virtual Tunnel Interface*.
-How to set uon an interface like that, have a look at the corresponding [tutorial](./vti_interface.md).
 
 #### left and right
 
