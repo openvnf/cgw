@@ -15,17 +15,16 @@ in the current version and therefore not recommended for production use.
   * [IPsec](#ipsec)
       * [disable setting of routes](#disable-setting-of-routes)
     * [disable IPsec service](#disable-ipsec-service)
-  * [Route-based vs Policy based VPN](#route-based-vs-policy-based-vpn)
   * [BGP](#bgp)
     * [BIRD Internet Routing Daemon](#bird-internet-routing-daemon)
     * [bird_exporter](#bird_exporter)
   * [VXLAN](#vxlan)
-    * [manual VXLAN setup](#manual-vxlan-setup)
+    * [manual VXLAN setup [deprecated]](#manual-vxlan-setup-deprecated)
     * [VXLAN-Controller configuration](#vxlan-controller-configuration)
   * [GRE](#gre)
-  * [VRRP [alpha]](#vrrp-alpha)
+  * [VRRP](#vrrp)
   * [PCAP [alpha]](#pcap-alpha)
-  * [Rclone](#rclone)
+  * [Rclone [alpha]](#rclone-alpha)
   * [Router Advertisement Daemon](#router-advertisement-daemon)
   * [Monitoring](#monitoring)
     * [Configure targets](#configure-targets)
@@ -35,7 +34,6 @@ in the current version and therefore not recommended for production use.
     * [enable IPv6 routing](#enable-ipv6-routing)
 * [Utilities](#utilities)
   * [debug container](#debug-container)
-  * [init script](#init-script)
 
 <!-- tocstop -->
 
@@ -128,41 +126,6 @@ ipsec:
 
 Deprecation: The service will be disabled by default in the future.
 
-
-### Route-based vs Policy based VPN
-
-The default model of Strongswan uses policy-based vpn.
-This means XFRM rules will be installed on the machine and every packet with destination in vpn connected networks will be transfered to there.
-
-If you have different flows of traffic though and just want steer a certain part through the vpn, it is advised to use [route-based VPN](https://wiki.strongswan.org/projects/strongswan/wiki/RouteBasedVPN).
-
-For that you have to set `ipsec.vti_key: true` to disable setting of internal routes.
-Further you have to create a VTI interface, which sets a mark, which has to be configured in Strongswan correspondingly.
-
-To create a VTI interface you can execute the following:
-
-```sh
-IPSEC_VTI_KEY=10
-IPSEC_REMOTEIP=198.51.100.1
-IPSEC_LOCALIP=192.0.2.1
-IPSEC_VTI_ADDR_LOCAL=203.0.113.10
-IPSEC_VTI_ADDR_PEER=203.0.113.11
-
-ip tunnel add vti${IPSEC_VTI_KEY} mode vti remote $IPSEC_REMOTEIP local $IPSEC_LOCALIP key $IPSEC_VTI_KEY
-ip address add ${IPSEC_VTI_ADDR_LOCAL}/32 peer ${IPSEC_VTI_ADDR_PEER}/32 dev vti${IPSEC_VTI_KEY}
-ip link set vti${IPSEC_VTI_KEY} up
-```
-
-The `vti_key` is the actuall number the packets will be marked with and has to correspond with the Strongswan config.
-
-The local and remote ip can be the public IPs of the link, but also arbitrary documentation addresses could be used.
-The kernel will not actually use the IP addresses, but remove the IP header when handed to Strongswan, but the parameters are required by `iproute2` as it is a virtual tunnel.
-
-The `IPSEC_VTI_ADDR_LOCAL` and `IPSEC_VTI_ADDR_PEER` should be set to a sensible value out of a private network.
-The `IPSEC_VTI_ADDR_PEER` address is then be used to set the routes for packets to the other side of the VPN connection.
-
-Because the VTI interface is virtual, the peer address does not have to be set on the other machine.
-
 ### BGP
 
 #### BIRD Internet Routing Daemon
@@ -210,7 +173,9 @@ There are two different ways available of connecting this service with another c
 The first one is the manual way, where the partners have to be configured with values.
 The second one is using the *vxlan-controller* and the vxlans can be configured using annotations.
 
-#### manual VXLAN setup
+#### manual VXLAN setup [deprecated]
+
+This feature might be deleted in future versions and is no longer supported!
 
 VXLAN endpoints inside the CGW can be created by adding a configuration under the `vxlan` key.
 
@@ -295,7 +260,7 @@ gre:
   gretap: <true | false>
 ```
 
-### VRRP [alpha]
+### VRRP
 
 VRRP based on keepalived can be activated and configured.
 It is possible to create multiple instances,
@@ -333,7 +298,7 @@ pcap:
     FILENAME: "http"
 ```
 
-### Rclone
+### Rclone [alpha]
 To publish captured traffic in the pod by pcap, you have to enable `Rclone` along `pcap` and
 configure it using environmental variables. Use `RCLONE_REMOTE_NAME` to use
 the correct remote and `RCLONE_REMOTE_PATH` for the correct destination path.
@@ -344,6 +309,7 @@ All available endpoints are described in the [official rclone documentation](htt
 An [inotify](https://linux.die.net/man/1/inotifywait)-pattern is watching for captures, moving them from the directory `/data/finished`.
 
 This container example-configuration enables authorisation through username and password:
+
 ```yaml
 rclone:
   enabled: true
@@ -361,6 +327,7 @@ SFTP can also be authorised using private keys. Setting `useSSHkeyFile` will loo
 the secret `rclone-ssh-key` in the appropriate namespace and mount it to `/etc/ssh` in
 the containers filesystem. Rclone will look for the file using `RCLONE_CONFIG_SFTP_KEY_FILE`-
 environment variable.
+
 ```yaml
 rclone:
   enabled: true
@@ -378,6 +345,7 @@ rclone:
 
 Note that this secret `rclone-ssh-key` is not created automatically when deploying this helm chart, but needs
 to be manually prepared by the user like so:
+
 ```bash
 kubectl create secret generic rclone-ssh-key --from-file=/path/to/key.pem -n <namespace>
 ```
@@ -489,23 +457,4 @@ If this is not desired, disable it as follows:
 ```yaml
 debug:
   enabled: false
-```
-
-### init script
-
-To run initialization steps, which are outside of the provided configuration parameters for standard models, you can provide a shellscript to run in a special init container with `NET_ADMIN` priviledges.
-
-To do so, provide the following parameters:
-
-```yaml
-initScript:
-  enabled: true # default is false
-  env:
-    # Add environmental variables here
-    GREETING: "Hello World"
-  script: |
-    set -e
-    echo "This runs my magic shell script"
-    echo "also multi line"
-    echo $GREETING
 ```
