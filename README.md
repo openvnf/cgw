@@ -309,7 +309,8 @@ strip the leading --, change - to _ make upper case and prepend RCLONE_.
 All available endpoints are described in the [official rclone documentation](https://rclone.org/commands/rclone_move/).
 An [inotify](https://linux.die.net/man/1/inotifywait)-pattern is watching for captures, moving them from the directory `/data/finished`.
 
-This container example-configuration enables authorisation through username and password:
+
+This container example-configuration enables authorisation for sftp through username and password:
 
 ```yaml
 rclone:
@@ -343,12 +344,25 @@ rclone:
     RCLONE_CONFIG_SFTP_PASS: "" # Encoded, blank for agent.
     RCLONE_CONFIG_SFTP_KEY_FILE: "/etc/ssh/key.pem"
 ```
-
 Note that this secret `rclone-ssh-key` is not created automatically when deploying this helm chart, but needs
 to be manually prepared by the user like so:
 
 ```bash
 kubectl create secret generic rclone-ssh-key --from-file=/path/to/key.pem -n <namespace>
+```
+
+This container example-configuration enables authorisation for s3 through access-key and secret-access-key:
+```yaml
+rclone:
+  enabled: true
+  env:
+    RCLONE_CONFIG_S3_TYPE: "s3"
+    RCLONE_CONFIG_S3_ENV_AUTH: "false"
+    RCLONE_CONFIG_S3_ACCESS_KEY_ID: "<sensitive>"
+    RCLONE_CONFIG_S3_SECRET_ACCESS_KEY: "<sensitive>"
+    RCLONE_CONFIG_S3_REGION: "s3-<region>"
+    RCLONE_CONFIG_S3_ACL: "private"
+    RCLONE_CONFIG_S3_FORCE_PATH_STYLE: "false"
 ```
 
 Note that using `rclone_move` implies that transferred files will be removed from
