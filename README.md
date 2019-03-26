@@ -6,27 +6,23 @@ in the current version and therefore not recommended for production use.
 
 <!-- toc -->
 
-* [Additional documents of CGW with specific topics](#additional-documents-of-cgw-with-specific-topics)
 * [General](#general)
   * [upgrade of the helm chart](#upgrade-of-the-helm-chart)
-* [Configuration](#configuration)
+* [Current Documentation](#current-documentation)
+* [Additional documents of CGW with specific topics](#additional-documents-of-cgw-with-specific-topics)
+* [Old Configuration Documentation](#old-configuration-documentation)
   * [Starting Point](#starting-point)
   * [IPsec](#ipsec)
-    * [disable IPsec](#disable-ipsec)
-    * [Manual Strongswan configuration](#manual-strongswan-configuration)
       * [disable setting of routes](#disable-setting-of-routes)
-    * [setting interfaces](#setting-interfaces)
     * [disable IPsec service](#disable-ipsec-service)
-  * [certificate based VPN](#certificate-based-vpn)
-  * [Route-based vs Policy based VPN](#route-based-vs-policy-based-vpn)
   * [BGP](#bgp)
     * [BIRD Internet Routing Daemon](#bird-internet-routing-daemon)
     * [bird_exporter](#bird_exporter)
   * [VXLAN](#vxlan)
-    * [manual VXLAN setup](#manual-vxlan-setup)
+    * [manual VXLAN setup [deprecated]](#manual-vxlan-setup-deprecated)
     * [VXLAN-Controller configuration](#vxlan-controller-configuration)
   * [GRE](#gre)
-  * [VRRP [alpha]](#vrrp-alpha)
+  * [VRRP](#vrrp)
   * [PCAP [alpha]](#pcap-alpha)
   * [Rclone [alpha]](#rclone-alpha)
   * [Router Advertisement Daemon](#router-advertisement-daemon)
@@ -36,15 +32,11 @@ in the current version and therefore not recommended for production use.
   * [Pod wide configurations](#pod-wide-configurations)
     * [additional pod annotations](#additional-pod-annotations)
     * [enable IPv6 routing](#enable-ipv6-routing)
+    * [run CGW on exclusive nodes](#run-cgw-on-exclusive-nodes)
 * [Utilities](#utilities)
   * [debug container](#debug-container)
-  * [init script](#init-script)
 
 <!-- tocstop -->
-
-## Additional documents of CGW with specific topics
-
-* [Configuring firewall with iptables](docs/Firewall.md)
 
 ## General
 
@@ -54,7 +46,24 @@ see [General Usage](docs/tutorials/general_usage.md) for general installation ov
 When configurations or secrets are changed, the pods will be redeployed automatically.
 This will cause a short interruption of the traffic at the moment.
 
-## Configuration
+## Current Documentation
+
+The new documentation is split in four different parts.
+
+* [Tutorials](docs/tutorials/index.md)
+* [How Tos](docs/how-tos/index.md)
+* [Concepts](docs/concepts/index.md)
+* [Reference](docs/reference/index.md)
+
+Depending wheter you learn better top down or bottom up, it makes sense to start with *Concepts* or *Tutorials*.
+
+The *How Tos* expect you to have a basic understanding of CGW and its components, as the settings will not be explained in details, when they are not specific to the *How to* itself.
+
+## Additional documents of CGW with specific topics
+
+* [Configuring firewall with iptables](docs/Firewall.md)
+
+## Old Configuration Documentation
 ### Starting Point
 
 Many people using the `values.yaml` from this Helm chart as a starting point for their own
@@ -95,39 +104,6 @@ components for your deployment.
 
 ### IPsec
 
-#### disable IPsec
-
-To disable the IPsec module, add the following:
-
-```yaml
-ipsec:
-  enabled: false  # defaults to `true`
-```
-
-#### Manual Strongswan configuration
-
-To use a manual configuration of Strongswan instead of using parameters, for example for multi-SA configurations,
-set the following parameters:
-
-```yaml
-ipsec:
-  manualConfig: true # default is false
-  strongswan:
-    ipsecConfig:
-      ipsec.<myconnectionname>.conf: |
-        <add your ipsec config here>
-    ipsecSecrets:
-      ipsec.<myconnectionname>.secrets: |
-        <add your ipsec secret here>
-```
-
-The `ipsec.<myconnectionname>.conf` has to follow the [Strongswan documentation](https://wiki.strongswan.org/projects/strongswan/wiki/IpsecConf).
-
-The `ipsec.<myconnectionname>.secrets` also have to follow the [Strongswan secrets documentation](https://wiki.strongswan.org/projects/strongswan/wiki/IpsecSecrets).
-They will also automatically be base64 encoded into a Kubernetes Secret.
-
-You can repeat the configuration for multiple connections.
-
 NOTE: If the manual configuration is used, the ping-prober must be disabled!! (see [ping-prober](#disable_ping-prober))
 
 ##### disable setting of routes
@@ -135,16 +111,6 @@ NOTE: If the manual configuration is used, the ping-prober must be disabled!! (s
 If Strongswan shall not install routes into its routing table, you have to set the value `ipsec.vti_key: true`.
 This is strongly advised, when using VTI interfaces and route-based VPN.
 
-#### setting interfaces
-
-To set the interfaces Strongswan shall bind on, set `ipsec.interfaces` with a comma seperated list of interfaces.
-
-For example:
-
-```yaml
-ipsec:
-  interfaces: "eth0,net1"
-```
 
 #### disable IPsec service
 
@@ -160,44 +126,6 @@ ipsec:
 ```
 
 Deprecation: The service will be disabled by default in the future.
-
-### certificate based VPN
-
-see [certificate based VPN](./docs/CertificateBasedVPN.md).
-
-### Route-based vs Policy based VPN
-
-The default model of Strongswan uses policy-based vpn.
-This means XFRM rules will be installed on the machine and every packet with destination in vpn connected networks will be transfered to there.
-
-If you have different flows of traffic though and just want steer a certain part through the vpn, it is advised to use [route-based VPN](https://wiki.strongswan.org/projects/strongswan/wiki/RouteBasedVPN).
-
-For that you have to set `ipsec.vti_key: true` to disable setting of internal routes.
-Further you have to create a VTI interface, which sets a mark, which has to be configured in Strongswan correspondingly.
-
-To create a VTI interface you can execute the following:
-
-```sh
-IPSEC_VTI_KEY=10
-IPSEC_REMOTEIP=198.51.100.1
-IPSEC_LOCALIP=192.0.2.1
-IPSEC_VTI_ADDR_LOCAL=203.0.113.10
-IPSEC_VTI_ADDR_PEER=203.0.113.11
-
-ip tunnel add vti${IPSEC_VTI_KEY} mode vti remote $IPSEC_REMOTEIP local $IPSEC_LOCALIP key $IPSEC_VTI_KEY
-ip address add ${IPSEC_VTI_ADDR_LOCAL}/32 peer ${IPSEC_VTI_ADDR_PEER}/32 dev vti${IPSEC_VTI_KEY}
-ip link set vti${IPSEC_VTI_KEY} up
-```
-
-The `vti_key` is the actuall number the packets will be marked with and has to correspond with the Strongswan config.
-
-The local and remote ip can be the public IPs of the link, but also arbitrary documentation addresses could be used.
-The kernel will not actually use the IP addresses, but remove the IP header when handed to Strongswan, but the parameters are required by `iproute2` as it is a virtual tunnel.
-
-The `IPSEC_VTI_ADDR_LOCAL` and `IPSEC_VTI_ADDR_PEER` should be set to a sensible value out of a private network.
-The `IPSEC_VTI_ADDR_PEER` address is then be used to set the routes for packets to the other side of the VPN connection.
-
-Because the VTI interface is virtual, the peer address does not have to be set on the other machine.
 
 ### BGP
 
@@ -246,7 +174,9 @@ There are two different ways available of connecting this service with another c
 The first one is the manual way, where the partners have to be configured with values.
 The second one is using the *vxlan-controller* and the vxlans can be configured using annotations.
 
-#### manual VXLAN setup
+#### manual VXLAN setup [deprecated]
+
+This feature might be deleted in future versions and is no longer supported!
 
 VXLAN endpoints inside the CGW can be created by adding a configuration under the `vxlan` key.
 
@@ -331,7 +261,7 @@ gre:
   gretap: <true | false>
 ```
 
-### VRRP [alpha]
+### VRRP
 
 VRRP based on keepalived can be activated and configured.
 It is possible to create multiple instances,
@@ -369,7 +299,7 @@ pcap:
     FILENAME: "http"
 ```
 
-### Rclone
+### Rclone [alpha]
 To publish captured traffic in the pod by pcap, you have to enable `Rclone` along `pcap` and
 configure it using environmental variables. Use `RCLONE_REMOTE_NAME` to use
 the correct remote and `RCLONE_REMOTE_PATH` for the correct destination path.
@@ -379,7 +309,9 @@ strip the leading --, change - to _ make upper case and prepend RCLONE_.
 All available endpoints are described in the [official rclone documentation](https://rclone.org/commands/rclone_move/).
 An [inotify](https://linux.die.net/man/1/inotifywait)-pattern is watching for captures, moving them from the directory `/data/finished`.
 
+
 This container example-configuration enables authorisation for sftp through username and password:
+
 ```yaml
 rclone:
   enabled: true
@@ -397,6 +329,7 @@ SFTP can also be authorised using private keys. Setting `useSSHkeyFile` will loo
 the secret `rclone-ssh-key` in the appropriate namespace and mount it to `/etc/ssh` in
 the containers filesystem. Rclone will look for the file using `RCLONE_CONFIG_SFTP_KEY_FILE`-
 environment variable.
+
 ```yaml
 rclone:
   enabled: true
@@ -413,6 +346,7 @@ rclone:
 ```
 Note that this secret `rclone-ssh-key` is not created automatically when deploying this helm chart, but needs
 to be manually prepared by the user like so:
+
 ```bash
 kubectl create secret generic rclone-ssh-key --from-file=/path/to/key.pem -n <namespace>
 ```
@@ -527,6 +461,25 @@ additionalAnnotations:
   security.alpha.kubernetes.io/unsafe-sysctls: net.ipv6.conf.default.forwarding=1,net.ipv6.conf.all.forwarding=1
 ```
 
+#### Run CGW on exclusive nodes:
+
+For activate this features setup nodeSelector and tolerations:
+```
+nodeSelector:
+  cgw-service: "true"
+
+tolerations:
+- key: "node-role"
+  operator: "Equal"
+  value: "cgw-services"
+  effect: "NoSchedule"
+```
+And add label and taint to the right nodes, for example on node1:
+```
+kubectl label nodes node1 cgw-service=true
+kubectl taint nodes node1 node-role=cgw-services:NoSchedule
+```
+
 ## Utilities
 
 ### debug container
@@ -538,23 +491,4 @@ If this is not desired, disable it as follows:
 ```yaml
 debug:
   enabled: false
-```
-
-### init script
-
-To run initialization steps, which are outside of the provided configuration parameters for standard models, you can provide a shellscript to run in a special init container with `NET_ADMIN` priviledges.
-
-To do so, provide the following parameters:
-
-```yaml
-initScript:
-  enabled: true # default is false
-  env:
-    # Add environmental variables here
-    GREETING: "Hello World"
-  script: |
-    set -e
-    echo "This runs my magic shell script"
-    echo "also multi line"
-    echo $GREETING
 ```
