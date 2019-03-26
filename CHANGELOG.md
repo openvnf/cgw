@@ -2,22 +2,30 @@
 
 ## 1.0.0
 
-- configuration
+- configuration [breaking]
   - move `service` section of `ipsec` under `ipsec` section in value file
   - move `image` section of `ipsec` under `ipsec` section in value file
   - move `pullSecrets` section to root and remove defaults
   - move `setRouteDefaultTable` section under `ipsec` section
   - move `useEnvConfig` section under `ipsec` section
-- new defaults
+- new defaults [breaking]
   - change manual config for IPSEC to be the new default
-  - disable IPSEC by default
+  - disable `ipsec` by default
   - disable `iptables` by default
   - disable `pingProber` by default
   - disable `pingExporter` by default
   - disable `ipsec.service` by default
-- add service for vxlan and move it out of IPSEC service
-- updated software versions
+- add service for vxlan and move it out of IPSEC service [breaking]
+- updated software versions [breaking]
   - update `ping-prober` container to alpine `3.9`
+  - update `pcap` to `1.1.0`
+- move all repositories to quay.io for security checking
+- deprecation
+  - configure GRE using the `gre` component is deprecated
+  - configure IP addresses using `ipSetup` is deprecated
+  - using vxlan-connector (`vxlan`) is deprecated
+    - use vxlan-controller instead
+  - configure IPSEC without using `manualConfig` is deprecated
 
 ## pre 1.0.0
 
