@@ -23,6 +23,7 @@ Deprecated features or components might be removed in later versions without cha
 - updated software versions [breaking]
   - update `ping-prober` container to alpine `3.9`
   - update `pcap` to `1.1.0`
+  - update `travelping/nettools` image to `1.10.0`
 - move all repositories to quay.io for security checking
 - deprecation
   - configure GRE using the `gre` component is deprecated
