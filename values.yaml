@@ -1,51 +1,4 @@
 ---
-useEnvConfig: "HIDDEN_PUBIP_HOST"
-setRouteDefaultTable: false
-
-ipsec:
-  enabled: true
-  remoteip: 192.0.2.0
-  remotenet: 192.168.23.0/24
-  localprivip: "%any"
-  # localpubip: ipsec.openvnf.com
-  localnet: 192.168.24.0/24
-  keyexchange: ikev2
-  ikecipher: aes192gcm16-aes128gcm16-prfsha256-ecp256-ecp521,aes192-sha256-modp3072
-  espcipher: aes192gcm16-aes128gcm16-ecp256,aes192-sha256-modp3072
-  psk: secret
-  forceudp: "yes"
-  vti_key: 1304
-  manualConfig: false
-  service:
-    enabled: true
-  certs: {}
-service:
-  name: ipsec
-  type: ClusterIP
-  #  protocol: UDP
-  #  externalPort: 4500
-  #  internalPort: 4500
-replicaCount: 1
-image:
-  repository: openvnf/vnf-ipsec
-  tag: 1.4.0
-  pullPolicy: IfNotPresent
-  pullSecrets:
-    - name: werft
-ingress:
-  enabled: false
-  # Used to create an Ingress record.
-  hosts:
-    - chart-example.local
-  annotations:
-  # kubernetes.io/ingress.class: nginx
-  # kubernetes.io/tls-acme: "true"
-  tls:
-  # Secrets must be manually created in the namespace.
-  # - secretName: chart-example-tls
-  #   hosts:
-  #     - chart-example.local
-
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -192,6 +145,37 @@ resources:
       cpu: 50m
       memory: 64Mi
 
+ipsec:
+  enabled: false
+  useEnvConfig: "HIDDEN_PUBIP_HOST"
+  setRouteDefaultTable: false
+  remoteip: 192.0.2.0
+  remotenet: 192.168.23.0/24
+  localprivip: "%any"
+  # localpubip: ipsec.openvnf.com
+  localnet: 192.168.24.0/24
+  keyexchange: ikev2
+  ikecipher: aes192gcm16-aes128gcm16-prfsha256-ecp256-ecp521,aes192-sha256-modp3072
+  espcipher: aes192gcm16-aes128gcm16-ecp256,aes192-sha256-modp3072
+  psk: secret
+  forceudp: "yes"
+  vti_key: 1304
+  manualConfig: true
+  certs: {}
+  service:
+    enabled: false
+    name: ipsec
+    type: ClusterIP
+  replicaCount: 1
+  image:
+    repository: openvnf/vnf-ipsec
+    tag: 1.4.0
+    pullPolicy: IfNotPresent
+
+#pullSecrets:
+  #- name: werft
+
+
 ## Values used to set up GRE usage
 gre:
   enabled: false
@@ -235,7 +219,7 @@ networkUtility:
     pullPolicy: IfNotPresent
 
 iptables:
-  enabled: true
+  enabled: false
   image:
     repository: travelping/nettools
     tag: 1.9.0
@@ -275,14 +259,14 @@ debug:
     pullPolicy: IfNotPresent
 
 pingProber:
-  enabled: true
+  enabled: false
   image:
     repository: alpine
-    tag: "3.7"
+    tag: "3.9"
     pullPolicy: IfNotPresent
 
 pingExporter:
-  enabled: true
+  enabled: false
   image:
     repository: travelping/ping-exporter
     tag: 0.6.0
@@ -312,6 +296,9 @@ vxlan:
       bridged_ifaces: dum0815
       bridge_name: br0
       id: 100
+  service:
+    enabled: false
+    type: ClusterIP
 
 vxlanController:
   enabled: false

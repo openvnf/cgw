@@ -1,4 +1,24 @@
 # Changelog
+
+## 1.0.0
+
+- configuration
+  - move `service` section of `ipsec` under `ipsec` section in value file
+  - move `image` section of `ipsec` under `ipsec` section in value file
+  - move `pullSecrets` section to root and remove defaults
+  - move `setRouteDefaultTable` section under `ipsec` section
+  - move `useEnvConfig` section under `ipsec` section
+- new defaults
+  - change manual config for IPSEC to be the new default
+  - disable IPSEC by default
+  - disable `iptables` by default
+  - disable `pingProber` by default
+  - disable `pingExporter` by default
+  - disable `ipsec.service` by default
+- add service for vxlan and move it out of IPSEC service
+- updated software versions
+  - update `ping-prober` container to alpine `3.9`
+
 ## pre 1.0.0
 
 ### 0.10.0

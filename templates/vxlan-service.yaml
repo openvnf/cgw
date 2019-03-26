@@ -1,0 +1,26 @@
+{{- if and .Values.vxlan.enabled .Values.vxlan.service.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "CGW.fullname" . }}-vxlan
+  labels:
+    app: {{ template "CGW.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.vxlan.service.annotations }}
+  annotations:
+{{ toYaml .Values.vxlan.service.annotations | indent 4 }}
+{{- end }}
+spec:
+  {{ if not .Values.vxlan.service.externalIPs }}type: {{ .Values.vxlan.service.type }}{{ end }}
+  {{ if .Values.vxlan.service.externalIPs }}externalIPs: {{ .Values.vxlan.service.externalIPs }}{{ end }}
+  ports:
+    - port: 4789
+      targetPort: 4789
+      protocol: UDP
+      name: vxlan
+  selector:
+    app: {{ template "CGW.name" . }}
+    release: {{ .Release.Name }}
+{{- end }}

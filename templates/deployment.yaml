@@ -98,8 +98,8 @@ spec:
       {{- end }}
       {{- if and .Values.ipsec.vti_key (not .Values.ipsec.manualConfig) }}
       - name: init-vti
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        image: "{{ .Values.ipsec.image.repository }}:{{ .Values.ipsec.image.tag }}"
+        imagePullPolicy: {{ .Values.ipsec.image.pullPolicy | quote }}
         command: ["/usr/local/bin/start-strongswan.sh", "init"]
         resources:
 {{ toYaml .Values.resources.initVti | indent 10 }}
@@ -163,7 +163,7 @@ spec:
           value: "{{ .Values.gre.remoteip }}"
         - name: GRE_IFACE
           value: "{{ .Values.gre.name }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
@@ -322,8 +322,8 @@ spec:
 
       {{- if .Values.ipsec.enabled }}
       - name: ipsec
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        image: "{{ .Values.ipsec.image.repository }}:{{ .Values.ipsec.image.tag }}"
+        imagePullPolicy: {{ .Values.ipsec.image.pullPolicy | quote }}
         resources:
 {{ toYaml .Values.resources.ipsec | indent 10 }}
         ports:
@@ -336,9 +336,9 @@ spec:
         env:
         {{- if not .Values.ipsec.manualConfig }}
           - name: USE_ENV_CONFIG
-            value: "{{ .Values.useEnvConfig }}"
+            value: "{{ .Values.ipsec.useEnvConfig }}"
           - name: SET_ROUTE_DEFAULT_TABLE
-            value: "{{ .Values.setRouteDefaultTable }}"
+            value: "{{ .Values.ipsec.setRouteDefaultTable }}"
           - name: IPSEC_LOCALPRIVIP
             value: "{{ .Values.ipsec.localprivip }}"
   #        - name: IPSEC_LOCALPUBIP
@@ -785,9 +785,9 @@ spec:
               path: radvd.conf
               defaultMode: 0444
       {{- end }}
-    {{- if .Values.image.pullSecrets }}
+    {{- if .Values.pullSecrets }}
       imagePullSecrets:
-{{ toYaml .Values.image.pullSecrets | indent 8 }}
+{{ toYaml .Values.pullSecrets | indent 8 }}
     {{- end }}
 
    {{- if .Values.nodeSelector }}

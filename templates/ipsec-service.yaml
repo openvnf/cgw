@@ -2,19 +2,19 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "CGW.fullname" . }}
+  name: {{ template "CGW.fullname" . }}-ipsec
   labels:
     app: {{ template "CGW.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-{{- if .Values.service.annotations }}
+{{- if .Values.ipsec.service.annotations }}
   annotations:
-{{ toYaml .Values.service.annotations | indent 4 }}
+{{ toYaml .Values.ipsec.service.annotations | indent 4 }}
 {{- end }}
 spec:
-  {{ if not .Values.service.externalIPs }}type: {{ .Values.service.type }}{{ end }}
-  {{ if .Values.service.externalIPs }}externalIPs: {{ .Values.service.externalIPs }}{{ end }}
+  {{ if not .Values.ipsec.service.externalIPs }}type: {{ .Values.ipsec.service.type }}{{ end }}
+  {{ if .Values.ipsec.service.externalIPs }}externalIPs: {{ .Values.ipsec.service.externalIPs }}{{ end }}
   ports:
     - port: 500
       targetPort: 500
@@ -24,12 +24,6 @@ spec:
       targetPort: 4500
       protocol: UDP
       name: p4500
-    {{- if .Values.vxlan.enabled }}
-    - port: 4789
-      targetPort: 4789
-      protocol: UDP
-      name: vxlan
-    {{- end }}
   selector:
     app: {{ template "CGW.name" . }}
     release: {{ .Release.Name }}
