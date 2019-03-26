@@ -1,4 +1,6 @@
-# configure IPs and interfaces declaratively
+# configure IPs and interfaces declaratively [deprecated]
+
+This feature is deprecated. Use [configure IPs and interfaces imperatively](./imperative_ip_configuration.md) instead.
 
 There are two different ways in CGW to add IP addresses and interfaces, a declarative and an imperative one.
 This tutorial will describe how to add IP addresses declarative using a yaml configuration.

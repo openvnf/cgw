@@ -1,5 +1,9 @@
 # Changelog
 
+## General Notice
+
+Deprecated features or components might be removed in later versions without change in major version number!
+
 ## 1.0.0
 
 - configuration [breaking]

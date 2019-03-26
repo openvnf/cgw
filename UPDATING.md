@@ -2,6 +2,10 @@
 
 <!-- toc -->
 
+* [1.0.0](#100)
+  * [disabled sections](#disabled-sections)
+  * [manual config is new default for `ipsec`](#manual-config-is-new-default-for-ipsec)
+  * [Services for IPSEC and VXLAN](#services-for-ipsec-and-vxlan)
 * [pre 1.0](#pre-10)
   * [from version `= 0.10.0`](#from-version--0100)
     * [ping-exporter update](#ping-exporter-update)
@@ -9,6 +13,69 @@
     * [VXLAN controller annotations](#vxlan-controller-annotations)
 
 <!-- tocstop -->
+
+## 1.0.0
+
+In version `1.0.0` of CGW a lot of defaults changed in a breaking manner, therefore it is assumed that your configuration will also be affected.
+
+### disabled sections
+
+By default all components of CGW are disabled by default besides the `debug` container.
+Therefore the equivalent default looks like the following:
+
+```yaml
+debug:
+  enabled: true
+
+ipsec:
+  enabled: false
+  service:
+    enabled: false
+
+vxlanController:
+  enabled: false
+
+iptables:
+  enabled: false
+
+initScript:
+  enabled: false
+
+pingExporter:
+  enabled: false
+
+pingProber:
+  enabled: false
+```
+
+Add a `enabled` section to all components you want to used!
+
+### manual config is new default for `ipsec`
+
+If you are NOT using the manual config for IPSEC, meaning providing a complete Strongwan config you have to add the following:
+
+```yaml
+ipsec:
+  manualConfig: false
+```
+
+If it is already set to `true` you can either keep it or remove it.
+
+### Services for IPSEC and VXLAN
+
+If you are still using services for vxlan (without using vxlan-controller) and/or the service for ipsec itself,
+you have to change the following, as the parts moved:
+
+```yaml
+ipsec:
+  service:  # was `service` instead of `ipsec.service` before
+    enabled: true
+    <all settings from `service` go here>
+
+vxlan:
+  service:  # was part of the general `service` before and is split now
+    enabled: true
+```
 
 ## pre 1.0
 
