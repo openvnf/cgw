@@ -267,6 +267,9 @@ spec:
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
+          {{- if .Values.initScript.additionalSecurityContext }}
+{{ toYaml .Values.initScript.additionalSecurityContext | indent 10 }}
+          {{- end }}
         envFrom:
           - configMapRef:
               name: {{ template "CGW.fullname" . }}-init-script-env
