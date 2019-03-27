@@ -50,10 +50,10 @@ This will cause a short interruption of the traffic at the moment.
 
 The new documentation is split in four different parts.
 
-* [Tutorials](docs/tutorials/index.md)
-* [How Tos](docs/how-tos/index.md)
-* [Concepts](docs/concepts/index.md)
-* [Reference](docs/reference/index.md)
+* [Tutorials](docs/tutorials/README.md)
+* [How Tos](docs/how-tos/README.md)
+* [Concepts](docs/concepts/README.md)
+* [Reference](docs/reference/README.md)
 
 Depending wheter you learn better top down or bottom up, it makes sense to start with *Concepts* or *Tutorials*.
 
