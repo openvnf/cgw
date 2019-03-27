@@ -145,6 +145,8 @@ resources:
       cpu: 50m
       memory: 64Mi
 
+replicaCount: 1
+
 ipsec:
   enabled: false
   useEnvConfig: "HIDDEN_PUBIP_HOST"
@@ -166,7 +168,6 @@ ipsec:
     enabled: false
     name: ipsec
     type: ClusterIP
-  replicaCount: 1
   image:
     repository: quay.io/openvnf/vnf-ipsec
     tag: 1.4.0
