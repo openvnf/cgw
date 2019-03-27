@@ -25,6 +25,7 @@ Deprecated features or components might be removed in later versions without cha
   - update `pcap` to `1.1.0`
   - update `travelping/nettools` image to `1.10.0`
 - move all repositories to quay.io for security checking
+- remove the chart name (*cgw*) from the container names in the pod
 - deprecation
   - configure GRE using the `gre` component is deprecated
   - configure IP addresses using `ipSetup` is deprecated

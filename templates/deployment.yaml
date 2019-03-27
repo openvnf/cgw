@@ -171,7 +171,7 @@ spec:
        
       {{- if .Values.ipSetup.enabled }}
       {{- if or .Values.ipSetup.ip .Values.ipSetup.staticRoutes }}
-      - name: {{ .Chart.Name }}-ip-setup
+      - name: ip-setup
         image: {{ .Values.networkUtility.image.repository }}:{{ .Values.networkUtility.image.tag }}
         imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
         resources:
@@ -215,7 +215,7 @@ spec:
 
       {{- if .Values.vxlanController.enabled }}
       {{- if or .Values.vxlanController.ip .Values.vxlanController.staticRoutes }}
-      - name: {{ .Chart.Name }}-vxlan-controller-ip-setup
+      - name: vxlan-controller-ip-setup
         image: {{ .Values.networkUtility.image.repository }}:{{ .Values.networkUtility.image.tag }}
         imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
         resources:
@@ -259,7 +259,7 @@ spec:
 
 
       {{- if .Values.initScript.enabled }}
-      - name: {{ .Chart.Name }}-init-script
+      - name: init-script
         image: {{ .Values.initScript.image.repository }}:{{ .Values.initScript.image.tag }}
         imagePullPolicy: {{ .Values.initScript.image.pullPolicy | quote }}
         resources:
@@ -283,7 +283,7 @@ spec:
       {{- end }}
 
       {{- if .Values.iptables.enabled }}
-      - name: {{ .Chart.Name }}-iptables
+      - name: iptables
         image: {{ .Values.iptables.image.repository }}:{{ .Values.iptables.image.tag }}
         imagePullPolicy: {{ .Values.iptables.image.pullPolicy | quote }}
         resources:
@@ -306,7 +306,7 @@ spec:
 
       containers:
       {{- if .Values.debug.enabled }}
-      - name: {{ .Chart.Name }}-debug
+      - name: debug
         image: {{ .Values.debug.image.repository }}:{{ .Values.debug.image.tag }}
         imagePullPolicy: {{ .Values.debug.image.pullPolicy | quote }}
         resources:
