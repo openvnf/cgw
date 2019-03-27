@@ -170,7 +170,7 @@ ipsec:
     type: ClusterIP
   image:
     repository: quay.io/openvnf/vnf-ipsec
-    tag: 1.4.0
+    tag: v1.4.0
     pullPolicy: IfNotPresent
 
 #pullSecrets:
@@ -270,7 +270,7 @@ pingExporter:
   enabled: false
   image:
     repository: quay.io/travelping/ping-exporter
-    tag: 0.6.0
+    tag: v0.6.0
     pullPolicy: IfNotPresent
   service:
     annotations:
@@ -331,7 +331,7 @@ pcap:
   enabled: false
   image:
     repository: quay.io/travelping/pcap
-    tag: 1.1.0
+    tag: v1.1.0
     pullPolicy: IfNotPresent
 
 radvd:
