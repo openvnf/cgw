@@ -145,6 +145,8 @@ resources:
       cpu: 50m
       memory: 64Mi
 
+replicaCount: 1
+
 ipsec:
   enabled: false
   useEnvConfig: "HIDDEN_PUBIP_HOST"
@@ -166,7 +168,6 @@ ipsec:
     enabled: false
     name: ipsec
     type: ClusterIP
-  replicaCount: 1
   image:
     repository: quay.io/openvnf/vnf-ipsec
     tag: 1.4.0
@@ -207,7 +208,7 @@ initScript:
   env: {}
   image:
     repository: quay.io/travelping/nettools
-    tag: 1.10.0
+    tag: v1.10.0
     pullPolicy: IfNotPresent
   script: |
     echo "script configuration is missing"
@@ -215,14 +216,14 @@ initScript:
 networkUtility:
   image:
     repository: quay.io/travelping/nettools
-    tag: 1.10.0
+    tag: v1.10.0
     pullPolicy: IfNotPresent
 
 iptables:
   enabled: false
   image:
     repository: quay.io/travelping/nettools
-    tag: 1.10.0
+    tag: v1.10.0
     pullPolicy: IfNotPresent
   ipv4Rules: ""
     #*filter
@@ -255,14 +256,14 @@ debug:
   enabled: true
   image:
     repository: quay.io/travelping/nettools
-    tag: 1.10.0
+    tag: v1.10.0
     pullPolicy: IfNotPresent
 
 pingProber:
   enabled: false
   image:
     repository: quay.io/travelping/nettools
-    tag: 1.10.0
+    tag: v1.10.0
     pullPolicy: IfNotPresent
 
 pingExporter:
@@ -306,7 +307,7 @@ vxlanController:
   metadataKey: vxlan.openvnf.org
   names: "vxeth0, vxeth1"
   image:
-    repository: openvnf/kube-vxlan-controller-agent
+    repository: quay.io/openvnf/kube-vxlan-controller-agent
     tag: v2.1.0
     pullPolicy: IfNotPresent
   # ip:
