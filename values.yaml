@@ -132,11 +132,11 @@ resources:
       memory: 64Mi
   pingExporter:
     limits:
+      cpu: 100m
+      memory: 64Mi
+    requests:
       cpu: 50m
       memory: 32Mi
-    requests:
-      cpu: 25m
-      memory: 16Mi
   rclone:
     limits:
       cpu: 50m
