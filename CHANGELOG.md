@@ -4,6 +4,10 @@
 
 Deprecated features or components might be removed in later versions without change in major version number!
 
+## 1.0.1
+
+- Double `ping-exporter's` resources to mitigate wrong results (https://github.com/openvnf/cgw/pull/31).
+
 ## 1.0.0
 
 - configuration [breaking]
