@@ -12,6 +12,8 @@ The initialisation script will run as the last init container, and therefore aft
   * [the first example](#the-first-example)
   * [the shell script itself](#the-shell-script-itself)
 * [add route to an interface](#add-route-to-an-interface)
+* [change MTU of interfaces](#change-mtu-of-interfaces)
+* [disable offloading for NICs](#disable-offloading-for-nics)
 
 <!-- tocstop -->
 
@@ -94,3 +96,29 @@ initScript:
 As seen in the example, the only difference are the last line in which `ip route` is used to add a route to the kernels routing table.
 
 Like in the example above, `ip -6` has to be used, to add routes to the IPv6 routing table.
+
+## change MTU of interfaces
+
+If you have to change the MTU of interfaces manually, add the following parts to the initscript:
+
+```yaml
+initScript:
+  script: |
+    ip link set dev eth0 mtu 1440
+    # < add additional links>
+```
+
+## disable offloading for NICs
+
+To disable offloadings of the network cards, add the following parts to the initscript:
+
+```yaml
+initScript:
+  script: |
+    ethtool -K eth0 gro off
+    ethtool -K eth0 tso off
+    ethtool -K eth0 gso off
+    # < add lines for additional interfaces >
+```
+
+
