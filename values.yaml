@@ -343,6 +343,7 @@ radvd:
 
 rclone:
   enabled: false
+  filename: "gtp.pcap"
   useSSHkeyFile: false
   image:
     repository: quay.io/travelping/docker-rclone

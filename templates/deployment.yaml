@@ -665,7 +665,8 @@ spec:
            inotifywait --monitor -e close_write --format %w%f $watchnames | while read FILE
            do
             echo "$FILE is finished. Moving to data/finished/. Attempting to push to $RCLONE_REMOTE_PATH/ on remote device."
-            mv $FILE/ data/finished/
+            timestamp=$(echo $FILE | cut -d '_' -f3 | cut -d '.' -f1 |  sed 's/./&_/4;s/./&_/7;s/./&-/10;s/./&h/13;s/./&m/16')
+            mv $FILE data/finished/$timestamp-{{ .Values.rclone.filename }}
             rclone move /data/finished/ $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/
            done
       {{- end }}
