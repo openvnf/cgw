@@ -25,6 +25,8 @@ Deprecated features or components might be removed in later versions without cha
   - update `ping-prober` container to alpine `3.9`
   - update `pcap` to `1.1.0`
   - update `travelping/nettools` image to `1.10.0`
+- udate software versions
+  - update `vnf-bird` to `1.0.0`, which uses Fedora and bird `1.6.6`
 - move all repositories to quay.io for security checking
 - remove the chart name (*cgw*) from the container names in the pod
 - deprecation
