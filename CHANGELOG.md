@@ -34,6 +34,7 @@ Deprecated features or components might be removed in later versions without cha
     - use vxlan-controller instead
   - configure IPSEC without using `manualConfig` is deprecated
 - double `ping-exporter's` resources to mitigate wrong results (https://github.com/openvnf/cgw/pull/31)
+- added `filename` to *rclone* to enable naming trace-files.
 
 ## pre 1.0.0
 
