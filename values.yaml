@@ -189,7 +189,7 @@ bird:
   enabled: false
   image:
     repository: quay.io/openvnf/vnf-bird
-    tag: v1.0.0_2019-04-15T135012Z
+    tag: v1.0.1_2019-05-10T140120Z
     pullPolicy: IfNotPresent
 
   birdExporter:
