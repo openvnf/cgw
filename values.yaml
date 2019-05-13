@@ -200,7 +200,7 @@ bird:
         prometheus.io/port: "9324"
     image:
       repository: quay.io/openvnf/bird_exporter
-      tag: 1.2.3
+      tag: 1.2.3_bugfix1
       pullPolicy: IfNotPresent
 
 initScript:

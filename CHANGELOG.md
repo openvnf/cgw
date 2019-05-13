@@ -4,11 +4,18 @@
 
 Deprecated features or components might be removed in later versions without change in major version number!
 
-## 1.0.1
+## 1.0
+
+### 1.0.2
+
+- update version of `bird_exporter` to fix non-propagation of container startup
+  arguments.
+
+### 1.0.1
 
 - update `vnf-bird` to `1.0.2` as `bird6` was forgotten to be installed
 
-## 1.0.0
+### 1.0.0
 
 - configuration [breaking]
   - move `service` section of `ipsec` under `ipsec` section in value file
