@@ -6,6 +6,11 @@ Deprecated features or components might be removed in later versions without cha
 
 ## 1.0
 
+### 1.1.0
+
+- update version of `pcap` to `1.2.1`
+- change default resources to lower values
+
 ### 1.0.2
 
 - update version of `bird_exporter` to fix non-propagation of container startup

@@ -97,10 +97,10 @@ resources:
       memory: 64Mi
   bird:
     limits:
-      cpu: 200m
-      memory: 256Mi
+      cpu: 100m
+      memory: 128Mi
     requests:
-      cpu: 200m
+      cpu: 100m
       memory: 128Mi
   birdExporter:
     limits:
@@ -112,10 +112,10 @@ resources:
   pcap:
     limits:
       cpu: 50m
-      memory: 128Mi
+      memory: 256Mi
     requests:
       cpu: 50m
-      memory: 64Mi
+      memory: 128Mi
   radvd:
     limits:
       cpu: 50m
