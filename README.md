@@ -147,6 +147,16 @@ At the moment, you have to configure BIRD manually following the [BIRD documenta
 
 The version used is `1.6` which differs in its configuration from version `2.0`.
 
+Further, the *bird* container is configured to log to standard out, but if you
+want to have info logs with timestamps, you should add the following to the
+respective bird and bird6 configuration:
+
+```
+log stderr all;
+```
+
+see: <https://bird.network.cz/?get_doc&v=16&f=bird-3.html#ss3.2>
+
 #### bird_exporter
 
 By default `bird_exporter` will be enabled, when bird is enabled and expose prometheus metrics for *BIRD*.

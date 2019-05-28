@@ -6,6 +6,10 @@ Deprecated features or components might be removed in later versions without cha
 
 ## 1.0
 
+### 1.2.0
+
+- enable log to standard out for *bird* containers.
+
 ### 1.1.0
 
 - update version of `pcap` to `1.2.1`
