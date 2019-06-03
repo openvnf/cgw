@@ -754,10 +754,10 @@ spec:
       - name: init-script
         configMap:
           name: {{ template "CGW.fullname" . }}-init-script
+          defaultMode: 0544
           items:
             - key: initScript.sh
               path: initScript.sh
-              defaultMode: 0544
       {{- end }}
       {{- if .Values.bird.enabled }}
       - name: bird-config
@@ -781,10 +781,10 @@ spec:
       - name: radvd-config
         configMap:
           name: {{ template "CGW.fullname" . }}-radvd-config
+          defaultMode: 0444
           items:
             - key: radvd.conf
               path: radvd.conf
-              defaultMode: 0444
       {{- end }}
     {{- if .Values.pullSecrets }}
       imagePullSecrets:
