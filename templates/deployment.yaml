@@ -8,7 +8,6 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  terminationGracePeriodSeconds: 0
   strategy:
     rollingUpdate:
       maxSurge: 0
@@ -46,6 +45,7 @@ spec:
 {{ toYaml .Values.additionalAnnotations | indent 8 }}
         {{- end }}
     spec:
+      terminationGracePeriodSeconds: 0
         {{- if .Values.affinity }}
       affinity:
 {{ toYaml .Values.affinity | indent 8 }}
