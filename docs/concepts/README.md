@@ -37,6 +37,6 @@ measures to retain service if any of the components fail.
 * [HA routing via two routers on each side with full
   mesh (MODEL-6)](models/bgp-ha-two-sides-full.md)
 * [HA routing via two routers on each side over VPN with full
-  mesh (MODEL-7)](models/bgp-ha-tow-sides-full-vpn.md)
+  mesh (MODEL-7)](models/bgp-ha-two-sides-full-vpn-bfd.md)
 
 

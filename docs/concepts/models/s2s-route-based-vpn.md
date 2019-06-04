@@ -1,4 +1,4 @@
-# MODEL-1 Site to Site route based VPN
+# MODEL-1 Site to Site route based VPN using IPSEC (MODEL-1)
 
 ## Overview
 

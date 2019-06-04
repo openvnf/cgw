@@ -1,4 +1,4 @@
-# Announced default route by other party using BGP
+# Announced default route by other party using BGP (MODEL-2)
 
 As shown in the overview, the architecture consists of routers on our side as
 well as the side of the other party.
