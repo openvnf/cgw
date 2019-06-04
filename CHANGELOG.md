@@ -6,6 +6,12 @@ Deprecated features or components might be removed in later versions without cha
 
 ## 1.0
 
+### 1.2.1
+
+- fix mode values for file access of init script and radvd-config
+- move `terminationGracePeriodSeconds` into Podspec
+- fixes validation error for Helm `2.14` with this chart
+
 ### 1.2.0
 
 - enable log to standard out for *bird* containers.
