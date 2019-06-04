@@ -32,7 +32,7 @@ in the current version and therefore not recommended for production use.
   * [Pod wide configurations](#pod-wide-configurations)
     * [additional pod annotations](#additional-pod-annotations)
     * [enable IPv6 routing](#enable-ipv6-routing)
-    * [run CGW on exclusive nodes](#run-cgw-on-exclusive-nodes)
+    * [Run CGW on exclusive nodes:](#run-cgw-on-exclusive-nodes)
 * [Utilities](#utilities)
   * [debug container](#debug-container)
 
