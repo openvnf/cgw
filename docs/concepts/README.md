@@ -10,6 +10,8 @@ If you are just looking for a certain task, and already know the concepts and th
 ## Parts
 
 * [Policy vs Route based VPN](./policy_route_based_vpn.md)
+* [Routing basics](./routing_basics.md)
+* [Bidirectional Forwarding Detection](./bfd.md)_
 
 
 ### Models
