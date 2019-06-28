@@ -6,6 +6,9 @@ Deprecated features or components might be removed in later versions without cha
 
 ## 1.0
 
+### 1.2.2
+- reduce packaged helm chart file size from 240kbyte to 21kbyte
+
 ### 1.2.1
 
 - fix mode values for file access of init script and radvd-config
