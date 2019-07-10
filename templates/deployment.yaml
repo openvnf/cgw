@@ -9,8 +9,7 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   strategy:
-    rollingUpdate:
-      maxSurge: 0
+    type: Recreate
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -45,7 +44,7 @@ spec:
 {{ toYaml .Values.additionalAnnotations | indent 8 }}
         {{- end }}
     spec:
-      terminationGracePeriodSeconds: 0
+      terminationGracePeriodSeconds: 15
         {{- if .Values.affinity }}
       affinity:
 {{ toYaml .Values.affinity | indent 8 }}

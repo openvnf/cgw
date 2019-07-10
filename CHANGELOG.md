@@ -5,6 +5,10 @@
 Deprecated features or components might be removed in later versions without change in major version number!
 
 ## 1.0
+ 
+### 1.3.0
+- change deployment strategy to `Recreate` as we had problems with duplicate
+  address detection of not yet dead pods.
 
 ### 1.2.2
 - reduce packaged helm chart file size from 240kbyte to 21kbyte
