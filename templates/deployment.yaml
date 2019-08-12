@@ -49,6 +49,14 @@ spec:
       affinity:
 {{ toYaml .Values.affinity | indent 8 }}
         {{- end }}
+        {{- if .Values.sysctls }}
+      securityContext:
+        sysctls:
+{{ toYaml .Values.sysctls | indent 10 }}
+        {{- end }}
+        {{- if .Values.additionalPodSpec }}
+{{ toYaml .Values.additionalPodSpec | indent 6}}
+        {{- end }}
       initContainers:
       {{- if .Values.vxlanController.enabled }}
       - name: vxlan-controller-agent-init
