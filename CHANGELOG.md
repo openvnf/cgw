@@ -5,6 +5,11 @@
 Deprecated features or components might be removed in later versions without change in major version number!
 
 ## 1.0
+
+### 1.4.0
+
+- add value to add sysctls to the security context
+- add value to add additional pod specs
  
 ### 1.3.0
 - change deployment strategy to `Recreate` as we had problems with duplicate
