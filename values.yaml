@@ -1,4 +1,7 @@
 ---
+labels:
+  name: cgw
+  cluster: cluster01
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -330,8 +333,8 @@ vrrp:
 pcap:
   enabled: false
   image:
-    repository: quay.io/travelping/pcap
-    tag: v1.2.1
+    repository: travelping/pcap
+    tag: 1.2.1
     pullPolicy: IfNotPresent
 
 radvd:
@@ -346,7 +349,7 @@ rclone:
   filename: "gtp.pcap"
   useSSHkeyFile: false
   image:
-    repository: quay.io/travelping/docker-rclone
+    repository: travelping/docker-rclone
     tag: v1.0
     pullPolicy: IfNotPresent
   env:
