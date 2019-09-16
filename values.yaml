@@ -340,7 +340,7 @@ pcap:
 radvd:
   enabled: false
   image:
-    repository: quay.io/travelping/docker-rclone
+    repository: quay.io/openvnf/radvd
     tag: v0.1.1
     pullPolicy: IfNotPresent
 
@@ -349,7 +349,7 @@ rclone:
   filename: "gtp.pcap"
   useSSHkeyFile: false
   image:
-    repository: travelping/docker-rclone
+    repository: quay.io/travelping/docker-rclone
     tag: v1.0
     pullPolicy: IfNotPresent
   env:
