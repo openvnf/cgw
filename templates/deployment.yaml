@@ -671,10 +671,13 @@ spec:
            [ -d /data/ ] && watchnames="$watchnames /data/"
            inotifywait --monitor -e close_write --format %w%f $watchnames | while read FILE
            do
-            echo "$FILE is finished. Moving to data/finished/. Attempting to push to $RCLONE_REMOTE_PATH/ on remote device."
-            timestamp=$(echo $FILE | cut -d '_' -f3 | cut -d '.' -f1 |  sed 's/./&_/4;s/./&_/7;s/./&-/10;s/./&h/13;s/./&m/16;s/./&s/19')
-            mv $FILE data/finished/$timestamp-{{ .Values.rclone.filename }}
-            rclone move /data/finished/ $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/
+            filename=$(echo $FILE | cut -d '/' -f3 | cut -d '_' -f1)
+            timestamp=$(echo $FILE | cut -d '_' -f3 | cut -d '.' -f1 |  sed 's/./&-/4;s/./&-/7;s/./&_/10;s/./&h/13;s/./&m/16;s/./&s/19')
+            date=$(echo $timestamp | cut -d '_' -f1)
+            format=$(echo $FILE | rev | cut -d '.' -f1 | rev)
+            echo "$FILE is finished. Moving to data/finished/. Attempting to push to $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/{{ .Values.labels.name }}/${date}/${timestamp}_{{ .Values.labels.name }}_{{ .Values.labels.cluster }}_${filename}.${format}"
+            mv $FILE /data/finished/${timestamp}_{{ .Values.labels.name }}_{{ .Values.labels.cluster }}_${filename}.${format}
+            rclone move /data/finished/ $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/{{ .Values.labels.name }}/${date}
            done
       {{- end }}
       volumes:
@@ -782,7 +785,7 @@ spec:
       {{- if .Values.pcap.enabled }}
       - name: pcap-data
         emptyDir:
-          sizeLimit: 2Gi
+          sizeLimit: 10Gi
       {{- end }}
       {{- if .Values.radvd.enabled }}
       - name: radvd-config
