@@ -333,14 +333,14 @@ vrrp:
 pcap:
   enabled: false
   image:
-    repository: travelping/pcap
-    tag: 1.2.1
+    repository: quay.io/travelping/pcap
+    tag: v1.2.1
     pullPolicy: IfNotPresent
 
 radvd:
   enabled: false
   image:
-    repository: quay.io/openvnf/radvd
+    repository: quay.io/travelping/docker-rclone
     tag: v0.1.1
     pullPolicy: IfNotPresent
 
