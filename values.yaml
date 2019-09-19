@@ -350,7 +350,7 @@ rclone:
   useSSHkeyFile: false
   image:
     repository: quay.io/travelping/docker-rclone
-    tag: v1.0
+    tag: v1.1
     pullPolicy: IfNotPresent
   env:
     RCLONE_REMOTE_NAME: "sftp"

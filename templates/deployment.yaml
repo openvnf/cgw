@@ -671,13 +671,15 @@ spec:
            [ -d /data/ ] && watchnames="$watchnames /data/"
            inotifywait --monitor -e close_write --format %w%f $watchnames | while read FILE
            do
-            filename=$(echo $FILE | cut -d '/' -f3 | cut -d '_' -f1)
-            timestamp=$(echo $FILE | cut -d '_' -f3 | cut -d '.' -f1 |  sed 's/./&-/4;s/./&-/7;s/./&_/10;s/./&h/13;s/./&m/16;s/./&s/19')
-            date=$(echo $timestamp | cut -d '_' -f1)
-            format=$(echo $FILE | rev | cut -d '.' -f1 | rev)
-            echo "$FILE is finished. Moving to data/finished/. Attempting to push to $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/{{ .Values.labels.name }}/${date}/${timestamp}_{{ .Values.labels.name }}_{{ .Values.labels.cluster }}_${filename}.${format}"
-            mv $FILE /data/finished/${timestamp}_{{ .Values.labels.name }}_{{ .Values.labels.cluster }}_${filename}.${format}
-            rclone move /data/finished/ $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/{{ .Values.labels.name }}/${date}
+            
+            ts=$(stat -c "%Y" $FILE)
+            prefix=$(date +"%Y-%m-%d/%Y-%m-%d-%Hh%Mm%Ss" -d @$ts)
+            suffix=$(echo $FILE | awk '{ gsub(/\./, "_", $0); split($0, f, "_"); printf("%s.%s\n", f[1], f[4]) }')
+            target="${prefix}_{{ .Values.labels.name }}_{{ .Values.labels.cluster }}_${suffix}"
+
+            echo "$FILE is finished. Moving to data/finished/. Attempting to push to $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/${target}"
+            lz4 --rm "$FILE" "/data/finishes/${target}"
+            rclone move /data/finished/ "$RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/${target}"
            done
       {{- end }}
       volumes:
