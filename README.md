@@ -294,6 +294,9 @@ vrrp:
     # priority, should differ between routing functions
     priority: 50
     authPath: secret
+    # interval in which to send gratuitous ARPs in seconds.
+    # 0 for no refreshing.
+    master_refresh: 10
 ```
 
 ### PCAP [alpha]
