@@ -2,7 +2,8 @@
 
 ## General Notice
 
-Deprecated features or components might be removed in later versions without change in major version number!
+Deprecated features or components might be removed in later versions without
+change in major version number!
 
 ## 1.0
 
@@ -10,12 +11,14 @@ Deprecated features or components might be removed in later versions without cha
 
 - add value to add sysctls to the security context
 - add value to add additional pod specs
- 
+
 ### 1.3.0
+
 - change deployment strategy to `Recreate` as we had problems with duplicate
   address detection of not yet dead pods.
 
 ### 1.2.2
+
 - reduce packaged helm chart file size from 240kbyte to 21kbyte
 
 ### 1.2.1
@@ -149,4 +152,5 @@ Deprecated features or components might be removed in later versions without cha
 - add option to disable usage of VTI interfaces for IPSEC
 
 ### 0.4.0
--  add cgw-exporter to expose ICMP echo metrics for the service
+
+- add cgw-exporter to expose ICMP echo metrics for the service
