@@ -9,6 +9,9 @@ Deprecated features or components might be removed in later versions without cha
 ### 1.5.0
 
 - add config parameter to send gratuitous ARP for VRRP
+- change API version of Deployment to `apps/v1`
+  - [breaking] this change makes CGW uncompatible with kubernetes version 
+    `< 1.9.0`
 
 ### 1.4.0
 
