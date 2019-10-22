@@ -17,7 +17,9 @@ data:
       virtual_router_id {{ $instance.virtual_router_id }}
       priority {{ $instance.priority }}
       advert_int 1
+      {{- if $instance.master_refresh }}
       garp_master_refresh {{ $instance.master_refresh }}
+      {{- end }}
       authentication {
           auth_type PASS
           auth_pass {{ $instance.authPath }}

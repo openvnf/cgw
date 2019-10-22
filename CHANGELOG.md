@@ -6,6 +6,11 @@ Deprecated features or components might be removed in later versions without cha
 
 ## 1.0
 
+
+### 1.5.1
+
+- make config parameter for gratuitous ARP for VRRP backwards compatible
+
 ### 1.5.0
 
 - add config parameter to send gratuitous ARP for VRRP
