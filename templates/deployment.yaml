@@ -154,7 +154,7 @@ spec:
             {{- else }}
             ip tunnel add "$GRE_IFACE" mode gre remote "$GRE_REMOTEIP" local "$GRE_LOCALIP" ttl 255
             {{- end }}
-            ip link set "$GRE_IFACE" up 
+            ip link set "$GRE_IFACE" up
           else
             echo "set gre.localip, gre.remoteip and gre.name in your configuration"
             exit 1
@@ -173,7 +173,7 @@ spec:
           capabilities:
             add: ["NET_ADMIN"]
       {{ end }}
-       
+
       {{- if .Values.ipSetup.enabled }}
       {{- if or .Values.ipSetup.ip .Values.ipSetup.staticRoutes }}
       - name: ip-setup
