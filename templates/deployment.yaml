@@ -29,7 +29,6 @@ spec:
         {{- end }}
         checksum/strongswan-config-template: {{ include (print $.Template.BasePath "/strongswan-config.yaml") . | sha256sum }}
         checksum/strongswan-secret-template: {{ include (print $.Template.BasePath "/strongswan-secret.yaml") . | sha256sum }}
-        checksum/bird-config-template: {{ include (print $.Template.BasePath "/bird-config.yaml") . | sha256sum }}
         checksum/iptables-config-template: {{ include (print $.Template.BasePath "/iptables-configmap.yaml") . | sha256sum }}
         checksum/ip-init-config-template: {{ include (print $.Template.BasePath "/init-script-config.yaml") . | sha256sum }}
         checksum/ip-init-env-template: {{ include (print $.Template.BasePath "/init-script-env.yaml") . | sha256sum }}
@@ -37,7 +36,6 @@ spec:
         checksum/vrrp-config-template: {{ include (print $.Template.BasePath "/vrrp-configmap.yaml") . | sha256sum }}
         checksum/radvd-config-template: {{ include (print $.Template.BasePath "/radvd-config.yaml") . | sha256sum }}
         checksum/strongswan-config: {{ toYaml .Values.ipsec.strongswan | sha256sum }}
-        checksum/bird-config: {{ toYaml .Values.bird.configuration | sha256sum }}
         checksum/iptables-ipv4-config: {{ toYaml .Values.iptables.ipv4Rules | sha256sum }}
         checksum/iptables-ipv6-config: {{ toYaml .Values.iptables.ipv6Rules | sha256sum }}
         {{- if .Values.additionalAnnotations }}
