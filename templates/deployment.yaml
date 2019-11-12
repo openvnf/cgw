@@ -539,6 +539,23 @@ spec:
           mountPath: /opt/bird/
         - name: bird-socket
           mountPath: /var/run/bird/
+      - name: bird-config-watcher
+        image: {{ .Values.bird.birdConfigWatcher.image.repository }}:{{ .Values.bird.birdConfigWatcher.image.tag }}
+        imagePullPolicy: {{ .Values.bird.birdConfigWatcher.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.birdConfigWatcher | indent 10 }}
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+            - SYS_ADMIN
+            - SETPCAP
+            - NET_RAW
+        volumeMounts:
+        - name: bird-config
+          mountPath: /opt/bird/
+        - name: bird-socket
+          mountPath: /var/run/bird/
       {{- end }}
 
       {{- if and .Values.bird.enabled .Values.bird.birdExporter.enabled }}
