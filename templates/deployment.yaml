@@ -558,6 +558,10 @@ spec:
             - SYS_ADMIN
             - SETPCAP
             - NET_RAW
+        ports:
+        - name: p8000
+          containerPort: 8000
+          protocol: TCP
         volumeMounts:
         - name: bird-config
           mountPath: /opt/bird/
