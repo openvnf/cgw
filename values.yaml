@@ -205,7 +205,7 @@ bird:
     enabled: false
     image:
       repository: quay.io/openvnf/bird-configwatcher
-      tag: master
+      tag: v0.0.9
       pullPolicy: IfNotPresent
   birdExporter:
     enabled: true
