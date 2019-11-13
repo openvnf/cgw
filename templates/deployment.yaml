@@ -27,6 +27,12 @@ spec:
         {{- if .Values.vxlanController.enabled }}
         {{ .Values.vxlanController.annotationKey }}: "{{ .Values.vxlanController.names }}"
         {{- end }}
+        {{- if .Values.bird.enabled }}
+        {{- if not .Values.bird.birdConfigWatcher.enabled }}
+        checksum/bird-config-template: {{ include (print $.Template.BasePath "/bird-config.yaml") . | sha256sum }}
+        checksum/bird-config: {{ toYaml .Values.bird.configuration | sha256sum }}
+        {{- end }}
+        {{- end }}
         checksum/strongswan-config-template: {{ include (print $.Template.BasePath "/strongswan-config.yaml") . | sha256sum }}
         checksum/strongswan-secret-template: {{ include (print $.Template.BasePath "/strongswan-secret.yaml") . | sha256sum }}
         checksum/iptables-config-template: {{ include (print $.Template.BasePath "/iptables-configmap.yaml") . | sha256sum }}
