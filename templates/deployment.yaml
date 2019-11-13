@@ -545,6 +545,7 @@ spec:
           mountPath: /opt/bird/
         - name: bird-socket
           mountPath: /var/run/bird/
+      {{- if .Values.bird.birdConfigWatcher.enabled }}
       - name: bird-config-watcher
         image: {{ .Values.bird.birdConfigWatcher.image.repository }}:{{ .Values.bird.birdConfigWatcher.image.tag }}
         imagePullPolicy: {{ .Values.bird.birdConfigWatcher.image.pullPolicy | quote }}
@@ -564,7 +565,7 @@ spec:
           mountPath: /var/run/bird/
       {{- end }}
 
-      {{- if and .Values.bird.enabled .Values.bird.birdExporter.enabled }}
+      {{- if .Values.bird.birdExporter.enabled }}
       - name: bird-exporter
         image: {{ .Values.bird.birdExporter.image.repository }}:{{ .Values.bird.birdExporter.image.tag }}
         imagePullPolicy: {{ .Values.bird.birdExporter.image.pullPolicy | quote }}
@@ -589,6 +590,7 @@ spec:
         volumeMounts:
         - name: bird-socket
           mountPath: /var/run/bird/
+      {{- end }}
       {{- end }}
       {{ if .Values.vrrp.enabled }}
       ## VRRP ##
