@@ -1,12 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "CGW.fullname" . }}
   labels:
     app: {{ template "CGW.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+  name: {{ template "CGW.fullname" . }}
+  namespace: {{ .Values.namespace }}
 spec:
   strategy:
     type: Recreate
