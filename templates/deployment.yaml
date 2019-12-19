@@ -273,10 +273,11 @@ spec:
 {{ toYaml .Values.resources.initScript | indent 10 }}
         securityContext:
           capabilities:
-            add: ["NET_ADMIN"]
-          {{- if .Values.initScript.additionalSecurityContext }}
-{{ toYaml .Values.initScript.additionalSecurityContext | indent 10 }}
-          {{- end }}
+            add:
+            - "NET_ADMIN"
+            {{- if .Values.initScript.additionalSecurityContext }}
+{{ toYaml .Values.initScript.additionalSecurityContext | indent 12 }}
+            {{- end }}
         envFrom:
           - configMapRef:
               name: {{ template "CGW.fullname" . }}-init-script-env
