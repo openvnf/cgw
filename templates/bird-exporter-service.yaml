@@ -23,4 +23,4 @@ spec:
   selector:
     app: {{ template "CGW.name" . }}
     release: {{ .Release.Name }}
-{{- end -}}
+{{- end }}
