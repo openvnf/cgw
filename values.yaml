@@ -209,7 +209,7 @@ bird:
         prometheus.io/port: "8000"
     image:
       repository: quay.io/openvnf/bird-configwatcher
-      tag: v0.0.10
+      tag: v0.0.12
       pullPolicy: IfNotPresent
   birdExporter:
     enabled: true
