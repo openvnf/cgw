@@ -203,6 +203,10 @@ bird:
     pullPolicy: IfNotPresent
   birdConfigWatcher:
     enabled: false
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
     image:
       repository: quay.io/openvnf/bird-configwatcher
       tag: v0.0.10
