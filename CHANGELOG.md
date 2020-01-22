@@ -4,8 +4,11 @@
 
 Deprecated features or components might be removed in later versions without change in major version number!
 
-## 1.0
+## 1.x
 
+### 1.next
+
+- make the `$date` subdirectory in rclone's target optional
 
 ### 1.5.1
 
