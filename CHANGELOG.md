@@ -8,6 +8,8 @@ Deprecated features or components might be removed in later versions without cha
 
 ### 1.next
 
+### 1.5.2
+
 - make the `$date` subdirectory in rclone's target optional
 
 ### 1.5.1
