@@ -6,7 +6,7 @@ Deprecated features or components might be removed in later versions without cha
 
 ## 1.x
 
-### 1.next
+### 1.5.2
 
 ### 1.5.2
 
