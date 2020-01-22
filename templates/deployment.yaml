@@ -675,9 +675,9 @@ spec:
             timestamp=$(echo $FILE | cut -d '_' -f3 | cut -d '.' -f1 |  sed 's/./&-/4;s/./&-/7;s/./&_/10;s/./&h/13;s/./&m/16;s/./&s/19')
             date=$(echo $timestamp | cut -d '_' -f1)
             format=$(echo $FILE | rev | cut -d '.' -f1 | rev)
-            echo "$FILE is finished. Moving to data/finished/. Attempting to push to $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/{{ .Values.labels.name }}/${date}/${timestamp}_{{ .Values.labels.name }}_{{ .Values.labels.cluster }}_${filename}.${format}"
+            echo "$FILE is finished. Moving to data/finished/. Attempting to push to $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/{{ .Values.labels.name }}/{{ if .Values.rclone.dateInPath }}${date}{{ else }}{{ end }}/${timestamp}_{{ .Values.labels.name }}_{{ .Values.labels.cluster }}_${filename}.${format}"
             mv $FILE /data/finished/${timestamp}_{{ .Values.labels.name }}_{{ .Values.labels.cluster }}_${filename}.${format}
-            rclone move /data/finished/ $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/{{ .Values.labels.name }}/${date}
+            rclone move /data/finished/ $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/{{ .Values.labels.name }}/{{ if .Values.rclone.dateInPath }}${date}{{ else }}{{ end }}
            done
       {{- end }}
       volumes:
