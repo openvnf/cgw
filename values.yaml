@@ -346,12 +346,29 @@ radvd:
 
 rclone:
   enabled: false
-  filename: "gtp.pcap"
+  # compress using lz4
+  compression: false
+  # filename template.
+  # The value is used as the `FORMAT` string for a `date -d ...` run so the template can contain date format strings.
+  # Do NOT include the '+' demanded by `date`, we do that for you.
+  filename: "%Y-%m-%dT%H:%M:%SZ_gtp.pcap"
   useSSHkeyFile: false
+  # Build target path from various components. If all components are enabled, the path is
+  # RCLONE_REMOTE_NAME/RCLONE_REMOTE_PATH/<.Values.labels.cluster>/<.Values.labels.name>/<date>
   pathComponents:
-    cluster: true
-    date: true
-    name: true
+    # add cluster to path
+    cluster:
+      enabled: true
+    # add date to path
+    date:
+      enabled: true
+      # date format.
+      # The value is used as the `FORMAT` string for a `date -d ...`.
+      # Do NOT include the '+' demanded by `date`, we do that for you.
+      format: "%Y-%m-%d"
+    # add name to path
+    name:
+      enabled: true
   image:
     repository: quay.io/travelping/docker-rclone
     tag: v1.0
