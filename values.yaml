@@ -348,7 +348,10 @@ rclone:
   enabled: false
   filename: "gtp.pcap"
   useSSHkeyFile: false
-  dateInPath: true
+  pathComponents:
+    cluster: true
+    date: true
+    name: true
   image:
     repository: quay.io/travelping/docker-rclone
     tag: v1.0

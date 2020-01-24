@@ -673,13 +673,13 @@ spec:
            do
             filename=$(echo $FILE | cut -d '/' -f3 | cut -d '_' -f1)
             timestamp=$(echo $FILE | cut -d '_' -f3 | cut -d '.' -f1 |  sed 's/./&-/4;s/./&-/7;s/./&_/10;s/./&h/13;s/./&m/16;s/./&s/19')
-            {{ if .Values.rclone.dateInPath }}date=$(echo $timestamp | cut -d '_' -f1){{ end }}
+            {{ if .Values.rclone.pathComponents.date }}date=$(echo $timestamp | cut -d '_' -f1){{ end }}
             format=$(echo $FILE | rev | cut -d '.' -f1 | rev)
-            echo "$FILE is finished. Moving to data/finished/. Attempting to push to $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/{{ .Values.labels.name }}/{{ if .Values.rclone.dateInPath }}${date}/{{ end }}${timestamp}_{{ .Values.labels.name }}_{{ .Values.labels.cluster }}_${filename}.${format}"
-            mv $FILE /data/finished/${timestamp}_{{ .Values.labels.name }}_{{ .Values.labels.cluster }}_${filename}.${format}
-            rclone move /data/finished/ $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/{{ .Values.labels.name }}/{{ if .Values.rclone.dateInPath }}${date}{{ end }}
+            echo "$FILE is finished. Moving to data/finished/. Attempting to push to $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/{{ if .Values.rclone.pathComponents.name }}{{ .Values.labels.name }}/{{ end }}{{ if .Values.rclone.pathComponents.date }}${date}/{{ end }}${timestamp}_{{ if .Values.rclone.pathComponents.date }}{{ .Values.labels.name }}_{{ end }}{{ if .Values.rclone.pathComponents.cluster }}{{ .Values.labels.cluster }}_{{ end }}${filename}.${format}"
+            mv $FILE /data/finished/${timestamp}_{{ if .Values.rclone.pathComponents.name }}{{ .Values.labels.name }}_{{ end }}{{ if .Values.rclone.pathComponents.cluster }}{{ .Values.labels.cluster }}_{{ end }}${filename}.${format}
+            rclone move /data/finished/ $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/{{ if .Values.rclone.pathComponents.date }}{{ .Values.labels.name }}/{{ end }}{{ if .Values.rclone.pathComponents.date }}${date}{{ end }}
            done
-      {{- end }}
+        {{- end }}
       volumes:
       - name: host-kernel-modules-volume
         hostPath:
