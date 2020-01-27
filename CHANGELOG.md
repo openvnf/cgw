@@ -8,10 +8,13 @@ Deprecated features or components might be removed in later versions without cha
 
 ### 1.next
 
+### 1.5.4
+
 - re-add configurable filename removed in 0290390
 - sanitize target path generation
 - make date formats configurable via values.yaml
 - add optional lz4-compression before upload
+- fix additionalSecurityContext indentation (#44)
 
 ### 1.5.3
 
