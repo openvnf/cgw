@@ -55,7 +55,7 @@ spec:
 {{ toYaml .Values.sysctls | indent 10 }}
         {{- end }}
         {{- if .Values.additionalPodSpec }}
-{{ toYaml .Values.additionalPodSpec | indent 6}}
+{{ toYaml .Values.additionalPodSpec | indent 6 }}
         {{- end }}
       initContainers:
       {{- if .Values.vxlanController.enabled }}
