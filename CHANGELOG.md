@@ -8,6 +8,15 @@ Deprecated features or components might be removed in later versions without cha
 
 ### 1.next
 
+- re-add configurable filename removed in 0290390
+- sanitize target path generation
+- make date formats configurable via values.yaml
+- add optional lz4-compression before upload
+
+### 1.5.3
+
+- make the `$cluster` and `$name` subdirectories in rclone's target optional
+
 ### 1.5.2
 
 - make the `$date` subdirectory in rclone's target optional
