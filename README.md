@@ -297,6 +297,8 @@ vrrp:
     # interval in which to send gratuitous ARPs in seconds.
     # 0 for no refreshing.
     master_refresh: 10
+    # default state on startup (MASTER|BACKUP, default: MASTER)
+    state: BACKUP
 ```
 
 ### PCAP [alpha]
