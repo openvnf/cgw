@@ -667,7 +667,6 @@ spec:
         - sh
         - -c
         - |
-           mkdir data/finished
            watchnames=''
            [ -d /data/ ] && watchnames="$watchnames /data/"
            inotifywait --monitor -e close_write --format %w%f $watchnames | while read FILE
@@ -684,8 +683,6 @@ spec:
             filename=$(date -d${timestamp} "+{{ .Values.rclone.filename }}")
 
             # construct target folder
-            ## remote and remote path
-            target=${RCLONE_REMOTE_NAME}:${RCLONE_REMOTE_PATH}
             {{ if .Values.rclone.pathComponents.cluster.enabled }}
             ## add directory for cluster
             target=${target}/{{ .Values.labels.cluster }}
@@ -699,6 +696,8 @@ spec:
             target=${target}/${pathdate}
             {{ end }}
 
+            mkdir -p data/finished/${target}
+
             echo "$FILE is finished, moving to data/finished/${target}/${filename}."
             mv $FILE /data/finished/${target}/${filename}
 
@@ -707,7 +706,7 @@ spec:
             lz4 --rm ${target}/${filename}
             {{ end }}
 
-            echo "Attempting to push file to ${RCLONE_REMOTE_NAME}:${RCLONE_REMOTE_PATH}/${target}."
+            echo "Attempting to push file to ${target}."
             rclone move /data/finished/ ${RCLONE_REMOTE_NAME}:${RCLONE_REMOTE_PATH}/${target}
            done
         {{- end }}
