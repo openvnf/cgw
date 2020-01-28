@@ -667,6 +667,9 @@ spec:
         - sh
         - -c
         - |
+           {{ if .Values.rclone.debug }}
+           set -x
+           {{ end }}
            watchnames=''
            [ -d /data/ ] && watchnames="$watchnames /data/"
            inotifywait --monitor -e close_write --format %w%f $watchnames | while read FILE

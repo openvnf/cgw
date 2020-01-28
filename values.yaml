@@ -348,6 +348,8 @@ rclone:
   enabled: false
   # compress using lz4
   compression: false
+  # enable debug output (`set -x`) of rclone script
+  debug: false
   # filename template.
   # The value is used as the `FORMAT` string for a `date -d ...` run so the template can contain date format strings.
   # Do NOT include the '+' demanded by `date`, we do that for you.
