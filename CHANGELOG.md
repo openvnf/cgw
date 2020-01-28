@@ -8,6 +8,8 @@ Deprecated features or components might be removed in later versions without cha
 
 ### 1.next
 
+### 1.5.5
+
 - [vrrp] Configurable initial instance `state`
 - [rclone] Update image to v1.50.2 to get fully functional `date`
 - [rclone] Add debug option for script output
