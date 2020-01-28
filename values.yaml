@@ -371,7 +371,7 @@ rclone:
       enabled: true
   image:
     repository: quay.io/travelping/docker-rclone
-    tag: v1.0
+    tag: v1.50.2
     pullPolicy: IfNotPresent
   env:
     RCLONE_REMOTE_NAME: "sftp"
