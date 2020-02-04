@@ -13,6 +13,15 @@ Deprecated features or components might be removed in later versions without cha
 - [rclone] Add debug option for script output
 - [rclone] Hopefully the final fix to the script
 
+### 1.5.6, 1.5.7
+[rclone] Fix rclone filepath
+
+### 1.5.5
+- [vrrp] Configurable initial instance state
+- [rclone] Update image to v1.50.2 to get fully functional date
+- [rclone] Add debug option for script output
+- [rclone] Hopefully the final fix to the script
+
 ### 1.5.4
 
 - re-add configurable filename removed in 0290390

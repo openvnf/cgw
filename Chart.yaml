@@ -5,4 +5,5 @@ name: cgw
 home: https://github.com/openvnf/cgw
 sources:
   - https://github.com/openvnf/cgw
-version: master
+version: 1.5.7
+
