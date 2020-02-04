@@ -670,12 +670,13 @@ spec:
            {{ if .Values.rclone.debug }}
            set -x
            {{ end }}
-           watchnames=''
-           [ -d /data/ ] && watchnames="$watchnames /data/"
-           inotifywait --monitor -e close_write --format %w%f $watchnames | while read FILE
-           do
+
+           handleFile() {
+
+            FILENAME="$1"
+
             # extract file's timestamp and format into YYYY-MM-DDTHH:MM:SSZ
-            timestamp=$(echo ${FILE} | cut -d '_' -f3 | cut -d '.' -f1 |  sed 's/./&-/4;s/./&-/7;s/./&T/10;s/./&:/13;s/./&:/16;s/./&Z/19')
+            timestamp=$(echo "$1" | cut -d '_' -f3 | cut -d '.' -f1 |  sed 's/./&-/4;s/./&-/7;s/./&T/10;s/./&:/13;s/./&:/16;s/./&Z/19')
 
             {{ if .Values.rclone.pathComponents.date.enabled }}
             # generate date
@@ -686,6 +687,7 @@ spec:
             filename=$(date -d${timestamp} "+{{ .Values.rclone.filename }}")
 
             # construct target folder
+            target=""
             {{ if .Values.rclone.pathComponents.cluster.enabled }}
             ## add directory for cluster
             target=${target}/{{ .Values.labels.cluster }}
@@ -701,8 +703,8 @@ spec:
 
             mkdir -p data/finished/${target}
 
-            echo "$FILE is finished, moving to data/finished/${target}/${filename}."
-            mv $FILE /data/finished/${target}/${filename}
+            echo "$FILENAME is finished, moving to data/finished/${target}/${filename}."
+            mv "$FILENAME" /data/finished/${target}/${filename}
 
             {{- if .Values.rclone.compression }}
             # compress file
@@ -711,6 +713,13 @@ spec:
 
             echo "Attempting to push file to ${target}."
             rclone move /data/finished/ ${RCLONE_REMOTE_NAME}:${RCLONE_REMOTE_PATH}/${target}
+           }
+
+           watchnames=''
+           [ -d /data/ ] && watchnames="$watchnames /data/"
+           inotifywait --monitor -e close_write --format %w%f $watchnames | while read FILE
+           do
+             handleFile "$FILE"
            done
         {{- end }}
       volumes:
