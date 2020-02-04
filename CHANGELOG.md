@@ -8,6 +8,10 @@ Deprecated features or components might be removed in later versions without cha
 
 ### 1.next
 
+### 1.5.6
+
+- [rclone] Fix rclone filepath
+
 ### 1.5.5
 
 - [vrrp] Configurable initial instance `state`
