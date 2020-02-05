@@ -717,7 +717,7 @@ spec:
 
             {{- if .Values.rclone.compression }}
             # compress file
-            lz4 --rm ${filedir}/${filename}
+            lz4 --rm ${filedir}/${filename} ${filedir}/${filename}.lz4
             {{ end }}
 
             echo "Attempting to push file to ${target}."
