@@ -690,29 +690,38 @@ spec:
             target=""
             {{ if .Values.rclone.pathComponents.cluster.enabled }}
             ## add directory for cluster
-            target=${target}/{{ .Values.labels.cluster }}
+            target={{ .Values.labels.cluster }}
             {{ end }}
             {{ if .Values.rclone.pathComponents.name.enabled }}
             ## add directory for CGW name if enabled
-            target=${target}/{{ .Values.labels.name }}
+            if [ "$target" == "" ];then
+              target={{ .Values.labels.name }}
+            else
+              target=${target}/{{ .Values.labels.name }}
+            fi
             {{ end }}
             {{ if .Values.rclone.pathComponents.date.enabled }}
             ## add directory for date if enabled
-            target=${target}/${pathdate}
+            if [ "$target" == "" ];then
+              target=${pathdate}
+            else
+              target=${target}/${pathdate}
+            fi
             {{ end }}
+            
+            filedir=/data/finished/${target}
+            mkdir -p $filedir
 
-            mkdir -p data/finished/${target}
-
-            echo "$FILENAME is finished, moving to data/finished/${target}/${filename}."
-            mv "$FILENAME" /data/finished/${target}/${filename}
+            echo "$FILENAME is finished, moving to ${filedir}/${filename}."
+            mv "$FILENAME" ${filedir}/${filename}
 
             {{- if .Values.rclone.compression }}
             # compress file
-            lz4 --rm ${target}/${filename}
+            lz4 --rm ${filedir}/${filename}
             {{ end }}
 
             echo "Attempting to push file to ${target}."
-            rclone move /data/finished/ ${RCLONE_REMOTE_NAME}:${RCLONE_REMOTE_PATH}/${target}
+            rclone move /data/finished/ ${RCLONE_REMOTE_NAME}:${RCLONE_REMOTE_PATH}/ 
            }
 
            watchnames=''
