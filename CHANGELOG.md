@@ -13,6 +13,14 @@ Deprecated features or components might be removed in later versions without cha
 - [rclone] Add debug option for script output
 - [rclone] Hopefully the final fix to the script
 
+### 1.5.8
+
+[rclone] Fix rclone remote filepath
+
+### 1.5.6, 1.5.7
+
+[rclone] Fix rclone filepath
+
 ### 1.5.4
 
 - re-add configurable filename removed in 0290390
