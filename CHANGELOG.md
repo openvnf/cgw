@@ -8,6 +8,22 @@ Deprecated features or components might be removed in later versions without cha
 
 ### 1.next
 
+- Add `additionalLabels` parameter
+
+### 1.5.9
+
+- [rclone] fix lz4 compression
+
+### 1.5.8
+
+- [rclone] Fix rclone remote filepath
+
+### 1.5.6, 1.5.7
+
+- [rclone] Fix rclone filepath
+
+### 1.5.5
+
 - [vrrp] Configurable initial instance `state`
 - [rclone] Update image to v1.50.2 to get fully functional `date`
 - [rclone] Add debug option for script output
