@@ -32,7 +32,7 @@ in the current version and therefore not recommended for production use.
   * [Pod wide configurations](#pod-wide-configurations)
     * [additional pod annotations](#additional-pod-annotations)
     * [enable IPv6 routing](#enable-ipv6-routing)
-    * [run CGW on exclusive nodes](#run-cgw-on-exclusive-nodes)
+    * [Run CGW on exclusive nodes:](#run-cgw-on-exclusive-nodes)
 * [Utilities](#utilities)
   * [debug container](#debug-container)
 
@@ -146,6 +146,16 @@ bird:
 At the moment, you have to configure BIRD manually following the [BIRD documentation](http://bird.network.cz/?get_doc&v=16&f=bird-3.html).
 
 The version used is `1.6` which differs in its configuration from version `2.0`.
+
+Further, the *bird* container is configured to log to standard out, but if you
+want to have info logs with timestamps, you should add the following to the
+respective bird and bird6 configuration:
+
+```
+log stderr all;
+```
+
+see: <https://bird.network.cz/?get_doc&v=16&f=bird-3.html#ss3.2>
 
 #### bird_exporter
 
@@ -284,6 +294,11 @@ vrrp:
     # priority, should differ between routing functions
     priority: 50
     authPath: secret
+    # interval in which to send gratuitous ARPs in seconds.
+    # 0 for no refreshing.
+    master_refresh: 10
+    # default state on startup (MASTER|BACKUP, default: MASTER)
+    state: BACKUP
 ```
 
 ### PCAP [alpha]
@@ -300,7 +315,7 @@ pcap:
 ```
 
 ### Rclone [alpha]
-To publish captured traffic in the pod by pcap, you have to enable `Rclone` along `pcap` and
+To publish traffic captured by the pcap container, you have to enable `rclone` along `pcap` and
 configure it using environmental variables. Use `RCLONE_REMOTE_NAME` to use
 the correct remote and `RCLONE_REMOTE_PATH` for the correct destination path.
 `Rclone` is defined generically through the container environment.
@@ -309,8 +324,7 @@ strip the leading --, change - to _ make upper case and prepend RCLONE_.
 All available endpoints are described in the [official rclone documentation](https://rclone.org/commands/rclone_move/).
 An [inotify](https://linux.die.net/man/1/inotifywait)-pattern is watching for captures, moving them from the directory `/data/finished`.
 
-
-This container example-configuration enables authorisation for sftp through username and password:
+This container example-configuration enables authorisation for SFTP through username and password:
 
 ```yaml
 rclone:
@@ -373,7 +387,7 @@ When attempting to push duplicate files they will be removed from the source pat
 not overwritten/modified on the destination if [MD5/SHA](https://github.com/ncw/rclone#features)
 checksums and file-name are the same on both ends.
 Be aware this can cause data loss, if you were happen to lose access to the data at
-destination. Consider testing first using `--dry-run` flag first.
+destination. Consider testing first using the `--dry-run` flag.
 
 ### Router Advertisement Daemon
 To enable router advertisement of IPv6 routing CGWs, enable the daemon as follows:

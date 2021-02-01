@@ -4,11 +4,101 @@
 
 Deprecated features or components might be removed in later versions without change in major version number!
 
-## 1.0.1
+## 1.x
+
+### 1.next
+
+### 1.5.11
+
+- Fix trailing spaces in CM
+
+### 1.5.10
+
+- Add `additionalLabels` parameter
+
+### 1.5.9
+
+- [rclone] fix lz4 compression
+
+### 1.5.8
+
+- [rclone] Fix rclone remote filepath
+
+### 1.5.6, 1.5.7
+
+- [rclone] Fix rclone filepath
+
+### 1.5.5
+
+- [vrrp] Configurable initial instance `state`
+- [rclone] Update image to v1.50.2 to get fully functional `date`
+- [rclone] Add debug option for script output
+- [rclone] Hopefully the final fix to the script
+
+### 1.5.4
+
+- re-add configurable filename removed in 0290390
+- sanitize target path generation
+- make date formats configurable via values.yaml
+- add optional lz4-compression before upload
+- fix additionalSecurityContext indentation (#44)
+
+### 1.5.3
+
+- make the `$cluster` and `$name` subdirectories in rclone's target optional
+
+### 1.5.2
+
+- make the `$date` subdirectory in rclone's target optional
+
+### 1.5.1
+
+- make config parameter for gratuitous ARP for VRRP backwards compatible
+
+### 1.5.0
+
+- add config parameter to send gratuitous ARP for VRRP
+- change API version of Deployment to `apps/v1`
+  - [breaking] this change makes CGW uncompatible with kubernetes version 
+    `< 1.9.0`
+
+### 1.4.0
+
+- add value to add sysctls to the security context
+- add value to add additional pod specs
+ 
+### 1.3.0
+- change deployment strategy to `Recreate` as we had problems with duplicate
+  address detection of not yet dead pods.
+
+### 1.2.2
+- reduce packaged helm chart file size from 240kbyte to 21kbyte
+
+### 1.2.1
+
+- fix mode values for file access of init script and radvd-config
+- move `terminationGracePeriodSeconds` into Podspec
+- fixes validation error for Helm `2.14` with this chart
+
+### 1.2.0
+
+- enable log to standard out for *bird* containers.
+
+### 1.1.0
+
+- update version of `pcap` to `1.2.1`
+- change default resources to lower values
+
+### 1.0.2
+
+- update version of `bird_exporter` to fix non-propagation of container startup
+  arguments.
+
+### 1.0.1
 
 - update `vnf-bird` to `1.0.2` as `bird6` was forgotten to be installed
 
-## 1.0.0
+### 1.0.0
 
 - configuration [breaking]
   - move `service` section of `ipsec` under `ipsec` section in value file

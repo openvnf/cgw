@@ -3,11 +3,14 @@ sudo: enabled
 services:
   - docker
 
+env:
+  - helmversion=v2.16.1
+
 install:
-  - docker pull lachlanevenson/k8s-helm
+  - docker pull lachlanevenson/k8s-helm:$helmversion
 
 script:
-  - docker run -v `pwd`:/opt/cgw --entrypoint "/bin/sh" lachlanevenson/k8s-helm -c  "cd /opt/cgw; helm init -c; helm repo add tp $CHART_REPO; helm package -u ."
+  - docker run -v `pwd`:/opt/cgw --entrypoint "/bin/sh" lachlanevenson/k8s-helm:$helmversion -c  "cd /opt/cgw; helm init -c; helm repo add tp $CHART_REPO; helm package -u ."
 
 deploy:
   provider: script
@@ -16,4 +19,3 @@ deploy:
   on:
     tags: true
     all_branches: true
-

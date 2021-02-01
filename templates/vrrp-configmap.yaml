@@ -8,15 +8,21 @@ metadata:
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    {{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+    {{- end }}
 data:
   keepalived.conf: |
     {{- range $instance := .Values.vrrp.instances }}
     vrrp_instance {{ $instance.name }} {
-      state MASTER
+      state {{ $instance.state | upper | default "MASTER" }}
       interface {{ $instance.interface }}
       virtual_router_id {{ $instance.virtual_router_id }}
       priority {{ $instance.priority }}
       advert_int 1
+      {{- if $instance.master_refresh }}
+      garp_master_refresh {{ $instance.master_refresh }}
+      {{- end }}
       authentication {
           auth_type PASS
           auth_pass {{ $instance.authPath }}

@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "CGW.fullname" . }}
@@ -7,11 +7,12 @@ metadata:
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    {{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+    {{- end }}
 spec:
-  terminationGracePeriodSeconds: 0
   strategy:
-    rollingUpdate:
-      maxSurge: 0
+    type: Recreate
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -25,9 +26,12 @@ spec:
         {{- if .Values.vxlanController.enabled }}
         {{ .Values.vxlanController.metadataKey }}: "true"
         {{- end }}
+        {{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 8 }}
+        {{- end }}
       annotations:
         {{- if .Values.vxlanController.enabled }}
-        {{ .Values.vxlanController.annotationKey }}: "{{ .Values.vxlanController.names }}"
+        {{ .Values.vxlanController.annotationKey }}: {{ .Values.vxlanController.names | quote }}
         {{- end }}
         checksum/strongswan-config-template: {{ include (print $.Template.BasePath "/strongswan-config.yaml") . | sha256sum }}
         checksum/strongswan-secret-template: {{ include (print $.Template.BasePath "/strongswan-secret.yaml") . | sha256sum }}
@@ -46,9 +50,18 @@ spec:
 {{ toYaml .Values.additionalAnnotations | indent 8 }}
         {{- end }}
     spec:
+      terminationGracePeriodSeconds: 15
         {{- if .Values.affinity }}
       affinity:
 {{ toYaml .Values.affinity | indent 8 }}
+        {{- end }}
+        {{- if .Values.sysctls }}
+      securityContext:
+        sysctls:
+{{ toYaml .Values.sysctls | indent 10 }}
+        {{- end }}
+        {{- if .Values.additionalPodSpec }}
+{{ toYaml .Values.additionalPodSpec | indent 6 }}
         {{- end }}
       initContainers:
       {{- if .Values.vxlanController.enabled }}
@@ -91,7 +104,7 @@ spec:
           echo "Initializer completed."
         env:
         - name: LOCAL_PING_ENDPOINT
-          value: "{{ .Values.ipsec.local_ping_endpoint }}"
+          value: {{ .Values.ipsec.local_ping_endpoint | quote }}
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
@@ -105,21 +118,21 @@ spec:
 {{ toYaml .Values.resources.initVti | indent 10 }}
         env:
         - name: IPSEC_VTI_KEY
-          value: "{{ .Values.ipsec.vti_key }}"
+          value: {{ .Values.ipsec.vti_key | quote }}
 #        - name: IPSEC_LOCALIP
-#          value: "{{ .Values.ipsec.localip }}"
+#          value: {{ .Values.ipsec.localip | quote }}
         - name: IPSEC_VTI_STATICROUTES
-          value: "{{ .Values.ipsec.vti_staticroutes }}"
+          value: {{ .Values.ipsec.vti_staticroutes | quote }}
         - name: IPSEC_LOCALIP
-          value: "{{ .Values.ipsec.localip }}"
+          value: {{ .Values.ipsec.localip | quote }}
         - name: IPSEC_LOCALNET
-          value: "{{ .Values.ipsec.localnet }}"
+          value: {{ .Values.ipsec.localnet | quote }}
         - name: IPSEC_REMOTEIP
-          value: "{{ .Values.ipsec.remoteip }}"
+          value: {{ .Values.ipsec.remoteip | quote }}
         - name: IPSEC_REMOTENET
-          value: "{{ .Values.ipsec.remotenet }}"
+          value: {{ .Values.ipsec.remotenet | quote }}
         - name: IPSEC_PSK
-          value: "{{ .Values.ipsec.psk }}"
+          value: {{ .Values.ipsec.psk | quote }}
         volumeMounts:
         - mountPath: /lib/modules
           name: host-kernel-modules-volume
@@ -158,11 +171,11 @@ spec:
 
         env:
         - name: GRE_LOCALIP
-          value: "{{ .Values.gre.localip }}"
+          value: {{ .Values.gre.localip | quote }}
         - name: GRE_REMOTEIP
-          value: "{{ .Values.gre.remoteip }}"
+          value: {{ .Values.gre.remoteip | quote }}
         - name: GRE_IFACE
-          value: "{{ .Values.gre.name }}"
+          value: {{ .Values.gre.name | quote }}
         imagePullPolicy: {{ .Values.networkUtility.image.pullPolicy | quote }}
         securityContext:
           capabilities:
@@ -266,10 +279,11 @@ spec:
 {{ toYaml .Values.resources.initScript | indent 10 }}
         securityContext:
           capabilities:
-            add: ["NET_ADMIN"]
-          {{- if .Values.initScript.additionalSecurityContext }}
-{{ toYaml .Values.initScript.additionalSecurityContext | indent 10 }}
-          {{- end }}
+            add:
+            - "NET_ADMIN"
+            {{- if .Values.initScript.additionalSecurityContext }}
+{{ toYaml .Values.initScript.additionalSecurityContext | indent 12 }}
+            {{- end }}
         envFrom:
           - configMapRef:
               name: {{ template "CGW.fullname" . }}-init-script-env
@@ -336,44 +350,44 @@ spec:
         env:
         {{- if not .Values.ipsec.manualConfig }}
           - name: USE_ENV_CONFIG
-            value: "{{ .Values.ipsec.useEnvConfig }}"
+            value: {{ .Values.ipsec.useEnvConfig | quote }}
           - name: SET_ROUTE_DEFAULT_TABLE
-            value: "{{ .Values.ipsec.setRouteDefaultTable }}"
+            value: {{ .Values.ipsec.setRouteDefaultTable | quote }}
           - name: IPSEC_LOCALPRIVIP
-            value: "{{ .Values.ipsec.localprivip }}"
+            value: {{ .Values.ipsec.localprivip | quote }}
   #        - name: IPSEC_LOCALPUBIP
-  #          value: "{{ .Values.ipsec.localpubip }}"
+  #          value: {{ .Values.ipsec.localpubip | quote }}
           - name: IPSEC_LOCALIP
-            value: "{{ .Values.ipsec.localip }}"
+            value: {{ .Values.ipsec.localip | quote }}
           - name: IPSEC_LOCALID
-            value: "{{ .Values.ipsec.localid }}"
+            value: {{ .Values.ipsec.localid | quote }}
           - name: IPSEC_LOCALNET
-            value: "{{ .Values.ipsec.localnet }}"
+            value: {{ .Values.ipsec.localnet | quote }}
           - name: IPSEC_REMOTEIP
-            value: "{{ .Values.ipsec.remoteip }}"
+            value: {{ .Values.ipsec.remoteip | quote }}
           - name: IPSEC_REMOTEID
-            value: "{{ .Values.ipsec.remoteid }}"
+            value: {{ .Values.ipsec.remoteid | quote }}
           - name: IPSEC_REMOTENET
-            value: "{{ .Values.ipsec.remotenet }}"
+            value: {{ .Values.ipsec.remotenet | quote }}
           - name: IPSEC_PSK
-            value: "{{ .Values.ipsec.psk }}"
+            value: {{ .Values.ipsec.psk | quote }}
           - name: IPSEC_KEYEXCHANGE
-            value: "{{ .Values.ipsec.keyexchange }}"
+            value: {{ .Values.ipsec.keyexchange | quote }}
           - name: IPSEC_IKECIPHER
-            value: "{{ .Values.ipsec.ikecipher }}"
+            value: {{ .Values.ipsec.ikecipher | quote }}
           - name: IPSEC_ESPCIPHER
-            value: "{{ .Values.ipsec.espcipher }}"
+            value: {{ .Values.ipsec.espcipher | quote }}
           - name: IPSEC_FORCEUDP
-            value: "{{ .Values.ipsec.forceudp }}"
+            value: {{ .Values.ipsec.forceudp | quote }}
           - name: IPSEC_IKEREAUTH
-            value: "{{ .Values.ipsec.ikereauth }}"
+            value: {{ .Values.ipsec.ikereauth | quote }}
           {{- if .Values.ipsec.lifetime }}
           - name: IPSEC_LIFETIME
-            value: "{{ .Values.ipsec.lifetime }}"
+            value: {{ .Values.ipsec.lifetime | quote }}
           {{- end}}
           {{- if .Values.ipsec.ikelifetime }}
           - name: IPSEC_IKELIFETIME
-            value: "{{ .Values.ipsec.ikelifetime }}"
+            value: {{ .Values.ipsec.ikelifetime | quote }}
           {{- end}}
         {{- else }}
           - name: IPSEC_USE_MANUAL_CONFIG
@@ -381,11 +395,11 @@ spec:
         {{- end }}
           {{- if .Values.ipsec.interfaces }}
           - name: IPSEC_INTERFACES
-            value: "{{ .Values.ipsec.interfaces }}"
+            value: {{ .Values.ipsec.interfaces | quote }}
           {{- end }}
           {{- if .Values.ipsec.vti_key }}
           - name: IPSEC_VTI_KEY
-            value: "{{ .Values.ipsec.vti_key }}"
+            value: {{ .Values.ipsec.vti_key | quote }}
           {{- end }}
         securityContext:
           privileged: true
@@ -433,9 +447,9 @@ spec:
 {{ toYaml .Values.resources.pingExporter | indent 10 }}
         env:
         - name: PINGEXPORTER_PING_TARGET
-          value: "{{ .Values.ipsec.remote_ping_endpoint }}"
+          value: {{ .Values.ipsec.remote_ping_endpoint | quote }}
         - name: PINGEXPORTER_PING_SOURCE_IPV4
-          value: "{{ .Values.ipsec.local_ping_endpoint }}"
+          value: {{ .Values.ipsec.local_ping_endpoint | quote }}
         ports:
         - containerPort: 9427
           protocol: TCP
@@ -472,9 +486,9 @@ spec:
           mountPath: /mnt/podshare
         env:
         - name: REMOTE_PING_ENDPOINT
-          value: "{{ .Values.ipsec.remote_ping_endpoint }}"
+          value: {{ .Values.ipsec.remote_ping_endpoint | quote }}
         - name: LOCAL_PING_ENDPOINT
-          value: "{{ .Values.ipsec.local_ping_endpoint }}"
+          value: {{ .Values.ipsec.local_ping_endpoint | quote }}
       {{- end }}
       ## VXLAN Connection ##
       {{- if .Values.vxlan.enabled }}
@@ -490,22 +504,22 @@ spec:
               - NET_ADMIN
         env:
         - name: PEER
-          value: "{{ $element.peer }}"
+          value: {{ $element.peer | quote }}
         {{- if $element.bridge }}
         - name: BRIDGE
-          value: "{{ $element.bridge }}"
+          value: {{ $element.bridge | quote }}
         {{- end }}
         - name: BRIDGED_IFACES
-          value: "{{ $element.bridged_ifaces }}"
+          value: {{ $element.bridged_ifaces | quote }}
         {{- if $element.bridge_name }}
         - name: BRIDGE_IFNAME
-          value: "{{ $element.bride_name }}"
+          value: {{ $element.bride_name | quote }}
         {{- end }}
         - name: VXLANID
-          value: "{{ $element.id }}"
+          value: {{ $element.id | quote }}
         {{- if $element.ipaddr }}
         - name: IP_ADDR
-          value: "{{ $element.ipaddr }}"
+          value: {{ $element.ipaddr | quote }}
         {{- end }}
         {{- if eq $index 0 }}
         ports:
@@ -659,17 +673,70 @@ spec:
         - sh
         - -c
         - |
-           mkdir data/finished
+           {{ if .Values.rclone.debug }}
+           set -x
+           {{ end }}
+
+           handleFile() {
+
+            FILENAME="$1"
+
+            # extract file's timestamp and format into YYYY-MM-DDTHH:MM:SSZ
+            timestamp=$(echo "$1" | cut -d '_' -f3 | cut -d '.' -f1 |  sed 's/./&-/4;s/./&-/7;s/./&T/10;s/./&:/13;s/./&:/16;s/./&Z/19')
+
+            {{ if .Values.rclone.pathComponents.date.enabled }}
+            # generate date
+            pathdate=$(date -d${timestamp} "+{{ .Values.rclone.pathComponents.date.format }}")
+            {{ end }}
+
+            # generate filename
+            filename=$(date -d${timestamp} "+{{ .Values.rclone.filename }}")
+
+            # construct target folder
+            target=""
+            {{ if .Values.rclone.pathComponents.cluster.enabled }}
+            ## add directory for cluster
+            target={{ .Values.labels.cluster }}
+            {{ end }}
+            {{ if .Values.rclone.pathComponents.name.enabled }}
+            ## add directory for CGW name if enabled
+            if [ "$target" == "" ];then
+              target={{ .Values.labels.name }}
+            else
+              target=${target}/{{ .Values.labels.name }}
+            fi
+            {{ end }}
+            {{ if .Values.rclone.pathComponents.date.enabled }}
+            ## add directory for date if enabled
+            if [ "$target" == "" ];then
+              target=${pathdate}
+            else
+              target=${target}/${pathdate}
+            fi
+            {{ end }}
+            
+            filedir=/data/finished/${target}
+            mkdir -p $filedir
+
+            echo "$FILENAME is finished, moving to ${filedir}/${filename}."
+            mv "$FILENAME" ${filedir}/${filename}
+
+            {{- if .Values.rclone.compression }}
+            # compress file
+            lz4 --rm ${filedir}/${filename} ${filedir}/${filename}.lz4
+            {{ end }}
+
+            echo "Attempting to push file to ${target}."
+            rclone move /data/finished/ ${RCLONE_REMOTE_NAME}:${RCLONE_REMOTE_PATH}/ 
+           }
+
            watchnames=''
            [ -d /data/ ] && watchnames="$watchnames /data/"
            inotifywait --monitor -e close_write --format %w%f $watchnames | while read FILE
            do
-            echo "$FILE is finished. Moving to data/finished/. Attempting to push to $RCLONE_REMOTE_PATH/ on remote device."
-            timestamp=$(echo $FILE | cut -d '_' -f3 | cut -d '.' -f1 |  sed 's/./&_/4;s/./&_/7;s/./&-/10;s/./&h/13;s/./&m/16;s/./&s/19')
-            mv $FILE data/finished/$timestamp-{{ .Values.rclone.filename }}
-            rclone move /data/finished/ $RCLONE_REMOTE_NAME:$RCLONE_REMOTE_PATH/
+             handleFile "$FILE"
            done
-      {{- end }}
+        {{- end }}
       volumes:
       - name: host-kernel-modules-volume
         hostPath:
@@ -754,10 +821,10 @@ spec:
       - name: init-script
         configMap:
           name: {{ template "CGW.fullname" . }}-init-script
+          defaultMode: 0544
           items:
             - key: initScript.sh
               path: initScript.sh
-              defaultMode: 0544
       {{- end }}
       {{- if .Values.bird.enabled }}
       - name: bird-config
@@ -775,16 +842,16 @@ spec:
       {{- if .Values.pcap.enabled }}
       - name: pcap-data
         emptyDir:
-          sizeLimit: 2Gi
+          sizeLimit: 10Gi
       {{- end }}
       {{- if .Values.radvd.enabled }}
       - name: radvd-config
         configMap:
           name: {{ template "CGW.fullname" . }}-radvd-config
+          defaultMode: 0444
           items:
             - key: radvd.conf
               path: radvd.conf
-              defaultMode: 0444
       {{- end }}
     {{- if .Values.pullSecrets }}
       imagePullSecrets:
@@ -800,5 +867,3 @@ spec:
       tolerations:
 {{ toYaml .Values.tolerations | indent 8 }}
    {{- end }}
-
-
