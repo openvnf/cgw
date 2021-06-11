@@ -19,7 +19,7 @@ spec:
     - port: 8000
       targetPort: 8000
       protocol: TCP
-      name: p8000
+      name: metrics
   selector:
     app: {{ template "CGW.name" . }}
     release: {{ .Release.Name }}

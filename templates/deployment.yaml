@@ -559,7 +559,7 @@ spec:
             - SETPCAP
             - NET_RAW
         ports:
-        - name: p8000
+        - name: metrics
           containerPort: 8000
           protocol: TCP
         volumeMounts:
