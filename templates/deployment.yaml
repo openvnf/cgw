@@ -672,69 +672,68 @@ spec:
         - sh
         - -c
         - |
-           {{ if .Values.rclone.debug }}
-           set -x
-           {{ end }}
+            {{- if .Values.rclone.debug }}
+            set -x
 
-           handleFile() {
+            {{- end }}
+            handleFile() {
+              FILENAME="$1"
 
-            FILENAME="$1"
+              # extract file's timestamp and format into YYYY-MM-DDTHH:MM:SSZ
+              timestamp=$(echo "$1" | cut -d '_' -f3 | cut -d '.' -f1 |  sed 's/./&-/4;s/./&-/7;s/./&T/10;s/./&:/13;s/./&:/16;s/./&Z/19')
 
-            # extract file's timestamp and format into YYYY-MM-DDTHH:MM:SSZ
-            timestamp=$(echo "$1" | cut -d '_' -f3 | cut -d '.' -f1 |  sed 's/./&-/4;s/./&-/7;s/./&T/10;s/./&:/13;s/./&:/16;s/./&Z/19')
+              {{- if .Values.rclone.pathComponents.date.enabled }}
+              # generate date
+              pathdate=$(date -d${timestamp} "+{{ .Values.rclone.pathComponents.date.format }}")
+              {{- end }}
 
-            {{ if .Values.rclone.pathComponents.date.enabled }}
-            # generate date
-            pathdate=$(date -d${timestamp} "+{{ .Values.rclone.pathComponents.date.format }}")
-            {{ end }}
+              # generate filename
+              filename=$(date -d${timestamp} "+{{ .Values.rclone.filename }}")
 
-            # generate filename
-            filename=$(date -d${timestamp} "+{{ .Values.rclone.filename }}")
+              # construct target folder
+              target=""
+              {{- if .Values.rclone.pathComponents.cluster.enabled }}
+              ## add directory for cluster
+              target={{ .Values.labels.cluster }}
+              {{- end }}
+              {{- if .Values.rclone.pathComponents.name.enabled }}
+              ## add directory for CGW name if enabled
+              if [ "$target" == "" ];then
+                target={{ .Values.labels.name }}
+              else
+                target=${target}/{{ .Values.labels.name }}
+              fi
+              {{- end }}
+              {{- if .Values.rclone.pathComponents.date.enabled }}
+              ## add directory for date if enabled
+              if [ "$target" == "" ];then
+                target=${pathdate}
+              else
+                target=${target}/${pathdate}
+              fi
+              {{- end }}
 
-            # construct target folder
-            target=""
-            {{ if .Values.rclone.pathComponents.cluster.enabled }}
-            ## add directory for cluster
-            target={{ .Values.labels.cluster }}
-            {{ end }}
-            {{ if .Values.rclone.pathComponents.name.enabled }}
-            ## add directory for CGW name if enabled
-            if [ "$target" == "" ];then
-              target={{ .Values.labels.name }}
-            else
-              target=${target}/{{ .Values.labels.name }}
-            fi
-            {{ end }}
-            {{ if .Values.rclone.pathComponents.date.enabled }}
-            ## add directory for date if enabled
-            if [ "$target" == "" ];then
-              target=${pathdate}
-            else
-              target=${target}/${pathdate}
-            fi
-            {{ end }}
-            
-            filedir=/data/finished/${target}
-            mkdir -p $filedir
+              filedir=/data/finished/${target}
+              mkdir -p $filedir
 
-            echo "$FILENAME is finished, moving to ${filedir}/${filename}."
-            mv "$FILENAME" ${filedir}/${filename}
+              echo "$FILENAME is finished, moving to ${filedir}/${filename}."
+              mv "$FILENAME" ${filedir}/${filename}
 
-            {{- if .Values.rclone.compression }}
-            # compress file
-            lz4 --rm ${filedir}/${filename} ${filedir}/${filename}.lz4
-            {{ end }}
+              {{- if .Values.rclone.compression }}
+              # compress file
+              lz4 --rm ${filedir}/${filename} ${filedir}/${filename}.lz4
+              {{- end }}
 
-            echo "Attempting to push file to ${target}."
-            rclone move /data/finished/ ${RCLONE_REMOTE_NAME}:${RCLONE_REMOTE_PATH}/ 
-           }
+              echo "Attempting to push file to ${target}."
+              rclone move /data/finished/ ${RCLONE_REMOTE_NAME}:${RCLONE_REMOTE_PATH}/
+            }
 
-           watchnames=''
-           [ -d /data/ ] && watchnames="$watchnames /data/"
-           inotifywait --monitor -e close_write --format %w%f $watchnames | while read FILE
-           do
-             handleFile "$FILE"
-           done
+            watchnames=''
+            [ -d /data/ ] && watchnames="$watchnames /data/"
+            inotifywait --monitor -e close_write --format %w%f $watchnames | while read FILE
+            do
+              handleFile "$FILE"
+            done
         {{- end }}
       volumes:
       - name: host-kernel-modules-volume
