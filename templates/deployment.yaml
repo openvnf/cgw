@@ -162,7 +162,7 @@ spec:
             {{- else }}
             ip tunnel add "$GRE_IFACE" mode gre remote "$GRE_REMOTEIP" local "$GRE_LOCALIP" ttl 255
             {{- end }}
-            ip link set "$GRE_IFACE" up 
+            ip link set "$GRE_IFACE" up
           else
             echo "set gre.localip, gre.remoteip and gre.name in your configuration"
             exit 1
@@ -181,7 +181,7 @@ spec:
           capabilities:
             add: ["NET_ADMIN"]
       {{ end }}
-       
+
       {{- if .Values.ipSetup.enabled }}
       {{- if or .Values.ipSetup.ip .Values.ipSetup.staticRoutes }}
       - name: ip-setup
@@ -662,7 +662,6 @@ spec:
         imagePullPolicy: {{ .Values.rclone.image.pullPolicy | quote }}
         resources:
 {{ toYaml .Values.resources.rclone | indent 10 }}
-        securityContext:
         capabilities:
           add:
           - NET_ADMIN
@@ -673,70 +672,70 @@ spec:
         - sh
         - -c
         - |
-           {{ if .Values.rclone.debug }}
-           set -x
-           {{ end }}
+      {{- if .Values.rclone.debug }}
+            set -x
+      {{- end }}
 
-           handleFile() {
+            handleFile() {
 
-            FILENAME="$1"
+              FILENAME="$1"
 
-            # extract file's timestamp and format into YYYY-MM-DDTHH:MM:SSZ
-            timestamp=$(echo "$1" | cut -d '_' -f3 | cut -d '.' -f1 |  sed 's/./&-/4;s/./&-/7;s/./&T/10;s/./&:/13;s/./&:/16;s/./&Z/19')
+              # extract file's timestamp and format into YYYY-MM-DDTHH:MM:SSZ
+              timestamp=$(echo "$1" | cut -d '_' -f3 | cut -d '.' -f1 |  sed 's/./&-/4;s/./&-/7;s/./&T/10;s/./&:/13;s/./&:/16;s/./&Z/19')
 
-            {{ if .Values.rclone.pathComponents.date.enabled }}
-            # generate date
-            pathdate=$(date -d${timestamp} "+{{ .Values.rclone.pathComponents.date.format }}")
-            {{ end }}
+      {{- if .Values.rclone.pathComponents.date.enabled }}
+              # generate date
+              pathdate=$(date -d${timestamp} "+{{ .Values.rclone.pathComponents.date.format }}")
+      {{- end }}
 
-            # generate filename
-            filename=$(date -d${timestamp} "+{{ .Values.rclone.filename }}")
+              # generate filename
+              filename=$(date -d${timestamp} "+{{ .Values.rclone.filename }}")
 
-            # construct target folder
-            target=""
-            {{ if .Values.rclone.pathComponents.cluster.enabled }}
-            ## add directory for cluster
-            target={{ .Values.labels.cluster }}
-            {{ end }}
-            {{ if .Values.rclone.pathComponents.name.enabled }}
-            ## add directory for CGW name if enabled
-            if [ "$target" == "" ];then
-              target={{ .Values.labels.name }}
-            else
-              target=${target}/{{ .Values.labels.name }}
-            fi
-            {{ end }}
-            {{ if .Values.rclone.pathComponents.date.enabled }}
-            ## add directory for date if enabled
-            if [ "$target" == "" ];then
-              target=${pathdate}
-            else
-              target=${target}/${pathdate}
-            fi
-            {{ end }}
-            
-            filedir=/data/finished/${target}
-            mkdir -p $filedir
+              # construct target folder
+              target=""
+      {{- if .Values.rclone.pathComponents.cluster.enabled }}
+              ## add directory for cluster
+              target={{ .Values.labels.cluster }}
+      {{- end }}
+      {{- if .Values.rclone.pathComponents.name.enabled }}
+              ## add directory for CGW name if enabled
+              if [ "$target" == "" ];then
+                target={{ .Values.labels.name }}
+              else
+                target=${target}/{{ .Values.labels.name }}
+              fi
+      {{- end }}
+      {{- if .Values.rclone.pathComponents.date.enabled }}
+              ## add directory for date if enabled
+              if [ "$target" == "" ];then
+                target=${pathdate}
+              else
+                target=${target}/${pathdate}
+              fi
+      {{- end }}
 
-            echo "$FILENAME is finished, moving to ${filedir}/${filename}."
-            mv "$FILENAME" ${filedir}/${filename}
+              filedir=/data/finished/${target}
+              mkdir -p $filedir
 
-            {{- if .Values.rclone.compression }}
-            # compress file
-            lz4 --rm ${filedir}/${filename} ${filedir}/${filename}.lz4
-            {{ end }}
+              echo "$FILENAME is finished, moving to ${filedir}/${filename}."
+              mv "$FILENAME" ${filedir}/${filename}
 
-            echo "Attempting to push file to ${target}."
-            rclone move /data/finished/ ${RCLONE_REMOTE_NAME}:${RCLONE_REMOTE_PATH}/ 
-           }
+      {{- if .Values.rclone.compression }}
+              # compress file
+              lz4 --rm ${filedir}/${filename} ${filedir}/${filename}.lz4
+      {{- end }}
 
-           watchnames=''
-           [ -d /data/ ] && watchnames="$watchnames /data/"
-           inotifywait --monitor -e close_write --format %w%f $watchnames | while read FILE
-           do
-             handleFile "$FILE"
-           done
-        {{- end }}
+              echo "Attempting to push file to ${target}."
+              rclone move /data/finished/ ${RCLONE_REMOTE_NAME}:${RCLONE_REMOTE_PATH}/
+            }
+
+            watchnames=''
+            [ -d /data/ ] && watchnames="$watchnames /data/"
+              inotifywait --monitor -e close_write --format %w%f $watchnames | while read FILE
+              do
+                handleFile "$FILE"
+              done
+      {{ end }}
       volumes:
       - name: host-kernel-modules-volume
         hostPath:
