@@ -662,7 +662,6 @@ spec:
         imagePullPolicy: {{ .Values.rclone.image.pullPolicy | quote }}
         resources:
 {{ toYaml .Values.resources.rclone | indent 10 }}
-        securityContext:
         capabilities:
           add:
           - NET_ADMIN
