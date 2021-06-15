@@ -181,16 +181,12 @@ bird:
 
 To observe the bird configs and applying new configs automatically without restarting BIRD, [bird-configwatcher](https://github.com/openvnf/bird-configwatcher) can be used.
 
-To enable `bird-configwatcher` or change images or annotations, change the following parameteres:
+To enable `bird-configwatcher` or change images, adjust the following parameteres:
 
 ```yaml
 bird:
   birdConfigWatcher:
     enabled: true # default is false
-    service:
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8000"
     image:
       repository: quay.io/openvnf/bird-configwatcher
       tag: v0.0.12
