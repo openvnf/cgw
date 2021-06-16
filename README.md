@@ -189,7 +189,7 @@ bird:
     enabled: true # default is false
     image:
       repository: quay.io/openvnf/bird-configwatcher
-      tag: v0.0.12
+      tag: v0.1.1
       pullPolicy: IfNotPresent
 ```
 
