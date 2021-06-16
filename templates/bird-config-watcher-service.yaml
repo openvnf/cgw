@@ -16,10 +16,10 @@ spec:
   type: ClusterIP
   clusterIP: None
   ports:
-    - port: 8000
-      targetPort: 8000
+    - port: {{ .Values.bird.birdConfigWatcher.metricsPort }}
+      targetPort: {{ .Values.bird.birdConfigWatcher.metricsPort }}
       protocol: TCP
-      name: p8000
+      name: metrics
   selector:
     app: {{ template "CGW.name" . }}
     release: {{ .Release.Name }}
