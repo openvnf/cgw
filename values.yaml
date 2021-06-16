@@ -203,6 +203,7 @@ bird:
     pullPolicy: IfNotPresent
   birdConfigWatcher:
     enabled: false
+    metricsPort: 8000
     service:
       annotations:
         prometheus.io/scrape: "true"

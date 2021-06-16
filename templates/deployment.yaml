@@ -558,9 +558,12 @@ spec:
             - SYS_ADMIN
             - SETPCAP
             - NET_RAW
+        env: 
+        - name: METRICS_PORT
+          value: {{ .Values.bird.birdConfigWatcher.metricsPort }}
         ports:
         - name: metrics
-          containerPort: 8000
+          containerPort: {{ .Values.bird.birdConfigWatcher.metricsPort }}
           protocol: TCP
         volumeMounts:
         - name: bird-config
