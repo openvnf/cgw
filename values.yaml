@@ -210,7 +210,7 @@ bird:
         prometheus.io/port: "8000"
     image:
       repository: quay.io/openvnf/bird-configwatcher
-      tag: v0.0.12
+      tag: v0.0.12 # TODO: Does not support the `METRICS_PORT` env var! Need a new release
       pullPolicy: IfNotPresent
   birdExporter:
     enabled: true
