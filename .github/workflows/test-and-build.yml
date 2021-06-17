@@ -9,8 +9,9 @@ on:
 env:
   CHART_REPO: 'TODO:'
 
+
 jobs:
-  test:
+  package:
     runs-on: ubuntu-latest
     container: lachlanevenson/k8s-helm:v2.16.7
     steps:
@@ -19,7 +20,6 @@ jobs:
       - name: Package
         run: |
           [[ $GITHUB_REF == "refs/tags/"* ]] && export TAG=${GITHUB_REF#refs/tags/}
-          "cd /opt/cgw
           helm init -c --skip-refresh
           helm repo add charts.tplabs.net $CHART_REPO
           helm repo rm stable # TODO: test why this was needed
