@@ -548,6 +548,13 @@ spec:
           mountPath: /opt/bird/
         - name: bird-socket
           mountPath: /var/run/bird/
+      - name: bird-reloader
+        image: pskamruk/bird-reloader:latest
+        volumeMounts:
+        - name: bird-config
+          mountPath: /opt/bird/
+        - name: bird-socket
+          mountPath: /var/run/bird/
       {{- end }}
 
       {{- if and .Values.bird.enabled .Values.bird.birdExporter.enabled }}
