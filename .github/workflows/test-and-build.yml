@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    tags: ['v*.*.*']
+  pull_request:
+    branches: [master]
+
+env:
+  CHART_REPO: 'TODO:'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: lachlanevenson/k8s-helm:v2.16.7
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Package
+        run: |
+          [[ $GITHUB_REF == "refs/tags/"* ]] && export TAG=${GITHUB_REF#refs/tags/}
+          "cd /opt/cgw
+          helm init -c --skip-refresh
+          helm repo add charts.tplabs.net $CHART_REPO
+          helm repo rm stable # TODO: test why this was needed
+          helm repo add stable https://charts.helm.sh/stable
+          helm repo update
+          if [[ -z "$TAG" ]]; then
+            helm package -u .
+          else
+            helm package -u --version $TAG .
+          fi
+      - uses: actions/upload-artifact@v2
+        with:
+          name: chart
+          path: cgw-*.tgz
+
+  release:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: chart
+      - name: Upload
+        run: |
+          curl --data-binary "@$(ls *.tgz)" $CHART_REPO/api/charts
