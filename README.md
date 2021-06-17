@@ -18,7 +18,7 @@ in the current version and therefore not recommended for production use.
   * [BGP](#bgp)
     * [BIRD Internet Routing Daemon](#bird-internet-routing-daemon)
     * [bird_exporter](#bird_exporter)
-    * [bird_exporter](#bird-configwatcher)
+    * [bird-configwatcher](#bird-configwatcher)
   * [VXLAN](#vxlan)
     * [manual VXLAN setup [deprecated]](#manual-vxlan-setup-deprecated)
     * [VXLAN-Controller configuration](#vxlan-controller-configuration)
