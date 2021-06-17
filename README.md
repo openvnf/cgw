@@ -177,6 +177,22 @@ bird:
       pullPolicy: IfNotPresent
 ```
 
+#### bird configwatcher
+
+To observe the bird configs and applying new configs automatically without restarting BIRD, [bird-configwatcher](https://github.com/openvnf/bird-configwatcher) can be used.
+
+To enable `bird-configwatcher` or change images, adjust the following parameteres:
+
+```yaml
+bird:
+  birdConfigWatcher:
+    enabled: true # default is false
+    image:
+      repository: quay.io/openvnf/bird-configwatcher
+      tag: v0.1.1
+      pullPolicy: IfNotPresent
+```
+
 ### VXLAN
 
 There are two different ways available of connecting this service with another container.
