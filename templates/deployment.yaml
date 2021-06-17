@@ -33,9 +33,14 @@ spec:
         {{- if .Values.vxlanController.enabled }}
         {{ .Values.vxlanController.annotationKey }}: {{ .Values.vxlanController.names | quote }}
         {{- end }}
+        {{- if .Values.bird.enabled }}
+        {{- if not .Values.bird.birdConfigWatcher.enabled }}
+        checksum/bird-config-template: {{ include (print $.Template.BasePath "/bird-config.yaml") . | sha256sum }}
+        checksum/bird-config: {{ toYaml .Values.bird.configuration | sha256sum }}
+        {{- end }}
+        {{- end }}
         checksum/strongswan-config-template: {{ include (print $.Template.BasePath "/strongswan-config.yaml") . | sha256sum }}
         checksum/strongswan-secret-template: {{ include (print $.Template.BasePath "/strongswan-secret.yaml") . | sha256sum }}
-        checksum/bird-config-template: {{ include (print $.Template.BasePath "/bird-config.yaml") . | sha256sum }}
         checksum/iptables-config-template: {{ include (print $.Template.BasePath "/iptables-configmap.yaml") . | sha256sum }}
         checksum/ip-init-config-template: {{ include (print $.Template.BasePath "/init-script-config.yaml") . | sha256sum }}
         checksum/ip-init-env-template: {{ include (print $.Template.BasePath "/init-script-env.yaml") . | sha256sum }}
@@ -43,7 +48,6 @@ spec:
         checksum/vrrp-config-template: {{ include (print $.Template.BasePath "/vrrp-configmap.yaml") . | sha256sum }}
         checksum/radvd-config-template: {{ include (print $.Template.BasePath "/radvd-config.yaml") . | sha256sum }}
         checksum/strongswan-config: {{ toYaml .Values.ipsec.strongswan | sha256sum }}
-        checksum/bird-config: {{ toYaml .Values.bird.configuration | sha256sum }}
         checksum/iptables-ipv4-config: {{ toYaml .Values.iptables.ipv4Rules | sha256sum }}
         checksum/iptables-ipv6-config: {{ toYaml .Values.iptables.ipv6Rules | sha256sum }}
         {{- if .Values.additionalAnnotations }}
@@ -548,9 +552,34 @@ spec:
           mountPath: /opt/bird/
         - name: bird-socket
           mountPath: /var/run/bird/
+      {{- if .Values.bird.birdConfigWatcher.enabled }}
+      - name: bird-config-watcher
+        image: {{ .Values.bird.birdConfigWatcher.image.repository }}:{{ .Values.bird.birdConfigWatcher.image.tag }}
+        imagePullPolicy: {{ .Values.bird.birdConfigWatcher.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources.birdConfigWatcher | indent 10 }}
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+            - SYS_ADMIN
+            - SETPCAP
+            - NET_RAW
+        env: 
+        - name: METRICS_PORT
+          value: {{ .Values.bird.birdConfigWatcher.metricsPort }}
+        ports:
+        - name: metrics
+          containerPort: {{ .Values.bird.birdConfigWatcher.metricsPort }}
+          protocol: TCP
+        volumeMounts:
+        - name: bird-config
+          mountPath: /opt/bird/
+        - name: bird-socket
+          mountPath: /var/run/bird/
       {{- end }}
 
-      {{- if and .Values.bird.enabled .Values.bird.birdExporter.enabled }}
+      {{- if .Values.bird.birdExporter.enabled }}
       - name: bird-exporter
         image: {{ .Values.bird.birdExporter.image.repository }}:{{ .Values.bird.birdExporter.image.tag }}
         imagePullPolicy: {{ .Values.bird.birdExporter.image.pullPolicy | quote }}
@@ -575,6 +604,7 @@ spec:
         volumeMounts:
         - name: bird-socket
           mountPath: /var/run/bird/
+      {{- end }}
       {{- end }}
       {{ if .Values.vrrp.enabled }}
       ## VRRP ##

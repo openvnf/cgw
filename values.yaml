@@ -105,6 +105,13 @@ resources:
     requests:
       cpu: 100m
       memory: 128Mi
+  birdConfigWatcher:
+    limits:
+      cpu: 50m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
   birdExporter:
     limits:
       cpu: 50m
@@ -194,7 +201,17 @@ bird:
     repository: quay.io/openvnf/vnf-bird
     tag: v1.1.0_2019-05-28T125241Z
     pullPolicy: IfNotPresent
-
+  birdConfigWatcher:
+    enabled: false
+    metricsPort: 8000
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+    image:
+      repository: quay.io/openvnf/bird-configwatcher
+      tag: v0.1.1
+      pullPolicy: IfNotPresent
   birdExporter:
     enabled: true
     service:
