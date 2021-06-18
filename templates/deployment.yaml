@@ -567,7 +567,7 @@ spec:
             - NET_RAW
         env: 
         - name: METRICS_PORT
-          value: {{ .Values.bird.birdConfigWatcher.metricsPort }}
+          value: "{{ .Values.bird.birdConfigWatcher.metricsPort }}"
         ports:
         - name: metrics
           containerPort: {{ .Values.bird.birdConfigWatcher.metricsPort }}
