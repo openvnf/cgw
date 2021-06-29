@@ -692,9 +692,6 @@ spec:
         imagePullPolicy: {{ .Values.rclone.image.pullPolicy | quote }}
         resources:
 {{ toYaml .Values.resources.rclone | indent 10 }}
-        capabilities:
-          add:
-          - NET_ADMIN
         envFrom:
           - configMapRef:
               name: {{ template "CGW.fullname" . }}-rclone-env

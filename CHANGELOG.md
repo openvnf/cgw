@@ -8,6 +8,10 @@ Deprecated features or components might be removed in later versions without cha
 
 ### 1.next
 
+### 1.6.2
+
+- remove failing sec context cap NET_ADMIN from rclone container
+
 ### 1.6.1
 
 - Fix bird-configwatcher metrics port
