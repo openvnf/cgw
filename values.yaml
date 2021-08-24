@@ -183,10 +183,6 @@ ipsec:
     tag: v1.4.0
     pullPolicy: IfNotPresent
 
-#pullSecrets:
-  #- name: werft
-
-
 ## Values used to set up GRE usage
 gre:
   enabled: false
@@ -199,7 +195,7 @@ bird:
   enabled: false
   image:
     repository: quay.io/openvnf/vnf-bird
-    tag: v1.1.0_2019-05-28T125241Z
+    tag: v1.2.0
     pullPolicy: IfNotPresent
   birdConfigWatcher:
     enabled: false
